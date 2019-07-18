@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jointjs/1.0.2/joint.css"/>
+</head>
+<body>
+    <!-- content -->
+    <div id="canvas">
+    </div>
+
+    <!-- dependencies -->
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="/node_modules/lodash/lodash.min.js"></script>
+    <script src="/node_modules/backbone/backbone-min.js"></script>
+    <script src="/node_modules/jointjs/dist/joint.js"></script>
+
+    <!-- code -->
+    <script type="text/javascript">
+        (function() {
+
+    var graph = new joint.dia.Graph;
+    var paper = new joint.dia.Paper({
+  el: $('#canvas'),
+  width: 1024,
+  height: 768,
+  gridSize: 20,
+  model: graph
+}); 
+
+    var m1 = new joint.shapes.devs.Model({
+  position: {
+    x: 200,
+    y: 200
+  },
+  size: {
+    width: 100,
+    height: 100
+  },
+  attrs: {
+    text: {
+      text: 'Top\nBottom\nModel'
+    }
+  },
+  inPorts: ['a'],
+  outPorts: ['b', 'c'],
+  ports: {
+    groups: {
+      'in': {
+        position: 'top',
+        label: {
+          position: 'outside'
+        }
+      },
+      'out': {
+        position: 'bottom',
+        label: {
+          position: 'outside'
+        }
+      }
+    }
+  }
+});
+    graph.addCell(m1);
+
+    var m2 = m1.clone().translate(300, 0).attr('.label/text', 'Model 2');
+    graph.addCell(m2);
+
+    var test = m1.clone().translate(500, 500).attr('.label/text', 'Model 2');
+    graph.addCell(test);
+
+    graph.on('change:source change:target', function(link) {
+        var sourcePort = link.get('source').port;
+        var sourceId = link.get('source').id;
+        var targetPort = link.get('target').port;
+        var targetId = link.get('target').id;
+
+        var m = [
+            'The port <b>' + sourcePort,
+            '</b> of element with ID <b>' + sourceId,
+            '</b> is connected to port <b>' + targetPort,
+            '</b> of elemnt with ID <b>' + targetId + '</b>'
+        ].join('');
+
+        out(m);
+    });
+
+    function out(m) {
+        $('#paper-link-out').html(m);
+    }
+
+    }());
+    </script>
+</body>
+</html>
