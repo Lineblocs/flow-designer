@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jointjs/1.0.2/joint.css"/>
+</head>
+<body>
+    <!-- content -->
+    <div id="canvas">
+    </div>
+
+    <!-- dependencies -->
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="/node_modules/lodash/lodash.min.js"></script>
+    <script src="/node_modules/backbone/backbone-min.js"></script>
+    <script src="/node_modules/jointjs/dist/joint.js"></script>
+    <script src="./models.js"></script>
+    <script src="./multiple-links.js"></script>
+
+    <!-- code -->
+    <script type="text/javascript">
+    var graph = new joint.dia.Graph;
+    var paper = new joint.dia.Paper({
+  el: $('#canvas'),
+  width: 1024,
+  height: 768,
+  gridSize: 20,
+  model: graph
+}); 
+
+    // enable interactions
+    bindInteractionEvents(adjustVertices, graph, paper);
+    // enable tools
+    bindToolEvents(paper);
+    var launch = new joint.shapes.devs.LaunchModel({
+        position: {
+            x: 500,
+            y: 0
+        }
+    });
+    graph.addCell(launch);
+    var m1 = new joint.shapes.devs.SwitchModel({
+  position: {
+    x: 200,
+    y: 200
+  },
+  ports: {
+    groups: {},
+    items: []
+  }
+});
+    graph.addCell(m1);
+var port = {
+        id: 'abc',
+        group: 'out',
+        args: {},
+        label: {
+            position: {
+                name: 'top',
+                args: {}
+            }
+        },
+        attrs: { text: { text: 'port1' } },
+    };
+    m1.addPort(port);
+    var port2 = Object.assign({}, port);
+    port2.id = 'xyz';
+    m1.addPort(port2);
+   var dial = new joint.shapes.devs.DialModel({
+  position: {
+    x: 200,
+    y: 200
+  },
+  size: {
+    width: 256,
+    height: 128
+  },
+  attrs: {
+    text: {
+      text: 'Switch'
+    }
+  },
+  inPorts: ['a'],
+  outPorts: ['b', 'c'],
+  ports: {
+    groups: {
+      'in': {
+        position: 'top',
+        label: {
+          position: 'outside'
+        }
+      },
+      'out': {
+        position: 'bottom',
+        label: {
+          position: 'outside'
+        }
+      }
+    }
+  }
+});
+    graph.addCell(dial);
+    var m2 = m1.clone().translate(300, 0).attr('.label/text', 'Model 2');
+    graph.addCell(m2);
+
+    var test = m1.clone().translate(500, 500).attr('.label/text', 'Model 2');
+    graph.addCell(test);
+
+    graph.on('change:source change:target', function(link) {
+        var sourcePort = link.get('source').port;
+        var sourceId = link.get('source').id;
+        var targetPort = link.get('target').port;
+        var targetId = link.get('target').id;
+
+        var m = [
+            'The port <b>' + sourcePort,
+            '</b> of element with ID <b>' + sourceId,
+            '</b> is connected to port <b>' + targetPort,
+            '</b> of elemnt with ID <b>' + targetId + '</b>'
+        ].join('');
+
+        out(m);
+    });
+
+    function out(m) {
+        $('#paper-link-out').html(m);
+    }
+    </script>
+</body>
+</html>
