@@ -1,0 +1,73 @@
+<div>
+    <form ng-submit="saveWidget()">
+        <div ng-cloak>
+            <md-content>
+                <md-tabs class="md-primary" md-center-tabs md-dynamic-height="true">
+                    <md-tab label="info">
+                        <md-content class="md-padding">
+                                <md-input-container>
+                                    <label for="testInput">Widget Name</label>
+                                    <input type="text" ng-model="cellModel.name" md-autofocus>
+                                </md-input-container>
+                                <md-input-container>
+                                    <label for="testInput">Playback Type</label>
+                                    <md-select ng-change="changePlaybackType(cellModel.data.playback_type)" ng-model="cellModel.data.playback_type">
+                                        <md-option><em>None</em></md-option>
+                                        <md-option ng-value="type" ng-repeat="type in playbackTypes">
+                                        {{type}}
+                                        </md-option>
+                                    </md-select>
+                                </md-input-container>
+                                <div ng-show="cellModel.data.playback_type==='Say'">
+                                    <md-input-container>
+                                        <label for="testInput">Text To Say</label>
+                                        <input type="text" ng-model="cellModel.data.text_to_say" md-autofocus>
+                                    </md-input-container>
+                                    <md-select ng-model="cellModel.data.text_language">
+                                        <md-option><em>None</em></md-option>
+                                        <md-option ng-repeat="language in languages" ng-value="cellModel.data.text_language" ng-disabled="$index === 1">
+                                        {{language}}
+                                        </md-option>
+                                    </md-select>
+                                    <md-select ng-model="cellModel.data.voice">
+                                        <md-option><em>None</em></md-option>
+                                        <md-option ng-repeat="voice in voices" ng-value="cellModel.data.voice" ng-disabled="$index === 1">
+                                        {{voice}}
+                                        </md-option>
+                                    </md-select>
+                                    <md-input-container>
+                                        <label for="testInput">Number Of Loops</label>
+                                        <input type="text" ng-model="cellModel.data.number_of_loops" md-autofocus>
+                                    </md-input-container>
+                                </div>
+                                <div ng-show="cellModel.data.playback_type==='Play'">
+                                    <md-input-container>
+                                        <label for="testInput">URL of audio file</label>
+                                        <input type="text" ng-model="cellModel.data.url_audio" md-autofocus>
+                                    </md-input-container>
+                                </div>
+                                <md-input-container>
+                                    <label for="testInput">Stop Timeout</label>
+                                    <input type="text" ng-model="cellModel.data.stop_timeout" md-autofocus>
+                                </md-input-container>
+                                <md-input-container>
+                                    <label for="testInput">Stop gather on keypress</label>
+                                    <md-checkbox ng-model="cellModel.data.stop_gather_on_keypress" aria-label="Checkbox 1"></md-checkbox>
+                                </md-input-container>
+                                <md-input-container ng-show="cellModel.data.stop_gather_on_keypress">
+                                    <label for="testInput">Keypress Key Stop</label>
+                                    <input type="text" ng-model="cellModel.data.keypress_key_stop" md-autofocus>
+                                </md-input-container>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+        <md-button type="submit" class="md-raised md-primary">
+            Save
+        </md-button>
+    </form>
+    <md-button ng-click="close()" class="md-primary">
+    Close Sidenav Right
+    </md-button>
+</div>

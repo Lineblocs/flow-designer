@@ -1,0 +1,40 @@
+<div>
+    <form ng-submit="saveWidget()">
+        <div ng-cloak>
+            <md-content>
+                <md-tabs class="md-primary" md-center-tabs md-dynamic-height="true">
+                    <md-tab label="info">
+                        <md-content class="md-padding">
+                                <md-input-container>
+                                    <label for="testInput">Widget Name</label>
+                                    <input type="text" ng-model="cellModel.name" md-autofocus>
+                                </md-input-container>
+                                <md-input-container>
+                                    <label for="testInput">Number To Call</label>
+                                    <input type="text" ng-model="cellModel.data.number_to_call" md-autofocus>
+                                </md-input-container>
+                                <md-input-container>
+                                    <label for="testInput">Caller ID</label>
+                                    <input type="text" ng-model="cellModel.data.caller_id" md-autofocus>
+                                </md-input-container>
+                                <md-input-container>
+                                    <label for="testInput">Ring Time</label>
+                                    <input type="text" ng-model="cellModel.data.ring_time" md-autofocus>
+                                </md-input-container>
+                                <md-input-container>
+                                    <label for="testInput">Do Record</label>
+                                    <md-checkbox ng-model="cellModel.data.do_record" aria-label="Checkbox 1"></md-checkbox>
+                                </md-input-container>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+        <md-button type="submit" class="md-raised md-primary">
+            Save
+        </md-button>
+    </form>
+    <md-button ng-click="close()" class="md-primary">
+    Close Sidenav Right
+    </md-button>
+</div>

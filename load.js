@@ -90,7 +90,7 @@ var stencilGraph = new joint.dia.Graph,
   });
 
   appendStencilModels(stencilGraph, [
-       joint.shapes.devs.UnspecifiedProcess,
+       joint.shapes.devs.SwitchModel,
        joint.shapes.devs.DialModel,
        joint.shapes.devs.BridgeModel,
        joint.shapes.devs.ProcessInputModel,
@@ -138,6 +138,8 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
       var s = flyShape.clone();
       s.position(x - target.left - offset.x, y - target.top - offset.y);
       graph.addCell(s);
+      var scope = getAngularScope();
+      scope.createModel( s );
     }
     $('body').off('mousemove.fly').off('mouseup.fly');
     flyShape.remove();

@@ -1,0 +1,52 @@
+<div>
+    <form ng-submit="saveWidget()">
+        <div ng-cloak>
+            <md-content>
+                <md-tabs class="md-primary" md-center-tabs md-dynamic-height="true">
+                    <md-tab label="info">
+                        <md-content class="md-padding">
+                                <md-input-container>
+                                    <label for="testInput">Widget Name</label>
+                                    <input type="text" ng-model="cellModel.name" md-autofocus>
+                                </md-input-container>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="links">
+                        <md-content class="md-padding">
+                            <ul ng-repeat="link in cellModel.links">
+                                <li>
+                                    <md-input-container>
+                                        <label for="testInput">Condition</label>
+                                        <md-select ng-model="ctrl.userState">
+                                            <md-option><em>None</em></md-option>
+                                            <md-option ng-repeat="condition in conditions" ng-value="cellModel.data.condition" ng-disabled="$index === 1">
+                                            {{condition}}
+                                            </md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label for="testInput">Test</label>
+                                        <input ng-model="link.test" />
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label for="testInput">Value</label>
+                                        <input ng-model="link.value" />
+                                    </md-input-container>
+                                </li>
+                            </ul>
+                            <md-button ng-click="addLink()" type="button" class="md-raised md-primary">
+                                Add Link
+                            </md-button>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+        <md-button type="submit" class="md-raised md-primary">
+            Save
+        </md-button>
+    </form>
+    <md-button ng-click="close()" class="md-primary">
+    Close Sidenav Right
+    </md-button>
+</div>

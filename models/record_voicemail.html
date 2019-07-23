@@ -1,0 +1,49 @@
+<div>
+    <form ng-submit="saveWidget()">
+        <div ng-cloak>
+            <md-content>
+                <md-tabs class="md-primary" md-center-tabs md-dynamic-height="true">
+                    <md-tab label="info">
+                        <md-content class="md-padding">
+                                <md-input-container>
+                                    <label for="testInput">Widget Name</label>
+                                    <input type="text" ng-model="cellModel.name" md-autofocus>
+                                </md-input-container>
+                                <md-input-container>
+                                    <label for="testInput">Finish Record Type</label>
+                                    <md-select ng-change="changeFinishRecordType(cellModel.data.finish_record_type)" ng-model="cellModel.data.finish_record_type">
+                                        <md-option><em>None</em></md-option>
+                                        <md-option ng-value="type" ng-repeat="type in finishRecordTypes">
+                                        {{type}}
+                                        </md-option>
+                                    </md-select>
+                                </md-input-container>
+                                <md-input-container>
+                                    <label for="testInput">Max Recording Length</label>
+                                    <input type="text" ng-model="cellModel.data.max_recording_length" md-autofocus>
+                                </md-input-container>
+                                <div ng-show="cellModel.data.finish_record_type==='Keypress'">
+                                    <md-input-container>
+                                        <label for="testInput">Finish Key</label>
+                                        <input type="text" ng-model="cellModel.data.finish_key" md-autofocus>
+                                    </md-input-container>
+                                </div>
+                                <div ng-show="cellModel.data.finish_record_type==='Silence'">
+                                    <md-input-container>
+                                        <label for="testInput">Seconds Of Silence</label>
+                                        <input type="text" ng-model="cellModel.data.seconds_of_silence" md-autofocus>
+                                    </md-input-container>
+                                </div>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+        <md-button type="submit" class="md-raised md-primary">
+            Save
+        </md-button>
+    </form>
+    <md-button ng-click="close()" class="md-primary">
+    Close Sidenav Right
+    </md-button>
+</div>

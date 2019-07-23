@@ -96,6 +96,8 @@ joint.shapes.devs.SwitchModel = joint.shapes.devs.Model.extend({
         fill: '#262626'
       }
     },
+    inPorts: ['In'],
+    outPorts: [],
     ports: {
         groups: {
             'in': {
@@ -179,7 +181,7 @@ joint.shapes.devs.BridgeModel = joint.shapes.devs.Model.extend({
 
   defaults: joint.util.deepSupplement({
 
-    type: 'devs.DialModel',
+    type: 'devs.BridgeModel',
     size: {
       width: 256,
       height: 128
