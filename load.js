@@ -1,10 +1,16 @@
 
+var offsetLeft, offsetTop, beforeInfo, launchCell;
 function getAngularScope() {
   return window['angularScope'];
 }
 function getSVGInfo(joint)
 {
   return $("g[model-id='" + joint.id + "']").get( 0 ).getBoundingClientRect();
+}
+function computeOffset() {
+  var info = getSVGInfo(launchCell);
+  offsetLeft = beforeInfo.left - info.left;
+  offsetTop = beforeInfo.top - info.top;
 }
 function removePorts(widget) {
         widget.attributes.inPorts.forEach(function(port) {
@@ -55,6 +61,8 @@ model: graph
   var paperScale = function(sx, sy) {
       //$("#canvas").css({"zoom": sx});
       paper.scale(sx, sy);
+      stencilPaper.scale(sx, sy);
+      computeOffset();
   };
 
   var zoomOut = function() {
@@ -162,7 +170,9 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
       //y = y - copyPosition.y;
       console.log("drag modified x and y are ", x, y);
     }
-    var size = cellView.model.attributes.size;
+    var sizeShape = cellView.model.clone();
+    sizeShape.scale(graphScale, graphScale);
+    var size = sizeShape.attributes.size;
   var flyGraph = new joint.dia.Graph,
     flyPaper = new joint.dia.Paper({
       el: $('#flyPaper'),
@@ -181,6 +191,7 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
     //flyPaper.scale(graphScale, graphScale);
     removePorts(flyShape);
   flyShape.position(0, 0);
+  flyPaper.scale(graphScale, graphScale);
   flyGraph.addCell(flyShape);
   $("#flyPaper").offset({
     left: e.pageX - offset.x,
@@ -196,6 +207,7 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
     var x = e.pageX,
       y = e.pageY,
       target = paper.$el.offset();
+      console.log("paper el is", paper.$el);
     
     // Dropped over paper ?
     if (x > target.left && x < target.left + paper.$el.width() && y > target.top && y < target.top + paper.$el.height()) {
@@ -219,28 +231,20 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
       } else {
         console.log("not changing final x,y because no copyPosition");
         s.position(finalX, finalY);
-        paper.scale(1, 1);
         graph.addCell(s);
-        var info1 = getSVGInfo(s);
-        console.log("info1 ", info1.left);
-        paper.scale(graphScale, graphScale);
-        var s2 = s.clone();
-        graph.addCell(s2);
-        var info2 = getSVGInfo(s2);
-        var x = info1.left - info2.left;
-        var y  = info1.top - info2.top;
-
-        console.log("info2 ", info2.left);
-        graph.addCell(s2);
-        s2.translate(x, y);
-        console.log("s2 ", s2);
-        //s.remove();
         console.log('SVG info x, y changes are ', x, y);
         var scope = getAngularScope();
         scope.createModel( s );
       }
       removePorts( s );
       if (graphScale !== 0) {
+        console.log("doing graph scale adjustments on ", s);
+        computeOffset();
+        var curr = s.position();
+        console.log("current position is ", curr);
+
+        s.position(curr.x + offsetLeft, curr.y + offsetTop);
+        //s.translate(-(offsetLeft), -(offsetTop));
         /*
         var cellInfo = getSVGInfo(s);
         console.log("after fly info is ", cellInfo);
@@ -256,3 +260,5 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
     $('#flyPaper').remove();
   });
 });
+launchCell = graph.getCells()[0];
+beforeInfo = getSVGInfo(launchCell);
