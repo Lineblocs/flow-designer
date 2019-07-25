@@ -14,6 +14,48 @@ function Link(from, to, condition, value, ports) {
 
 angular
   .module('basicUsageSidenavDemo', ['ngMaterial'])
+  .controller('ControlsCtrl', function ($scope, $timeout, $mdSidenav, $log, $mdDialog) {
+
+    $scope.zoomIn = function() {
+      zoomIn();
+    }
+
+    $scope.zoomOut = function() {
+      zoomOut();
+    }
+
+    $scope.saveChanges = function(ev) {
+      // Appending dialog to document.body to cover sidenav in docs app
+      // Modal dialogs should fully cover application
+      // to prevent interaction outside of dialog
+      var json = graph.toJSON();
+      console.log("graph JSON is ", json);
+      $mdDialog.show(
+        $mdDialog.alert()
+          .parent(angular.element(document.querySelector('body')))
+          .clickOutsideToClose(true)
+          .title('Changes Saved')
+          .content('Your flow has been saved and published. thanks')
+          .ariaLabel('Saved Changes')
+          .ok('ok')
+          .targetEvent(ev)
+      );
+      /*
+          $mdDialog.show(
+      $mdDialog.alert()
+        .parent(angular.element(document.querySelector('body')))
+        .clickOutsideToClose(true)
+        .title('This is an alert title')
+        .content('You can specify some description text in here.')
+        .ariaLabel('Alert Dialog Demo')
+        .ok('Got it!')
+        .targetEvent(ev)
+    );
+    */
+    }
+
+
+  })
   .controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log) {
     window['angularScope'] = angular.element(document.getElementById('panelCtrl')).scope();
 
@@ -105,8 +147,6 @@ angular
       console.log("changeFinishRecordType ", value);
       $scope.cellModel.data.finish_record_type = value;
     }
-
-
 
     /**
      * Supplies a function that will continue to operate until the

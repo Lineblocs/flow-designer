@@ -2,7 +2,10 @@
 function getAngularScope() {
   return window['angularScope'];
 }
-
+function getSVGInfo(joint)
+{
+  return $("g[model-id='" + joint.id + "']").get( 0 ).getBoundingClientRect();
+}
 function removePorts(widget) {
         widget.attributes.inPorts.forEach(function(port) {
             widget.removePort( port );
@@ -32,11 +35,13 @@ function appendStencilModels(graph, list)
 }
 
   var graph = new joint.dia.Graph;
+  var PAPER_HEIGHT = 1024;
+  var PAPER_WIDTH = "80%";
   var paper = new joint.dia.Paper({
 el: $('#canvas'),
 gridSize: 20,
-width: "80%",
-height: 1024,
+width: PAPER_WIDTH,
+height: PAPER_HEIGHT,
 model: graph
 }); 
 
@@ -44,6 +49,56 @@ model: graph
   bindInteractionEvents(adjustVertices, graph, paper);
   // enable tools
   bindToolEvents(paper);
+
+  var graphScale = 1;
+
+  var paperScale = function(sx, sy) {
+      //$("#canvas").css({"zoom": sx});
+      paper.scale(sx, sy);
+  };
+
+  var zoomOut = function() {
+      graphScale -= 0.1;
+      paperScale(graphScale, graphScale);
+  };
+
+  var zoomIn = function() {
+      graphScale += 0.1;
+      paperScale(graphScale, graphScale);
+  };
+
+  var resetZoom = function() {
+      graphScale = 1;
+      paperScale(graphScale, graphScale);
+  };
+
+  var dragStartPosition = null;
+  var copyPosition = null;
+  paper.on('blank:pointerdown',
+    function(event, x, y) {
+        dragStartPosition = { x: x, y: y};
+    }
+);
+paper.on('cell:pointerup blank:pointerup', function(cellView, x, y) {
+    dragStartPosition = null;
+});
+$("#canvas")
+    .mousemove(function(event) {
+        if (dragStartPosition) {
+            copyPosition = {};
+            copyPosition.x = event.offsetX - dragStartPosition.x;
+            copyPosition.y = event.offsetY - dragStartPosition.y;
+            copyPosition.offsetX = event.offsetX;
+            copyPosition.offsetY = event.offsetY;
+            copyPosition.dragX = dragStartPosition.x;
+            copyPosition.dragY = dragStartPosition.y;
+            console.log("doing canvas translate");
+            paper.translate(
+                copyPosition.x,
+                copyPosition.y);
+            }
+
+    });
   var launch = new joint.shapes.devs.LaunchModel({
       position: {
           x: 500,
@@ -98,7 +153,15 @@ var stencilGraph = new joint.dia.Graph,
   ]);
 stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
   $('body').append('<div id="flyPaper" style="position:fixed;z-index:100;opacity:.7;pointer-event:none;"></div>');
+  console.log("cell pointer down ", arguments);
     console.log("cellView is ", cellView);
+    if (copyPosition) {
+      console.log("copyPosition is ", copyPosition);
+      console.log("initial x and y are ", x, y)
+      //x = x - copyPosition.x;
+      //y = y - copyPosition.y;
+      console.log("drag modified x and y are ", x, y);
+    }
     var size = cellView.model.attributes.size;
   var flyGraph = new joint.dia.Graph,
     flyPaper = new joint.dia.Paper({
@@ -115,6 +178,7 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
       x: x - pos.x,
       y: y - pos.y
     };
+    //flyPaper.scale(graphScale, graphScale);
     removePorts(flyShape);
   flyShape.position(0, 0);
   flyGraph.addCell(flyShape);
@@ -136,10 +200,56 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
     // Dropped over paper ?
     if (x > target.left && x < target.left + paper.$el.width() && y > target.top && y < target.top + paper.$el.height()) {
       var s = flyShape.clone();
-      s.position(x - target.left - offset.x, y - target.top - offset.y);
-      graph.addCell(s);
-      var scope = getAngularScope();
-      scope.createModel( s );
+      var finalX = (x - target.left - offset.x);
+      var finalY = (y - target.top - offset.y);
+      console.log("final x,y before any changes ", finalX, finalY);
+
+      if (copyPosition) {
+        console.log("changing final x and y based on copyPosition");
+        //var finalX = (x - target.left - offset.x) + copyPosition.x;
+        //var finalY = (y - target.top - offset.y) + copyPosition.y;
+        //paper.translate(0, 0);
+        s.position(finalX, finalY);
+        graph.addCell(s);
+        console.log("adding new cell ", s);
+        s.translate(-(copyPosition.x), -(copyPosition.y));
+        var scope = getAngularScope();
+        scope.createModel( s );
+        //paper.translate(copyPosition.x, copyPosition.y);
+      } else {
+        console.log("not changing final x,y because no copyPosition");
+        s.position(finalX, finalY);
+        paper.scale(1, 1);
+        graph.addCell(s);
+        var info1 = getSVGInfo(s);
+        console.log("info1 ", info1.left);
+        paper.scale(graphScale, graphScale);
+        var s2 = s.clone();
+        graph.addCell(s2);
+        var info2 = getSVGInfo(s2);
+        var x = info1.left - info2.left;
+        var y  = info1.top - info2.top;
+
+        console.log("info2 ", info2.left);
+        graph.addCell(s2);
+        s2.translate(x, y);
+        console.log("s2 ", s2);
+        //s.remove();
+        console.log('SVG info x, y changes are ', x, y);
+        var scope = getAngularScope();
+        scope.createModel( s );
+      }
+      removePorts( s );
+      if (graphScale !== 0) {
+        /*
+        var cellInfo = getSVGInfo(s);
+        console.log("after fly info is ", cellInfo);
+        var x = cellInfo.x - fly.width;
+        var height = cellSize.height - flySize.height;
+        console.log("after width, height is ", width, height);
+        s.translate(-(width), -(height));
+        */
+      }
     }
     $('body').off('mousemove.fly').off('mouseup.fly');
     flyShape.remove();

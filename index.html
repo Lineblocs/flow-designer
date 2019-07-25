@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="./styles.css">
     <link rel="stylesheet" href="./custom/JointTooledViewPlugin/tooledViewPlugin.css">
 </head>
-<body>
+<body ng-app="basicUsageSidenavDemo">
     <div class="container">
         <!-- content -->
         <style>
@@ -25,7 +25,25 @@
             }
 
         </style>
-        <div class="papers">
+        <md-toolbar class="md-hue-1">
+            <div class="md-toolbar-tools" ng-controller="ControlsCtrl">
+                <md-button class="md-icon-button" aria-label="Settings" ng-disabled="true">
+                <md-icon md-svg-icon="img/icons/menu.svg"></md-icon>
+                </md-button>
+
+                <h2>Toolbar with Disabled/Enabled Icon Buttons</h2>
+                <md-button ng-click="zoomIn()" aria-label="Zoom In" class="md-icon-button zoom_in">
+                <md-icon md-svg-icon="img/icons/zoom_in.svg"></md-icon>
+                </md-button>
+                <md-button  ng-click="zoomOut()" aria-label="Zoom Out" class="md-icon-button zoom_out">
+                <md-icon md-svg-icon="img/icons/zoom_out.svg"></md-icon>
+                </md-button>
+                <md-button  ng-click="saveChanges($event)" aria-label="Save" class="md-raised md-primary">
+                    Save
+                </md-button>
+            </div>
+        </md-toolbar>
+        <div class="papers" ng-non-bindable>
             <div id="canvas"></div>
             <div id="stencil"></div>
         </div>
