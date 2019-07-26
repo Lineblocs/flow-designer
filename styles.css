@@ -19,11 +19,24 @@ body {
     float: left;
     width: 20%;
 }
-#canvas {
+.graph {
+    float: left;
     width: 80%;
+}
+.widgets {
+    float: left;
+    width: 20%;
+}
+#canvas {
+    width: 100%;
     height: 768px;
+    cursor: grab;
+}
+#canvas g.joint-cell {
+    cursor: all-scroll;
 }
 #stencil {
+    width: 100%;
   background:#FFFFFF; 
 }
 md-tabs {

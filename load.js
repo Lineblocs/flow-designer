@@ -49,7 +49,7 @@ function appendStencilModels(graph, list)
 
   var graph = new joint.dia.Graph;
   var PAPER_HEIGHT = 768;
-  var PAPER_WIDTH = "80%";
+  var PAPER_WIDTH = "100%";
   var paper = new joint.dia.Paper({
 el: $('#canvas'),
 gridSize: 1,
@@ -94,7 +94,10 @@ model: graph
   var copyPosition = null;
   paper.on('blank:pointerdown',
     function(event, x, y) {
+      console.log("blank pointer down called");
         dragStartPosition = { x: x, y: y};
+        var scope = getAngularScope();
+        scope.unsetCellModel();
     }
 );
 paper.on('cell:pointerup blank:pointerup', function(cellView, x, y) {
@@ -117,19 +120,6 @@ $("#canvas")
             }
 
     });
-  var launch = new joint.shapes.devs.LaunchModel({
-      position: {
-          x: 0,
-          y: 0
-      }
-  });
-  var size = launch.size();
-  launch.position(
-    $("#canvas").width()/2 - (size.width / 2), 
-    $("#canvas").height()/2 - (size.height / 2)
-  );
-
-  graph.addCell(launch);
 
   graph.on('change:source change:target', function(link) {
       var sourcePort = link.get('source').port;
@@ -148,9 +138,16 @@ $("#canvas")
   });
   paper.on('cell:pointerdblclick',
     function(cellView, evt, x, y) { 
-        getAngularScope().loadWidget(cellView);
+        getAngularScope().loadWidget(cellView, true);
     }
 );
+  paper.on('cell:pointerdown',
+    function(cellView, evt, x, y) { 
+        getAngularScope().loadWidget(cellView, false);
+    }
+);
+
+
 
   function out(m) {
       $('#paper-link-out').html(m);
@@ -162,7 +159,7 @@ $("#canvas")
 var stencilGraph = new joint.dia.Graph,
   stencilPaper = new joint.dia.Paper({
     el: $('#stencil'),
-    width: "20%",
+    width: "100%",
     height: 1024,
     model: stencilGraph,
     interactive: false
@@ -225,8 +222,6 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
       y = e.pageY,
       target = paper.$el.offset();
       console.log("paper el is", paper.$el);
-    var copyMouseX = mouseX;
-    var copyMouseY = mouseY;  
     // Dropped over paper ?
     if (x > target.left && x < target.left + paper.$el.width() && y > target.top && y < target.top + paper.$el.height()) {
       var s = flyShape.clone();
@@ -271,9 +266,3 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
 });
 launchCell = graph.getCells()[0];
 beforeInfo = getSVGInfo(launchCell);
-
-document.onmousemove = function(event) {
-
-  mouseX = event.pageX;
-  mouseY = event.pageY;
-}

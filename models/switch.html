@@ -1,5 +1,5 @@
 <div>
-    <form ng-submit="saveWidget()">
+    <form ng-submit="$shared.saveWidget()">
         <div ng-cloak>
             <md-content>
                 <md-tabs class="md-primary" md-center-tabs md-dynamic-height="true">
@@ -9,12 +9,16 @@
                                     <label for="testInput">Widget Name</label>
                                     <input type="text" ng-model="cellModel.name" md-autofocus>
                                 </md-input-container>
+                                <md-input-container>
+                                    <label for="testInput">Variable To Test</label>
+                                    <input type="text" ng-model="cellModel.test" md-autofocus>
+                                </md-input-container
                         </md-content>
                     </md-tab>
                     <md-tab label="links">
                         <md-content class="md-padding">
-                            <ul ng-repeat="link in cellModel.links">
-                                <li>
+                            <ul>
+                                <li ng-repeat="link in cellModel.links" ng-show="link.type !== $const.LINK_NO_CONDITION_MATCHES">
                                     <md-input-container>
                                         <label for="testInput">Condition</label>
                                         <md-select ng-model="ctrl.userState">
@@ -23,10 +27,6 @@
                                             {{condition}}
                                             </md-option>
                                         </md-select>
-                                    </md-input-container>
-                                    <md-input-container>
-                                        <label for="testInput">Test</label>
-                                        <input ng-model="link.test" />
                                     </md-input-container>
                                     <md-input-container>
                                         <label for="testInput">Value</label>
@@ -42,11 +42,6 @@
                 </md-tabs>
             </md-content>
         </div>
-        <md-button type="submit" class="md-raised md-primary">
-            Save
-        </md-button>
+        <div ng-include="'/templates/widget_buttons.html'"></div>
     </form>
-    <md-button ng-click="close()" class="md-primary">
-    Close Sidenav Right
-    </md-button>
 </div>

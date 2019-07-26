@@ -1,5 +1,5 @@
 <div>
-    <form ng-submit="saveWidget()">
+    <form ng-submit="$shared.saveWidget()">
         <div ng-cloak>
             <md-content>
                 <md-tabs class="md-primary" md-center-tabs md-dynamic-height="true">
@@ -30,11 +30,6 @@
                 </md-tabs>
             </md-content>
         </div>
-        <md-button type="submit" class="md-raised md-primary">
-            Save
-        </md-button>
+        <div ng-include="'/templates/widget_buttons.html'"></div>
     </form>
-    <md-button ng-click="close()" class="md-primary">
-    Close Sidenav Right
-    </md-button>
 </div>

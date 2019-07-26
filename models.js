@@ -97,7 +97,7 @@ joint.shapes.devs.SwitchModel = joint.shapes.devs.Model.extend({
       }
     },
     inPorts: ['In'],
-    outPorts: [],
+    outPorts: ['No Condition Matches'],
     ports: {
         groups: {
             'in': {

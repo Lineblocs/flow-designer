@@ -1,0 +1,19 @@
+<div>
+    <form ng-submit="$shared.saveWidget()">
+        <div ng-cloak>
+            <md-content>
+                <md-tabs class="md-primary" md-center-tabs md-dynamic-height="true">
+                    <md-tab label="info">
+                        <md-content class="md-padding">
+                                <md-input-container>
+                                    <label for="testInput">Name</label>
+                                    <input type="text" ng-model="cellModel.name" md-autofocus>
+                                </md-input-container>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+        <div ng-include="'/templates/widget_buttons.html'"></div>
+    </form>
+</div>
