@@ -3,12 +3,19 @@ var offsetLeft, offsetTop, beforeInfo, launchCell;
 function getAngularScope() {
   return window['angularScope'];
 }
+function getSVGEl(joint)
+{
+  return $("g[model-id='" + joint.id + "']");
+}
 function getSVGInfo(joint)
 {
-  return $("g[model-id='" + joint.id + "']").get( 0 ).getBoundingClientRect();
+  return getSVGEl(joint).get( 0 ).getBoundingClientRect();
 }
 function computeOffset() {
+  console.log("before info ", beforeInfo);
   var info = getSVGInfo(launchCell);
+  console.log("new info ", info);
+  console.log("graph scale ", graphScale);
   offsetLeft = beforeInfo.left - info.left;
   offsetTop = beforeInfo.top - info.top;
 }
@@ -41,11 +48,11 @@ function appendStencilModels(graph, list)
 }
 
   var graph = new joint.dia.Graph;
-  var PAPER_HEIGHT = 1024;
+  var PAPER_HEIGHT = 768;
   var PAPER_WIDTH = "80%";
   var paper = new joint.dia.Paper({
 el: $('#canvas'),
-gridSize: 20,
+gridSize: 1,
 width: PAPER_WIDTH,
 height: PAPER_HEIGHT,
 model: graph
@@ -57,21 +64,24 @@ model: graph
   bindToolEvents(paper);
 
   var graphScale = 1;
+  var numberOfZoom = 0;
 
   var paperScale = function(sx, sy) {
+      //paper.scale(sx, sy, $("#canvas").width()/2, $("#canvas").height()/2);
       //$("#canvas").css({"zoom": sx});
       paper.scale(sx, sy);
-      stencilPaper.scale(sx, sy);
       computeOffset();
   };
 
   var zoomOut = function() {
       graphScale -= 0.1;
+      numberOfZoom -= 1;
       paperScale(graphScale, graphScale);
   };
 
   var zoomIn = function() {
       graphScale += 0.1;
+      numberOfZoom += 1;
       paperScale(graphScale, graphScale);
   };
 
@@ -109,10 +119,16 @@ $("#canvas")
     });
   var launch = new joint.shapes.devs.LaunchModel({
       position: {
-          x: 500,
+          x: 0,
           y: 0
       }
   });
+  var size = launch.size();
+  launch.position(
+    $("#canvas").width()/2 - (size.width / 2), 
+    $("#canvas").height()/2 - (size.height / 2)
+  );
+
   graph.addCell(launch);
 
   graph.on('change:source change:target', function(link) {
@@ -170,9 +186,10 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
       //y = y - copyPosition.y;
       console.log("drag modified x and y are ", x, y);
     }
+    var info1, info2;
     var sizeShape = cellView.model.clone();
-    sizeShape.scale(graphScale, graphScale);
     var size = sizeShape.attributes.size;
+    info1 = getSVGInfo(cellView.model);
   var flyGraph = new joint.dia.Graph,
     flyPaper = new joint.dia.Paper({
       el: $('#flyPaper'),
@@ -188,11 +205,11 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
       x: x - pos.x,
       y: y - pos.y
     };
-    //flyPaper.scale(graphScale, graphScale);
     removePorts(flyShape);
   flyShape.position(0, 0);
-  flyPaper.scale(graphScale, graphScale);
   flyGraph.addCell(flyShape);
+    info2 = getSVGInfo(flyShape);
+    console.log("infos are ", info1, info2);
   $("#flyPaper").offset({
     left: e.pageX - offset.x,
     top: e.pageY - offset.y
@@ -208,20 +225,25 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
       y = e.pageY,
       target = paper.$el.offset();
       console.log("paper el is", paper.$el);
-    
+    var copyMouseX = mouseX;
+    var copyMouseY = mouseY;  
     // Dropped over paper ?
     if (x > target.left && x < target.left + paper.$el.width() && y > target.top && y < target.top + paper.$el.height()) {
       var s = flyShape.clone();
+      console.log("graph scale is ", graphScale);
       var finalX = (x - target.left - offset.x);
       var finalY = (y - target.top - offset.y);
+      var stuff1 = finalX - (finalX * graphScale);
+      var stuff2 = finalY - (finalY * graphScale);
+      console.log("stuff is ", stuff1, stuff2);
+      var myOffsetLeft, myOffsetTop, beforeInfo, afterInfo;
       console.log("final x,y before any changes ", finalX, finalY);
-
+      s.translate(finalX, finalY);
       if (copyPosition) {
         console.log("changing final x and y based on copyPosition");
         //var finalX = (x - target.left - offset.x) + copyPosition.x;
         //var finalY = (y - target.top - offset.y) + copyPosition.y;
         //paper.translate(0, 0);
-        s.position(finalX, finalY);
         graph.addCell(s);
         console.log("adding new cell ", s);
         s.translate(-(copyPosition.x), -(copyPosition.y));
@@ -230,31 +252,18 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
         //paper.translate(copyPosition.x, copyPosition.y);
       } else {
         console.log("not changing final x,y because no copyPosition");
-        s.position(finalX, finalY);
         graph.addCell(s);
-        console.log('SVG info x, y changes are ', x, y);
         var scope = getAngularScope();
         scope.createModel( s );
       }
-      removePorts( s );
-      if (graphScale !== 0) {
-        console.log("doing graph scale adjustments on ", s);
-        computeOffset();
-        var curr = s.position();
-        console.log("current position is ", curr);
-
-        s.position(curr.x + offsetLeft, curr.y + offsetTop);
-        //s.translate(-(offsetLeft), -(offsetTop));
-        /*
-        var cellInfo = getSVGInfo(s);
-        console.log("after fly info is ", cellInfo);
-        var x = cellInfo.x - fly.width;
-        var height = cellSize.height - flySize.height;
-        console.log("after width, height is ", width, height);
-        s.translate(-(width), -(height));
-        */
-      }
+      var test = paper.clientToLocalPoint(x, y);
+      var size = s.size();
+      console.log("tranlated point is ", test);
+      s.position(test.x - (size.width / 2), test.y - (size.height / 2));
+      //s.translate(-(66*numberOfZoom), -(36*numberOfZoom));
     }
+    var cell = graph.getCells()[0];
+
     $('body').off('mousemove.fly').off('mouseup.fly');
     flyShape.remove();
     $('#flyPaper').remove();
@@ -262,3 +271,9 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
 });
 launchCell = graph.getCells()[0];
 beforeInfo = getSVGInfo(launchCell);
+
+document.onmousemove = function(event) {
+
+  mouseX = event.pageX;
+  mouseY = event.pageY;
+}
