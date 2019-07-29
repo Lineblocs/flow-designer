@@ -1,5 +1,6 @@
 
-var offsetLeft, offsetTop, beforeInfo, launchCell;
+var offsetLeft, offsetTop, beforeInfo, launchCell, diagram;
+diagram = {};
 function getAngularScope() {
   return window['angularScope'];
 }
@@ -38,6 +39,10 @@ function appendStencilModels(graph, list)
             position: {
                 x: 10,
                 y: vert + padding
+            },
+            size: {
+              width: 256,
+              height: 128
             }
         });
         console.log("widget ", widget);
@@ -47,21 +52,6 @@ function appendStencilModels(graph, list)
   });
 }
 
-  var graph = new joint.dia.Graph;
-  var PAPER_HEIGHT = 768;
-  var PAPER_WIDTH = "100%";
-  var paper = new joint.dia.Paper({
-el: $('#canvas'),
-gridSize: 1,
-width: PAPER_WIDTH,
-height: PAPER_HEIGHT,
-model: graph
-}); 
-
-  // enable interactions
-  bindInteractionEvents(adjustVertices, graph, paper);
-  // enable tools
-  bindToolEvents(paper);
 
   var graphScale = 1;
   var numberOfZoom = 0;
@@ -69,8 +59,8 @@ model: graph
   var paperScale = function(sx, sy) {
       //paper.scale(sx, sy, $("#canvas").width()/2, $("#canvas").height()/2);
       //$("#canvas").css({"zoom": sx});
+      var paper = diagram['paper'];
       paper.scale(sx, sy);
-      computeOffset();
   };
 
   var zoomOut = function() {
@@ -90,6 +80,42 @@ model: graph
       paperScale(graphScale, graphScale);
   };
 
+function initializeDiagram() {
+  var graph = new joint.dia.Graph;
+  var PAPER_HEIGHT = 768;
+  var PAPER_WIDTH = "100%";
+  diagram['graph'] = graph;
+  var paper = new joint.dia.Paper({
+el: $('#canvas'),
+gridSize: 1,
+width: PAPER_WIDTH,
+height: PAPER_HEIGHT,
+model: graph,
+defaultConnector: {
+  name: 'rounded'
+},
+defaultRouter: {
+  name: 'manhattan'
+},
+validateMagnet: function(cellView, magnet) {
+    // Prevent links from ports that already have a link
+    var port = magnet.getAttribute('port');
+    var links = graph.getConnectedLinks(cellView.model, { outbound: true });
+    var portLinks = _.filter(links, function(o) {
+        return o.get('source').port == port;
+    });
+    if(portLinks.length > 0) return false;
+    // Note that this is the default behaviour. Just showing it here for reference.
+    // Disable linking interaction for magnets marked as passive (see below `.inPorts circle`).
+    return magnet.getAttribute('magnet') !== 'passive';
+}
+}); 
+  diagram['paper'] = paper;
+
+  // enable interactions
+  bindInteractionEvents(adjustVertices, graph, paper);
+  // enable tools
+  bindToolEvents(paper);
   var dragStartPosition = null;
   var copyPosition = null;
   paper.on('blank:pointerdown',
@@ -100,6 +126,7 @@ model: graph
         scope.unsetCellModel();
     }
 );
+
 paper.on('cell:pointerup blank:pointerup', function(cellView, x, y) {
     dragStartPosition = null;
 });
@@ -120,6 +147,16 @@ $("#canvas")
             }
 
     });
+  paper.model.on('batch:stop', function () {
+            var links = paper.model.getLinks();
+            _.each(links, function (link) {
+                var source = link.get('source');
+                var target = link.get('target');
+                if (source.id === undefined || target.id === undefined) {
+                    link.remove();
+                }
+            });
+        });
 
   graph.on('change:source change:target', function(link) {
       var sourcePort = link.get('source').port;
@@ -164,6 +201,8 @@ var stencilGraph = new joint.dia.Graph,
     model: stencilGraph,
     interactive: false
   });
+  diagram['stencilGraph'] = stencilGraph;
+  diagram['stencilPaper'] = stencilPaper;
 
   appendStencilModels(stencilGraph, [
        joint.shapes.devs.SwitchModel,
@@ -186,7 +225,6 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
     var info1, info2;
     var sizeShape = cellView.model.clone();
     var size = sizeShape.attributes.size;
-    info1 = getSVGInfo(cellView.model);
   var flyGraph = new joint.dia.Graph,
     flyPaper = new joint.dia.Paper({
       el: $('#flyPaper'),
@@ -205,7 +243,6 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
     removePorts(flyShape);
   flyShape.position(0, 0);
   flyGraph.addCell(flyShape);
-    info2 = getSVGInfo(flyShape);
     console.log("infos are ", info1, info2);
   $("#flyPaper").offset({
     left: e.pageX - offset.x,
@@ -264,5 +301,6 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
     $('#flyPaper').remove();
   });
 });
-launchCell = graph.getCells()[0];
-beforeInfo = getSVGInfo(launchCell);
+}
+
+//initializeDiagram();

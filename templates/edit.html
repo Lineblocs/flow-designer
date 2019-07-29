@@ -1,0 +1,55 @@
+<!-- content -->
+<md-toolbar class="md-hue-1">
+    <div class="md-toolbar-tools" ng-controller="ControlsCtrl">
+        <md-button class="md-icon-button" aria-label="Settings" ng-disabled="true">
+        <md-icon md-svg-icon="img/icons/menu.svg"></md-icon>
+        </md-button>
+
+        <h2>{{flow.name}}</h2>
+        <md-button ng-click="zoomIn()" aria-label="Zoom In" class="md-icon-button zoom_in">
+        <md-icon md-svg-icon="img/icons/zoom_in.svg"></md-icon>
+        </md-button>
+        <md-button  ng-click="zoomOut()" aria-label="Zoom Out" class="md-icon-button zoom_out">
+        <md-icon md-svg-icon="img/icons/zoom_out.svg"></md-icon>
+        </md-button>
+        <md-button  ng-click="centerFocus()" aria-label="Go to center" class="md-icon-button center_focus">
+        <md-icon md-svg-icon="img/icons/center_focus.svg"></md-icon>
+        </md-button>
+        <md-button  ng-show="$shared.canDelete()" ng-click="$shared.deleteWidget($event)" aria-label="Go to center" class="md-icon-button delete">
+        <md-icon md-svg-icon="img/icons/delete.svg"></md-icon>
+        </md-button>
+        <md-button  ng-click="saveChanges($event)" aria-label="Save" class="md-raised md-primary">
+            Save
+        </md-button>
+    </div>
+</md-toolbar>
+<div ng-controller="PaperCtrl" class="papers">
+    <div class="graph" ng-non-bindable>
+        <div id="canvas"></div>
+    </div>
+    <div class="widgets">
+        <md-sidenav class="md-sidenav-right" md-component-id="rightWidgets" md-whiteframe="4" md-is-locked-open="true">
+
+            <div ng-show="!$shared.cellModel">
+                <md-toolbar class="md-theme-indigo">
+                    <h1 class="md-toolbar-tools">Available Widgets</h1>
+                </md-toolbar>
+                <div ng-non-bindable id="stencil"></div>
+                <md-content layout-padding>
+                </md-content>
+            </div>
+            <div ng-show="$shared.cellModel">
+                    <md-toolbar class="md-theme-light">
+                        <h1 class="md-toolbar-tools">Widget Options</h1>
+                    </md-toolbar>
+                    <div ng-show="$shared.cellModel.cell.attributes.type === 'devs.LaunchModel'" ng-include="'models/launch.html'"></div>
+                    <div ng-show="$shared.cellModel.cell.attributes.type === 'devs.SwitchModel'" ng-include="'models/switch.html'"></div>
+                    <div ng-show="$shared.cellModel.cell.attributes.type  === 'devs.DialModel'" ng-include="'models/dial.html'"></div>
+                    <div ng-show="$shared.cellModel.cell.attributes.type === 'devs.BridgeModel'" ng-include="'models/bridge.html'"></div>
+                    <div ng-show="$shared.cellModel.cell.attributes.type === 'devs.ProcessInputModel'" ng-include="'models/process_input.html'"></div>
+                    <div ng-show="$shared.cellModel.cell.attributes.type === 'devs.RecordVoicemailModel'" ng-include="'models/record_voicemail.html'"></div>
+            </div>
+
+        </md-sidenav>
+    </div>
+</div>

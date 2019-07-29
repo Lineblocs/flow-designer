@@ -18,12 +18,12 @@
                     <md-tab label="links">
                         <md-content class="md-padding">
                             <ul>
-                                <li ng-repeat="link in cellModel.links" ng-show="link.type !== $const.LINK_NO_CONDITION_MATCHES">
+                                <li ng-repeat="link in $shared.cellModel.links" ng-show="link.type !== $const.LINK_NO_CONDITION_MATCHES">
                                     <md-input-container>
                                         <label for="testInput">Condition</label>
-                                        <md-select ng-model="ctrl.userState">
+                                        <md-select ng-model="link.condition" ng-change="changeConditionType(link, link.condition)">
                                             <md-option><em>None</em></md-option>
-                                            <md-option ng-repeat="condition in conditions" ng-value="cellModel.data.condition" ng-disabled="$index === 1">
+                                            <md-option ng-repeat="condition in conditions" ng-value="condition">
                                             {{condition}}
                                             </md-option>
                                         </md-select>

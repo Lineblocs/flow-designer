@@ -37,9 +37,27 @@ function Link(from, to, label, type, condition, value, ports) {
   }
 }
 
+function changeLabel(cell, text)
+{
+  cell.attr('.label', {
+        text: text,
+        fill: '#FFFFFF',
+        'ref-y': 50
+      });
+}
 angular
-  .module('basicUsageSidenavDemo', ['ngMaterial'])
-  .config(function($locationProvider) {
+  .module('basicUsageSidenavDemo', ['ngMaterial', 'ngRoute'])
+  .config(function($routeProvider, $locationProvider) {
+      $routeProvider.when("/create", {
+        templateUrl: "templates/create.html",
+        controller: "CreateCtrl"
+      });
+     $routeProvider.when("/edit", {
+        templateUrl: "templates/edit.html",
+        controller: "AppCtrl",
+        search: {flowId: null}
+      });
+      $routeProvider.otherwise("/create");
         $locationProvider.html5Mode(true);  
   })
   .factory("$const", function() {
@@ -65,14 +83,16 @@ angular
       }, function() {
       });
     }
+    factory.canDelete = function() {
+      if (factory.cellModel && factory.cellModel.cell.attributes.type !== "devs.LaunchModel") {
+        return true;
+      }
+      return false;
+    }
     factory.saveWidget = function() {
       var model = factory.cellModel;
       //model.cell.attr({ text: { text:  model.name } });
-      model.cell.attr('.label', {
-        text: model.name,
-        fill: '#FFFFFF',
-        'ref-y': 50
-      });
+      changeLabel(model.cell, model.name);
     }
     return factory;
   })
@@ -97,8 +117,16 @@ angular
 
     }
 
+    $scope.canDelete = function() {
+      if ($shared.cellModel && $shared.cellModel.cell.attributes.type !== "devs.LaunchModel") {
+        return true;
+      }
+      return false;
+    }
+
     $scope.centerFocus = function() {
       copyPosition = null;
+      var paper = diagram['paper'];
       paper.translate(0, 0);
     }
     $scope.zoomIn = function() {
@@ -113,6 +141,7 @@ angular
       // Appending dialog to document.body to cover sidenav in docs app
       // Modal dialogs should fully cover application
       // to prevent interaction outside of dialog
+      var graph = diagram['graph'];
       var json = graph.toJSON();
       var params = {};
       params['graph'] = json;
@@ -157,8 +186,23 @@ angular
 
 
   })
-  .controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http) {
-    window['angularScope'] = angular.element(document.getElementById('panelCtrl')).scope();
+  .controller('CreateCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http) {
+    $scope.values = {
+      name: ""
+    };
+    $scope.submit = function() {
+      var data = angular.copy( $scope.values );
+      data['flow_json'] = null;
+      $http.post( $const.FLOW_REMOTE_URL + "/saveFlow", data).then(function(res) {
+        console.log("response arguments ", arguments);
+        console.log("response headers ", res.headers('X-Flow-ID'));
+        console.log("response body ", res.body);
+        var id = res.headers('X-Flow-ID');
+        $location.url("/edit?flowId=" + id);
+      });
+    }
+  }).controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $timeout) {
+    window['angularScope'] = angular.element(document.getElementById('scopeCtrl')).scope();
     $scope.$shared = $shared;
     $scope.$const = $const;
 
@@ -210,14 +254,31 @@ angular
       cellModel.links.push( link );
     }
 
-    $scope.createModel = function(cell) {
+    $scope.createModel = function(cell, name) {
       console.log("creating model for cell ", cell);
-      var model = new Model(cell, "Untitled Widget");
       /*
       if (cell.attributes.type === 'devs.SwitchModel') {
         $scope.addLink("No Condition Matches", $const.LINK_NO_CONDITION_MATCHES, model);
       }
       */
+
+      if (typeof name === 'undefined') {
+        var name = cell.attributes.name;
+        var graph = diagram['graph'];
+        var cells = graph.getCells();
+        var count = 0;
+        for (var index in cells) {
+          var target = cells[ index ];
+          if ( target.attributes.type === cell.attributes.type && target !== cell ) {
+            count += 1;
+          }
+        }
+        if ( count > 0 ) {
+          name += " (" + count + ")";
+        }
+      }
+      var model = new Model(cell, name);
+      changeLabel(cell, name);
       $shared.models.push( model );
     }
     $scope.isOpenRight = function(){
@@ -233,6 +294,7 @@ angular
       for (var index in $shared.models) {
         if ($shared.models[ index ].cell.id === cellView.model.id ) {
           $shared.cellModel = $shared.models[ index ];
+          $scope.cellModel = $shared.cellModel;
         }
       }
       console.log("changed cellModel to ", $shared.cellModel);
@@ -244,7 +306,10 @@ angular
       }, 0);
     }
 
-
+    $scope.changeConditionType = function(link, value) {
+      console.log("changeConditionType ", value);
+      link.condition = value;
+    }
     $scope.changePlaybackType = function(value) {
       console.log("changePlaybackType ", value);
       $shared.cellModel.data.playback_type = value;
@@ -300,72 +365,78 @@ angular
 
       var search = $location.search();
       console.log("load search is ", search);
-      //var data = JSON.parse(testJSON);
-      //graph.fromJSON(data.graph);
-      if (search.flowId) {
-        //fetch( $const.FLOW_REMOTE_URL + "/flowData/" + search.flowId ).then(function(res) {
-        $http.get( $const.FLOW_REMOTE_URL + "/flowData/" + search.flowId ).then(function(res) {
-          //res.json().then(function(res) {
-            console.log("fetch JSON is ", res);
-            if (res.data.flow_json) {
-            //if (false) {
-              //var data = JSON.parse(res.data.flow_json);
-              var data = JSON.parse( res.data.flow_json );
-              console.log("loading graph data ", data);
-              graph.fromJSON(data.graph);
-              var cells = graph.getCells();
-              for (var index in cells) {
-                var cell = cells[index];
-                console.log("checking if cell needs dynamic ports ", cell);
-                if (cell.attributes.type === 'devs.SwitchModel') {
-                  for (var index1 in data.models) {
-                    var model = data.models[index1];
-                    if (model.id === cell.id) {
-                      for (var index2 in model.links) {
-                        var link = model.links[index2];
-                        createDynamicPort(cell, link);
+      $timeout(function() {
+        //var data = JSON.parse(testJSON);
+        //graph.fromJSON(data.graph);
+        initializeDiagram();
+        var graph = diagram['graph'];
+        if (search.flowId) {
+          //fetch( $const.FLOW_REMOTE_URL + "/flowData/" + search.flowId ).then(function(res) {
+          $http.get( $const.FLOW_REMOTE_URL + "/flowData/" + search.flowId ).then(function(res) {
+            //res.json().then(function(res) {
+              console.log("fetch JSON is ", res);
+              if (res.data.flow_json) {
+              //if (false) {
+                //var data = JSON.parse(res.data.flow_json);
+                var data = JSON.parse( res.data.flow_json );
+                console.log("loading graph data ", data);
+                graph.fromJSON(data.graph);
+                var cells = graph.getCells();
+                for (var index in cells) {
+                  var cell = cells[index];
+                  console.log("checking if cell needs dynamic ports ", cell);
+                  if (cell.attributes.type === 'devs.SwitchModel') {
+                    for (var index1 in data.models) {
+                      var model = data.models[index1];
+                      if (model.id === cell.id) {
+                        for (var index2 in model.links) {
+                          var link = model.links[index2];
+                          createDynamicPort(cell, link);
+                        }
                       }
-                    }
-                  } 
-                }
-              }
-            for (var index in data.models) {
-              var model = data.models[ index ];
-              for (var index1 in cells) {
-                  var cell = cells[ index1 ];
-                  if (model.id === cell.id) {
-                    var links = [];
-                    for (var index2 in model.links) {
-                        var link = model.links[ index2 ];
-                        var obj1 = new Link(null, null, link.label, link.type, link.condition, link.value, []);
-                        links.push(obj1);
-                    }
-                    var obj2 = new Model(cell, model.name, links, model.data);
-                    $shared.models.push(obj2);
+                    } 
                   }
                 }
-              }
-            } else {
-              var launch = new joint.shapes.devs.LaunchModel({
-                  position: {
-                      x: 0,
-                      y: 0
+              for (var index in data.models) {
+                var model = data.models[ index ];
+                for (var index1 in cells) {
+                    var cell = cells[ index1 ];
+                    if (model.id === cell.id) {
+                      var links = [];
+                      for (var index2 in model.links) {
+                          var link = model.links[ index2 ];
+                          var obj1 = new Link(null, null, link.label, link.type, link.condition, link.value, []);
+                          links.push(obj1);
+                      }
+                      var obj2 = new Model(cell, model.name, links, model.data);
+                      $shared.models.push(obj2);
+                    }
                   }
-              });
-              var size = launch.size();
-              launch.position(
-                $("#canvas").width()/2 - (size.width / 2), 
-                $("#canvas").height()/2 - (size.height / 2)
-              );
+                }
+              } else {
+                var launch = new joint.shapes.devs.LaunchModel({
+                    position: {
+                        x: 0,
+                        y: 0
+                    }
+                });
+                var subtractPaddingTop = 240;
+                var size = launch.size();
+                launch.position(
+                  $("#canvas").width()/2 - (size.width / 2), 
+                  //($("#canvas").height()/2 - (size.height / 2)) - subtractPaddingTop
+                  120
+                );
 
-              graph.addCell(launch);
-              $scope.createModel(launch);
-            }
-          //});
-        });
-      }
-  }
-
+                graph.addCell(launch);
+                $scope.createModel(launch, "Launch");
+              }
+            //});
+          });
+        }
+      }, 0);
+  } 
+  $scope.load = load;
       load();
       $mdSidenav('rightWidgets').open();
   }).controller('PaperCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http) {
