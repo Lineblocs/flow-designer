@@ -47,3 +47,7 @@ md-toolbar.md-default-theme.md-hue-2:not(.md-menu-toolbar), md-toolbar.md-hue-1:
     background-color: rgb(1,74,182);
     color: rgba(255,255,255,0.87);
 }
+.sidebar {
+    border: 1px solid #E3E3E3;
+    border-top: none;
+}

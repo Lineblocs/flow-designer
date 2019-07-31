@@ -33,6 +33,7 @@ function Link(from, to, label, type, condition, value, ports) {
     params['type'] = this.type;
     params['value'] = this.value;
     params['label'] = this.label;
+    params['condition'] = this.condition;
     return params;
   }
 }
@@ -98,10 +99,6 @@ angular
   })
   .controller('ControlsCtrl', function ($scope, $timeout, $mdSidenav, $log, $mdDialog, $shared, $http, $location, $const, $mdSidenav) {
     $scope.$shared = $shared;
-    $scope.flow = {
-      "name": "Unititled Flow"
-    };
-
     function showSaved(ev) {
 
       $mdDialog.show(
@@ -202,7 +199,6 @@ angular
       });
     }
   }).controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $timeout) {
-    window['angularScope'] = angular.element(document.getElementById('scopeCtrl')).scope();
     $scope.$shared = $shared;
     $scope.$const = $const;
 
@@ -368,6 +364,7 @@ angular
       $timeout(function() {
         //var data = JSON.parse(testJSON);
         //graph.fromJSON(data.graph);
+        window['angularScope'] = angular.element(document.getElementById('scopeCtrl')).scope();
         initializeDiagram();
         var graph = diagram['graph'];
         if (search.flowId) {
@@ -375,6 +372,7 @@ angular
           $http.get( $const.FLOW_REMOTE_URL + "/flowData/" + search.flowId ).then(function(res) {
             //res.json().then(function(res) {
               console.log("fetch JSON is ", res);
+              $shared.flow = res.data;
               if (res.data.flow_json) {
               //if (false) {
                 //var data = JSON.parse(res.data.flow_json);

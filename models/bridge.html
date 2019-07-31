@@ -21,10 +21,9 @@
                                     <label for="testInput">Timeout</label>
                                     <input type="text" ng-model="cellModel.data.timeout" md-autofocus>
                                 </md-input-container>
-                                <md-input-container>
-                                    <label for="testInput">Do Record</label>
-                                    <md-checkbox ng-model="cellModel.data.do_record" aria-label="Checkbox 1"></md-checkbox>
-                                </md-input-container>
+                                <md-checkbox id="recordInput" ng-model="cellModel.data.do_record" aria-label="Checkbox 1">
+                                    Do Record
+                                </md-checkbox>
                         </md-content>
                     </md-tab>
                 </md-tabs>

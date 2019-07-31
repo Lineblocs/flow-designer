@@ -33,22 +33,29 @@ function appendStencilModels(graph, list)
   var vert = 0;
   var padding = 10;
   var widget = 128;
+  var yPos = vert + padding;
+  var xPos = 10;
   list.forEach( function( clazz ) {
         var widget =new clazz({
             ports: {},
             position: {
-                x: 10,
-                y: vert + padding
+                x: xPos,
+                y: yPos
             },
             size: {
               width: 256,
               height: 128
             }
         });
+        var xPos = ( $("#stencil").width() / 2 ) 
         console.log("widget ", widget);
         removePorts( widget );
         graph.addCell( widget );
-        vert += widget.attributes.size.height;
+        var size = widget.attributes.size;
+        var xPos = ( $("#stencil").width() / 2 )  - ( size.width / 2);
+        widget.position( xPos, yPos );
+        yPos += padding;
+        yPos += widget.attributes.size.height;
   });
 }
 
@@ -123,7 +130,9 @@ validateMagnet: function(cellView, magnet) {
       console.log("blank pointer down called");
         dragStartPosition = { x: x, y: y};
         var scope = getAngularScope();
-        scope.unsetCellModel();
+        if (scope.cellModel) {
+          scope.unsetCellModel();
+        }
     }
 );
 
@@ -197,7 +206,7 @@ var stencilGraph = new joint.dia.Graph,
   stencilPaper = new joint.dia.Paper({
     el: $('#stencil'),
     width: "100%",
-    height: 1024,
+    height: 768,
     model: stencilGraph,
     interactive: false
   });
