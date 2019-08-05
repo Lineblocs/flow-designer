@@ -12,12 +12,13 @@ function Model(cell, name, links, data) {
     };
   }
 }
-function Link(from, to, label, type, condition, value, ports) {
+function Link(from, to, label, type, condition, value, cell, ports) {
   this.from = from;
   this.to = to;
   this.condition = condition;
   this.type = type;
   this.value = value;
+  this.cell = cell;
   this.label = label;
   this.ports = ports || [];
   this.toJSON = function() {
@@ -34,16 +35,19 @@ function Link(from, to, label, type, condition, value, ports) {
     params['value'] = this.value;
     params['label'] = this.label;
     params['condition'] = this.condition;
+    params['cell'] = this.cell;
     return params;
   }
 }
 
-function changeLabel(cell, text)
+function changeLabel(cell, text, refY)
 {
+  refY = refY || 50;
   cell.attr('.label', {
         text: text,
         fill: '#FFFFFF',
-        'ref-y': 50
+        'font-size': '18',
+        'ref-y': refY
       });
 }
 angular
@@ -65,12 +69,15 @@ angular
     var factory = this;
     factory.LINK_CONDITION_MATCHES = "LINK_CONDITION_MATCHES";
     factory.LINK_NO_CONDITION_MATCHES = "LINK_NO_CONDITION_MATCHES";
-    factory.FLOW_REMOTE_URL = "http://localhost:8001/api/flow";
+    factory.FLOW_REMOTE_URL = "http://45.76.62.46:8086/api/flow";
     return factory;
   })
   .factory("$shared", function($mdDialog, $mdSidenav) {
     var factory = this;
     factory.models = [];
+    factory.voices = {"da-DK":[{"lang":"da-DK","name":"da-DK-Standard-A","gender":"FEMALE"},{"lang":"da-DK","name":"da-DK-Wavenet-A","gender":"FEMALE"}],"nl-NL":[{"lang":"nl-NL","name":"nl-NL-Standard-A","gender":"FEMALE"},{"lang":"nl-NL","name":"nl-NL-Wavenet-A","gender":"FEMALE"}],"en-AU":[{"lang":"en-AU","name":"en-AU-Standard-A","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Standard-B","gender":"MALE"},{"lang":"en-AU","name":"en-AU-Standard-C","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Standard-D","gender":"MALE"},{"lang":"en-AU","name":"en-AU-Wavenet-A","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Wavenet-B","gender":"MALE"},{"lang":"en-AU","name":"en-AU-Wavenet-C","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Wavenet-D","gender":"MALE"}],"en-GB":[{"lang":"en-GB","name":"en-GB-Standard-A","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Standard-B","gender":"MALE"},{"lang":"en-GB","name":"en-GB-Standard-C","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Standard-D","gender":"MALE"},{"lang":"en-GB","name":"en-GB-Wavenet-A","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Wavenet-B","gender":"MALE"},{"lang":"en-GB","name":"en-GB-Wavenet-C","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Wavenet-D","gender":"MALE"}],"en-US":[{"lang":"en-US","name":"en-US-Standard-B","gender":"MALE"},{"lang":"en-US","name":"en-US-Standard-C","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Standard-D","gender":"MALE"},{"lang":"en-US","name":"en-US-Standard-E","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Wavenet-A","gender":"MALE"},{"lang":"en-US","name":"en-US-Wavenet-B","gender":"MALE"},{"lang":"en-US","name":"en-US-Wavenet-C","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Wavenet-D","gender":"MALE"},{"lang":"en-US","name":"en-US-Wavenet-E","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Wavenet-F","gender":"FEMALE"}],"fr-CA":[{"lang":"fr-CA","name":"fr-CA-Standard-A","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Standard-B","gender":"MALE"},{"lang":"fr-CA","name":"fr-CA-Standard-C","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Standard-D","gender":"MALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-A","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-B","gender":"MALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-C","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-D","gender":"MALE"}],"fr-FR":[{"lang":"fr-FR","name":"fr-FR-Standard-A","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Standard-B","gender":"MALE"},{"lang":"fr-FR","name":"fr-FR-Standard-C","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Standard-D","gender":"MALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-A","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-B","gender":"MALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-C","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-D","gender":"MALE"}],"de-DE":[{"lang":"de-DE","name":"de-DE-Standard-A","gender":"FEMALE"},{"lang":"de-DE","name":"de-DE-Standard-B","gender":"MALE"},{"lang":"de-DE","name":"de-DE-Wavenet-A","gender":"FEMALE"},{"lang":"de-DE","name":"de-DE-Wavenet-B","gender":"MALE"},{"lang":"de-DE","name":"de-DE-Wavenet-C","gender":"FEMALE"},{"lang":"de-DE","name":"de-DE-Wavenet-D","gender":"MALE"}],"it-IT":[{"lang":"it-IT","name":"it-IT-Standard-A","gender":"FEMALE"},{"lang":"it-IT","name":"it-IT-Wavenet-A","gender":"FEMALE"}],"ja-JP":[{"lang":"ja-JP","name":"ja-JP-Standard-A","gender":"FEMALE"},{"lang":"ja-JP","name":"ja-JP-Wavenet-A","gender":"FEMALE"}],"ko-KR":[{"lang":"ko-KR","name":"ko-KR-Standard-A","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Standard-B","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Standard-C","gender":"MALE"},{"lang":"ko-KR","name":"ko-KR-Standard-D","gender":"MALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-A","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-B","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-C","gender":"MALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-D","gender":"MALE"}],"nb-NO":[{"lang":"nb-NO","name":"nb-no-Standard-E","gender":"FEMALE"},{"lang":"nb-NO","name":"nb-no-Wavenet-E","gender":"FEMALE"}],"pl-PL":[{"lang":"pl-PL","name":"pl-PL-Standard-A","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Standard-B","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Standard-C","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Standard-D","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Standard-E","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-A","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-B","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-C","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-D","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-E","gender":"FEMALE"}],"pt-BR":[{"lang":"pt-BR","name":"pt-BR-Standard-A","gender":"FEMALE"},{"lang":"pt-BR","name":"pt-BR-Wavenet-A","gender":"FEMALE"}],"pt-PT":[{"lang":"pt-PT","name":"pt-PT-Standard-A","gender":"FEMALE"},{"lang":"pt-PT","name":"pt-PT-Standard-B","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Standard-C","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Standard-D","gender":"FEMALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-A","gender":"FEMALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-B","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-C","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-D","gender":"FEMALE"}],"ru-RU":[{"lang":"ru-RU","name":"ru-RU-Standard-A","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Standard-B","gender":"MALE"},{"lang":"ru-RU","name":"ru-RU-Standard-C","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Standard-D","gender":"MALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-A","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-B","gender":"MALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-C","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-D","gender":"MALE"}],"sk-SK":[{"lang":"sk-SK","name":"sk-SK-Standard-A","gender":"FEMALE"},{"lang":"sk-SK","name":"sk-SK-Wavenet-A","gender":"FEMALE"}],"es-ES":[{"lang":"es-ES","name":"es-ES-Standard-A","gender":"FEMALE"}],"sv-SE":[{"lang":"sv-SE","name":"sv-SE-Standard-A","gender":"FEMALE"},{"lang":"sv-SE","name":"sv-SE-Wavenet-A","gender":"FEMALE"}],"tr-TR":[{"lang":"tr-TR","name":"tr-TR-Standard-A","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Standard-B","gender":"MALE"},{"lang":"tr-TR","name":"tr-TR-Standard-C","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Standard-D","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Standard-E","gender":"MALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-A","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-B","gender":"MALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-C","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-D","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-E","gender":"MALE"}],"uk-UA":[{"lang":"uk-UA","name":"uk-UA-Standard-A","gender":"FEMALE"},{"lang":"uk-UA","name":"uk-UA-Wavenet-A","gender":"FEMALE"}]}
+    factory.voiceGenders = ['MALE', 'FEMALE'];
+    factory.voiceLangs  = Object.keys( factory.voices );
     factory.deleteWidget = function(ev) {
       var confirm = $mdDialog.confirm()
             .title('Are you sure you want to remove this widget ?')
@@ -84,7 +91,29 @@ angular
       }, function() {
       });
     }
+    factory.duplicateWidget = function(ev) {
+        console.log("duplicating widget ", factory.cellView);
+        var graph = diagram['graph'];
+        var newCell = factory.cellView.model.clone();
+        var newModel = Object.assign({}, factory.cellModel);
+        graph.addCell(newCell);
+        var oldPos = factory.cellView.model.position();
+        var size = factory.cellView.model.size();
+        var padding = 30;
+        var newX = (oldPos.x + size.width + padding);
+        console.log("adding new cell ", newCell);
+        newCell.position(newX, oldPos.y);
+        var scope = getAngularScope();
+        var name = factory.cellModel.name + " (duplicate)";
+        scope.createModel(  newCell, name );
+    }
     factory.canDelete = function() {
+      if (factory.cellModel && factory.cellModel.cell.attributes.type !== "devs.LaunchModel") {
+        return true;
+      }
+      return false;
+    }
+    factory.canDuplicate = function() {
       if (factory.cellModel && factory.cellModel.cell.attributes.type !== "devs.LaunchModel") {
         return true;
       }
@@ -94,6 +123,46 @@ angular
       var model = factory.cellModel;
       //model.cell.attr({ text: { text:  model.name } });
       changeLabel(model.cell, model.name);
+    }
+    factory.getCellById = function( id ) {
+      var found = null;
+      var graph = diagram['graph'];
+      graph.getCells().forEach(function( cell ) {
+          if ( cell.id === id ) {
+            factory.models.forEach( function( model ) {
+                if ( model.cell.id === id ) {
+                  found = { "cell": cell, "model": model };
+                }
+
+            })
+          }
+      });
+      console.log("getCellById result ", found);
+      return found;
+    }
+    factory.getVoiceLangs = function() {
+      var langs = Object.keys( factory.voices );
+      console.log("voice languages are ", langs);
+      return langs;
+    }
+    factory.getVoices = function() {
+      var cellModel = factory.cellModel;
+      if (!cellModel || !cellModel.data.text_language) {
+        return []; 
+      }
+      var options = factory.voices[ cellModel.data.text_language ];
+      if ( cellModel.data.text_gender ) {
+        options = options.filter( function( option ) {
+          if ( option.gender === cellModel.data.text_gender ) {
+            return true;
+          }
+          return false;
+        })
+      }
+      options = options.map(function(option) {
+        return option.name;
+      });
+      return options;
     }
     return factory;
   })
@@ -120,12 +189,33 @@ angular
       }
       return false;
     }
+    $scope.canDuplicate = function() {
+      if ($shared.cellModel && $shared.cellModel.cell.attributes.type !== "devs.LaunchModel") {
+        return true;
+      }
+      return false;
+    }
+
+
 
     $scope.centerFocus = function() {
       copyPosition = null;
       var paper = diagram['paper'];
       paper.translate(0, 0);
     }
+    $scope.undo = function() {
+      var commandManager = diagram['commandManager'];
+      commandManager.undo();
+    }
+    $scope.redo = function() {
+      var commandManager = diagram['commandManager'];
+      commandManager.redo();
+    }
+    $scope.zoomOut = function() {
+      zoomOut();
+    }
+
+
     $scope.zoomIn = function() {
       zoomIn();
     }
@@ -244,8 +334,9 @@ angular
         },
         attrs: { text: { text: label } },
       };
+      console.log("adding port ", port);
       cellModel.cell.addPort(port);
-      var link = new Link( cellModel, null, label, type, null, null );
+      var link = new Link( cellModel, null, label, type, null, null, null );
       link.ports.push( port );
       cellModel.links.push( link );
     }
@@ -286,7 +377,7 @@ angular
       console.log("loadWidget cellView ", cellView);
       console.log("loadWidget models ", $shared.models);
       //openSidebar = openSidebar || false;
-      $scope.cellView = cellView;
+      $shared.cellView = cellView;
       for (var index in $shared.models) {
         if ($shared.models[ index ].cell.id === cellView.model.id ) {
           $shared.cellModel = $shared.models[ index ];
@@ -301,7 +392,18 @@ angular
         $scope.$apply();
       }, 0);
     }
-
+    $scope.changeTextLanguage = function(value) {
+      console.log("changeTextLanguage ", value);
+      $shared.cellModel.data.text_language = value;
+    }
+    $scope.changeTextGender = function(value) {
+      console.log("changeTextGender ", value);
+      $shared.cellModel.data.text_gender = value;
+    }
+    $scope.changeVoice = function(value) {
+      console.log("changeVoice ", value);
+      $shared.cellModel.data.voice = value;
+    }
     $scope.changeConditionType = function(link, value) {
       console.log("changeConditionType ", value);
       link.condition = value;
@@ -403,7 +505,7 @@ angular
                       var links = [];
                       for (var index2 in model.links) {
                           var link = model.links[ index2 ];
-                          var obj1 = new Link(null, null, link.label, link.type, link.condition, link.value, []);
+                          var obj1 = new Link(null, null, link.label, link.type, link.condition, link.value, link.cell, []);
                           links.push(obj1);
                       }
                       var obj2 = new Model(cell, model.name, links, model.data);

@@ -23,18 +23,30 @@
                                         <label for="testInput">Text To Say</label>
                                         <input type="text" ng-model="cellModel.data.text_to_say" md-autofocus>
                                     </md-input-container>
-                                    <md-select ng-model="cellModel.data.text_language">
-                                        <md-option><em>None</em></md-option>
-                                        <md-option ng-repeat="language in languages" ng-value="cellModel.data.text_language" ng-disabled="$index === 1">
-                                        {{language}}
-                                        </md-option>
-                                    </md-select>
-                                    <md-select ng-model="cellModel.data.voice">
-                                        <md-option><em>None</em></md-option>
-                                        <md-option ng-repeat="voice in voices" ng-value="cellModel.data.voice" ng-disabled="$index === 1">
-                                        {{voice}}
-                                        </md-option>
-                                    </md-select>
+                                    <md-input-container>
+                                        <label>Language</label>
+                                        <md-select ng-model="cellModel.data.text_language" ng-change="changeTextLanguage(cellModel.data.text_language)">
+                                            <md-option ng-repeat="language in $shared.voiceLangs" ng-value="language">
+                                            {{language}}
+                                            </md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label>Gender</label>
+                                        <md-select ng-model="cellModel.data.text_gender" ng-change="changeTextGender(cellModel.data.text_gender)">
+                                            <md-option ng-repeat="gender in $shared.voiceGenders" ng-value="gender">
+                                            {{gender}}
+                                            </md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label>Voice</label>
+                                        <md-select ng-model="cellModel.data.voice" ng-change="changeVoice(cellModel.data.voice)">
+                                            <md-option ng-repeat="voice in $shared.getVoices()" ng-value="voice">
+                                            {{voice}}
+                                            </md-option>
+                                        </md-select>
+                                    </md-input-container>
                                     <md-input-container>
                                         <label for="testInput">Number Of Loops</label>
                                         <input type="text" ng-model="cellModel.data.number_of_loops" md-autofocus>

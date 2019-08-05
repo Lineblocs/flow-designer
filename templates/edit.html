@@ -6,6 +6,12 @@
         </md-button>
 
         <h2>{{$shared.flow.name}}</h2>
+        <md-button ng-click="undo()" aria-label="Undo" class="md-icon-button undo">
+        <md-icon md-svg-icon="img/icons/undo.svg"></md-icon>
+        </md-button>
+        <md-button  ng-click="redo()" aria-label="Redo" class="md-icon-button redo">
+        <md-icon md-svg-icon="img/icons/redo.svg"></md-icon>
+        </md-button>
         <md-button ng-click="zoomIn()" aria-label="Zoom In" class="md-icon-button zoom_in">
         <md-icon md-svg-icon="img/icons/zoom_in.svg"></md-icon>
         </md-button>
@@ -17,6 +23,9 @@
         </md-button>
         <md-button  ng-show="$shared.canDelete()" ng-click="$shared.deleteWidget($event)" aria-label="Go to center" class="md-icon-button delete">
         <md-icon md-svg-icon="img/icons/delete.svg"></md-icon>
+        </md-button>
+        <md-button  ng-show="$shared.canDuplicate()" ng-click="$shared.duplicateWidget($event)" aria-label="Duplicate cell" class="md-icon-button duplicate">
+        <md-icon md-svg-icon="img/icons/duplicate.svg"></md-icon>
         </md-button>
         <md-button  ng-click="saveChanges($event)" aria-label="Save" class="md-raised md-primary">
             Save

@@ -44,11 +44,13 @@ function appendStencilModels(graph, list)
             },
             size: {
               width: 256,
-              height: 128
+              height: 64
             }
         });
         var xPos = ( $("#stencil").width() / 2 ) 
         console.log("widget ", widget);
+        var refY = (64 / 2) - (18 / 2);
+        changeLabel(widget, widget.attributes.name, refY);
         removePorts( widget );
         graph.addCell( widget );
         var size = widget.attributes.size;
@@ -118,7 +120,25 @@ validateMagnet: function(cellView, magnet) {
 }
 }); 
   diagram['paper'] = paper;
-
+  var commandManager = new joint.dia.CommandManager({ graph: graph });
+  diagram['commandManager'] = commandManager;
+  graph.on('change:source change:target', function(link) {
+      console.log("created a link ", arguments);
+      if (link.get('source').id && link.get('target').id) {
+          var angular = getAngularScope();
+          var source = angular.$shared.getCellById( link.get('source').id );
+          var target = angular.$shared.getCellById( link.get('target').id );
+          if ( source.cell.attributes.type === "devs.SwitchModel" ) {
+            var port = link.get('source').port;
+            source.model.links.forEach(function(link) {
+              if (link.label === port) {
+                link.cell = target.model.name;
+              }
+            });
+          }
+          // both ends of the link are connected.
+      }
+  })
   // enable interactions
   bindInteractionEvents(adjustVertices, graph, paper);
   // enable tools
@@ -271,6 +291,8 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
     // Dropped over paper ?
     if (x > target.left && x < target.left + paper.$el.width() && y > target.top && y < target.top + paper.$el.height()) {
       var s = flyShape.clone();
+      s.size( widgetDimens.width, widgetDimens.height );
+      changeLabel(s, s.attributes.name);
       console.log("graph scale is ", graphScale);
       var finalX = (x - target.left - offset.x);
       var finalY = (y - target.top - offset.y);

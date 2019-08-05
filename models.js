@@ -1,3 +1,7 @@
+var widgetDimens = {
+  width: 256,
+  height: 128
+};
 joint.shapes.devs.LaunchModel = joint.shapes.devs.Model.extend({
 
   markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
@@ -5,10 +9,7 @@ joint.shapes.devs.LaunchModel = joint.shapes.devs.Model.extend({
   defaults: joint.util.deepSupplement({
 
     type: 'devs.LaunchModel',
-    size: {
-      width: 256,
-      height: 128
-    },
+    size: widgetDimens,
     attrs: {
       rect: {
         stroke: '#d1d1d1',
@@ -72,10 +73,7 @@ joint.shapes.devs.SwitchModel = joint.shapes.devs.Model.extend({
   defaults: joint.util.deepSupplement({
     name: 'Switch',
     type: 'devs.SwitchModel',
-    size: {
-      width: 256,
-      height: 128
-    },
+    size: widgetDimens, 
     attrs: {
       rect: {
         stroke: '#d1d1d1',
@@ -127,10 +125,7 @@ joint.shapes.devs.DialModel = joint.shapes.devs.Model.extend({
   defaults: joint.util.deepSupplement({
     name: 'Dial',
     type: 'devs.DialModel',
-    size: {
-      width: 256,
-      height: 128
-    },
+    size: widgetDimens,
     attrs: {
       rect: {
         stroke: '#d1d1d1',
@@ -152,7 +147,7 @@ joint.shapes.devs.DialModel = joint.shapes.devs.Model.extend({
       }
     },
   inPorts: ['In'],
-  outPorts: ['Busy', 'No Answer', 'Call Failed'],
+  outPorts: ['Answer', 'No Answer', 'Call Failed'],
   ports: {
         groups: {
             'in': {
@@ -182,10 +177,7 @@ joint.shapes.devs.BridgeModel = joint.shapes.devs.Model.extend({
   defaults: joint.util.deepSupplement({
     name: 'Bridge',
     type: 'devs.BridgeModel',
-    size: {
-      width: 256,
-      height: 128
-    },
+    size: widgetDimens,
     attrs: {
       rect: {
         stroke: '#d1d1d1',
@@ -237,10 +229,7 @@ joint.shapes.devs.ProcessInputModel = joint.shapes.devs.Model.extend({
   defaults: joint.util.deepSupplement({
     name: 'ProcessInput',
     type: 'devs.ProcessInputModel',
-    size: {
-      width: 256,
-      height: 128
-    },
+    size: widgetDimens,
     attrs: {
       rect: {
         stroke: '#009900',
@@ -292,10 +281,7 @@ joint.shapes.devs.RecordVoicemailModel = joint.shapes.devs.Model.extend({
   defaults: joint.util.deepSupplement({
     name: 'RecordVoicemail',
     type: 'devs.RecordVoicemailModel',
-    size: {
-      width: 256,
-      height: 128
-    },
+    size: widgetDimens,
     attrs: {
       rect: {
         stroke: '#009900',

@@ -17,7 +17,7 @@
                     </md-tab>
                     <md-tab label="links">
                         <md-content class="md-padding">
-                            <ul>
+                            <ul class="switch-links">
                                 <li ng-repeat="link in $shared.cellModel.links" ng-show="link.type !== $const.LINK_NO_CONDITION_MATCHES">
                                     <md-input-container>
                                         <label for="testInput">Condition</label>
@@ -31,6 +31,10 @@
                                     <md-input-container>
                                         <label for="testInput">Value</label>
                                         <input ng-model="link.value" />
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label for="testInput">Cell</label>
+                                        <input type="text" ng-model="link.cell" md-autofocus>
                                     </md-input-container>
                                 </li>
                             </ul>
