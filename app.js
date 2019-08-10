@@ -40,6 +40,9 @@ function Link(from, to, label, type, condition, value, cell, ports) {
   }
 }
 
+function checkExpires(expiresIn) {
+  return false;
+}
 function changeLabel(cell, text, refY)
 {
   refY = refY || 50;
@@ -52,7 +55,30 @@ function changeLabel(cell, text, refY)
 }
 angular
   .module('basicUsageSidenavDemo', ['ngMaterial', 'ngRoute'])
-  .config(function($routeProvider, $locationProvider) {
+      .service('JWTHttpInterceptor', function() {
+        return {
+            // optional method
+            'request': function(config) {
+                // do something on success
+                var token = localStorage.getItem("AUTH");
+                if (token) {
+                    try {
+                        var tokenObj = JSON.parse( token );
+                        if (checkExpires()) {
+                            getNewToken();
+                        } else {
+                            config.headers['Authorization'] = "Bearer " + tokenObj.token;
+                        }
+                    } catch (e) {
+                        console.error("error parsing token ", token);
+                    }
+                }
+                console.log("request headers are ", config.headers);
+                return config;
+            }
+        };
+    })
+  .config(function($routeProvider, $locationProvider, $httpProvider) {
       $routeProvider.when("/create", {
         templateUrl: "templates/create.html",
         controller: "CreateCtrl"
@@ -64,6 +90,7 @@ angular
       });
       $routeProvider.otherwise("/create");
         $locationProvider.html5Mode(true);  
+          $httpProvider.interceptors.push('JWTHttpInterceptor');
   })
   .factory("$const", function() {
     var factory = this;

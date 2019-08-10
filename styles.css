@@ -1,6 +1,8 @@
 body {    
     margin: 0 !important;
     padding: 0 !important;
+    overflow-y: hidden;
+    overflow-x: hidden;
 }
 .container {
     width: 100%;
