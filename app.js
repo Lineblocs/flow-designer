@@ -59,21 +59,17 @@ angular
         return {
             // optional method
             'request': function(config) {
-                // do something on success
-                var token = localStorage.getItem("AUTH");
-                if (token) {
-                    try {
-                        var tokenObj = JSON.parse( token );
-                        if (checkExpires()) {
-                            getNewToken();
-                        } else {
-                            config.headers['Authorization'] = "Bearer " + tokenObj.token;
-                        }
-                    } catch (e) {
-                        console.error("error parsing token ", token);
-                    }
+                try {                
+                  var urlObj = URI(document.location.href);
+                 var query = urlObj.query( true );
+                  var token = query.auth;
+                  if (token) {
+                      config.headers['Authorization'] = "Bearer " + token;
+                  }
+                  console.log("request headers are ", config.headers);
+                } catch (e) {
                 }
-                console.log("request headers are ", config.headers);
+                console.log("headers are ", config.headers);
                 return config;
             }
         };
