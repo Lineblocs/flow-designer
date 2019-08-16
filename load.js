@@ -1,6 +1,23 @@
 
 var offsetLeft, offsetTop, beforeInfo, launchCell, diagram;
 diagram = {};
+var GRAPH_CONNECTOR = {
+  name: 'rounded'
+};
+var GRAPH_ROUTER =  {
+  name: 'manhattan'
+};
+/*
+var DEFAULT_LINK = new joint.dia.Link({
+
+    attrs: {
+
+      '.connection' : { stroke: 'blue' }
+
+    }
+
+  });
+*/
 function getAngularScope() {
   return window['angularScope'];
 }
@@ -100,12 +117,9 @@ gridSize: 1,
 width: PAPER_WIDTH,
 height: PAPER_HEIGHT,
 model: graph,
-defaultConnector: {
-  name: 'rounded'
-},
-defaultRouter: {
-  name: 'manhattan'
-},
+defaultConnector: GRAPH_CONNECTOR,
+defaultRouter: GRAPH_ROUTER,
+  //defaultLink: DEFAULT_LINK, 
 validateMagnet: function(cellView, magnet) {
     // Prevent links from ports that already have a link
     var port = magnet.getAttribute('port');

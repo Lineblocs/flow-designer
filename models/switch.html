@@ -9,31 +9,27 @@
                                     <label for="testInput">Widget Name</label>
                                     <input type="text" ng-model="cellModel.name" md-autofocus>
                                 </md-input-container>
-                                <md-input-container>
-                                    <label for="testInput">Variable To Test</label>
-                                    <input type="text" ng-model="cellModel.data.test" md-autofocus>
-                                </md-input-container>
-                                      <md-autocomplete
-          ng-disabled="ctrl.isDisabled"
-          md-no-cache="ctrl.noCache"
-          md-selected-item="ctrl.selectedItem"
-          md-search-text-change="ctrl.searchTextChange(ctrl.searchText)"
-          md-search-text="ctrl.searchText"
-          md-selected-item-change="ctrl.selectedItemChange(item)"
-          md-items="item in ctrl.querySearch(ctrl.searchText)"
-          md-item-text="item.display"
-          md-min-length="0"
-          placeholder="Ex. Alaska"
-          input-aria-labelledby="favoriteStateLabel"
-          input-aria-describedby="autocompleteDetailedDescription">
-        <md-item-template>
-          <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.display}}</span>
-        </md-item-template>
-        <md-not-found>
-          No states matching "{{ctrl.searchText}}" were found.
-          <a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>
-        </md-not-found>
-      </md-autocomplete>
+                                <md-autocomplete flex required
+                                  md-no-cache="true"
+                                  md-selected-item="$shared.cellModel.tempData.selectedItem"
+                                  md-search-text-change="$shared.searchTextChange($shared.cellModel, 'test')"
+                                  md-search-text="$shared.cellModel.tempData.searchText"
+                                  md-selected-item-change="$shared.selectedItemChange($shared.cellModel, 'test', item)"
+                                  md-items="item in $shared.querySearch($shared.cellModel.tempData.searchText)"
+                                  md-item-text="item.display"
+                                  md-min-length="1"
+                                  placeholder="Ex. Launch.call.from"
+                                  md-require-match=""
+                                  md-floating-label="Variable To Test"
+                                  input-aria-describedby="the Variable to test">
+                                <md-item-template>
+                                  <span md-highlight-text="cellModel.tempData.searchText" md-highlight-flags="^i">{{item.display}}</span>
+                                </md-item-template>
+                                <md-not-found>
+                                  No states matching "{{ctrl.searchText}}" were found.
+                                  <a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>
+                                </md-not-found>
+                              </md-autocomplete>
                         </md-content>
                     </md-tab>
                     <md-tab label="links">
@@ -53,10 +49,27 @@
                                         <label for="testInput">Value</label>
                                         <input ng-model="link.value" />
                                     </md-input-container>
-                                    <md-input-container>
-                                        <label for="testInput">Cell</label>
-                                        <input type="text" ng-model="link.cell" md-autofocus>
-                                    </md-input-container>
+                                    <md-autocomplete flex required
+                                      md-no-cache="true"
+                                      md-selected-item="link.tempData.selectedItem"
+                                      md-search-text-change="$shared.searchLinkTextChange(link)"
+                                      md-search-text="link.tempData.searchText"
+                                      md-selected-item-change="$shared.selectedLinkItemChange(link, item)"
+                                      md-items="item in $shared.queryLinkSearch(link.tempData.searchText)"
+                                      md-item-text="item.display"
+                                      md-min-length="1"
+                                      placeholder="Ex. Dial"
+                                      md-floating-label="Cell to link"
+                                      input-aria-describedby="the Cell to link">
+                                    <md-item-template>
+                                      <span md-highlight-text="link.tempData.searchText" md-highlight-flags="^i">{{item.display}}</span>
+                                    </md-item-template>
+                                    <md-not-found>
+                                      No states matching "{{ctrl.searchText}}" were found.
+                                      <a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>
+                                    </md-not-found>
+                                  </md-autocomplete>
+
                                 </li>
                             </ul>
                             <md-button ng-click="addLink()" type="button" class="md-raised md-primary">

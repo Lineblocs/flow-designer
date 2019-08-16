@@ -58,3 +58,9 @@ ul.switch-links {
     margin: 0;
     list-style: none;
 }
+md-autocomplete[md-floating-label] md-input-container {
+  padding-bottom: 0px;
+}
+md-autocomplete {
+  padding-bottom: 20px;
+}

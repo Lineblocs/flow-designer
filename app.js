@@ -4,6 +4,7 @@ function Model(cell, name, links, data) {
   this.name = name;
   this.links = links || [];
   this.data = data || {};
+  this.tempData = {};
   this.toJSON = function() {
     return {
       id: this.cell.id,
@@ -21,6 +22,7 @@ function Link(from, to, label, type, condition, value, cell, ports) {
   this.cell = cell;
   this.label = label;
   this.ports = ports || [];
+  this.tempData = {};
   this.toJSON = function() {
     var params = {};
     params['from'] = null;
@@ -53,6 +55,17 @@ function changeLabel(cell, text, refY)
         'ref-y': refY
       });
 }
+function addCellArgs(model) {
+  console.log("addCellArgs ", model);
+  if (model.cell.attributes.type==='devs.SwitchModel') {
+    model.tempData.searchText = model.data.test;
+    for (var index in model.links) {
+      var link = model.links[ index ];
+      link.tempData.searchText = link.cell;
+    }
+  }
+}
+
 angular
   .module('basicUsageSidenavDemo', ['ngMaterial', 'ngRoute'])
       .service('JWTHttpInterceptor', function() {
@@ -95,12 +108,13 @@ angular
     factory.FLOW_REMOTE_URL = "http://45.76.62.46:8086/api/flow";
     return factory;
   })
-  .factory("$shared", function($mdDialog, $mdSidenav) {
+  .factory("$shared", function($mdDialog, $mdSidenav, $log) {
     var factory = this;
     factory.models = [];
     factory.voices = {"da-DK":[{"lang":"da-DK","name":"da-DK-Standard-A","gender":"FEMALE"},{"lang":"da-DK","name":"da-DK-Wavenet-A","gender":"FEMALE"}],"nl-NL":[{"lang":"nl-NL","name":"nl-NL-Standard-A","gender":"FEMALE"},{"lang":"nl-NL","name":"nl-NL-Wavenet-A","gender":"FEMALE"}],"en-AU":[{"lang":"en-AU","name":"en-AU-Standard-A","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Standard-B","gender":"MALE"},{"lang":"en-AU","name":"en-AU-Standard-C","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Standard-D","gender":"MALE"},{"lang":"en-AU","name":"en-AU-Wavenet-A","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Wavenet-B","gender":"MALE"},{"lang":"en-AU","name":"en-AU-Wavenet-C","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Wavenet-D","gender":"MALE"}],"en-GB":[{"lang":"en-GB","name":"en-GB-Standard-A","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Standard-B","gender":"MALE"},{"lang":"en-GB","name":"en-GB-Standard-C","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Standard-D","gender":"MALE"},{"lang":"en-GB","name":"en-GB-Wavenet-A","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Wavenet-B","gender":"MALE"},{"lang":"en-GB","name":"en-GB-Wavenet-C","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Wavenet-D","gender":"MALE"}],"en-US":[{"lang":"en-US","name":"en-US-Standard-B","gender":"MALE"},{"lang":"en-US","name":"en-US-Standard-C","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Standard-D","gender":"MALE"},{"lang":"en-US","name":"en-US-Standard-E","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Wavenet-A","gender":"MALE"},{"lang":"en-US","name":"en-US-Wavenet-B","gender":"MALE"},{"lang":"en-US","name":"en-US-Wavenet-C","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Wavenet-D","gender":"MALE"},{"lang":"en-US","name":"en-US-Wavenet-E","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Wavenet-F","gender":"FEMALE"}],"fr-CA":[{"lang":"fr-CA","name":"fr-CA-Standard-A","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Standard-B","gender":"MALE"},{"lang":"fr-CA","name":"fr-CA-Standard-C","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Standard-D","gender":"MALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-A","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-B","gender":"MALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-C","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-D","gender":"MALE"}],"fr-FR":[{"lang":"fr-FR","name":"fr-FR-Standard-A","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Standard-B","gender":"MALE"},{"lang":"fr-FR","name":"fr-FR-Standard-C","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Standard-D","gender":"MALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-A","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-B","gender":"MALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-C","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-D","gender":"MALE"}],"de-DE":[{"lang":"de-DE","name":"de-DE-Standard-A","gender":"FEMALE"},{"lang":"de-DE","name":"de-DE-Standard-B","gender":"MALE"},{"lang":"de-DE","name":"de-DE-Wavenet-A","gender":"FEMALE"},{"lang":"de-DE","name":"de-DE-Wavenet-B","gender":"MALE"},{"lang":"de-DE","name":"de-DE-Wavenet-C","gender":"FEMALE"},{"lang":"de-DE","name":"de-DE-Wavenet-D","gender":"MALE"}],"it-IT":[{"lang":"it-IT","name":"it-IT-Standard-A","gender":"FEMALE"},{"lang":"it-IT","name":"it-IT-Wavenet-A","gender":"FEMALE"}],"ja-JP":[{"lang":"ja-JP","name":"ja-JP-Standard-A","gender":"FEMALE"},{"lang":"ja-JP","name":"ja-JP-Wavenet-A","gender":"FEMALE"}],"ko-KR":[{"lang":"ko-KR","name":"ko-KR-Standard-A","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Standard-B","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Standard-C","gender":"MALE"},{"lang":"ko-KR","name":"ko-KR-Standard-D","gender":"MALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-A","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-B","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-C","gender":"MALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-D","gender":"MALE"}],"nb-NO":[{"lang":"nb-NO","name":"nb-no-Standard-E","gender":"FEMALE"},{"lang":"nb-NO","name":"nb-no-Wavenet-E","gender":"FEMALE"}],"pl-PL":[{"lang":"pl-PL","name":"pl-PL-Standard-A","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Standard-B","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Standard-C","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Standard-D","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Standard-E","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-A","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-B","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-C","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-D","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-E","gender":"FEMALE"}],"pt-BR":[{"lang":"pt-BR","name":"pt-BR-Standard-A","gender":"FEMALE"},{"lang":"pt-BR","name":"pt-BR-Wavenet-A","gender":"FEMALE"}],"pt-PT":[{"lang":"pt-PT","name":"pt-PT-Standard-A","gender":"FEMALE"},{"lang":"pt-PT","name":"pt-PT-Standard-B","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Standard-C","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Standard-D","gender":"FEMALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-A","gender":"FEMALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-B","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-C","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-D","gender":"FEMALE"}],"ru-RU":[{"lang":"ru-RU","name":"ru-RU-Standard-A","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Standard-B","gender":"MALE"},{"lang":"ru-RU","name":"ru-RU-Standard-C","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Standard-D","gender":"MALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-A","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-B","gender":"MALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-C","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-D","gender":"MALE"}],"sk-SK":[{"lang":"sk-SK","name":"sk-SK-Standard-A","gender":"FEMALE"},{"lang":"sk-SK","name":"sk-SK-Wavenet-A","gender":"FEMALE"}],"es-ES":[{"lang":"es-ES","name":"es-ES-Standard-A","gender":"FEMALE"}],"sv-SE":[{"lang":"sv-SE","name":"sv-SE-Standard-A","gender":"FEMALE"},{"lang":"sv-SE","name":"sv-SE-Wavenet-A","gender":"FEMALE"}],"tr-TR":[{"lang":"tr-TR","name":"tr-TR-Standard-A","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Standard-B","gender":"MALE"},{"lang":"tr-TR","name":"tr-TR-Standard-C","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Standard-D","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Standard-E","gender":"MALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-A","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-B","gender":"MALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-C","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-D","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-E","gender":"MALE"}],"uk-UA":[{"lang":"uk-UA","name":"uk-UA-Standard-A","gender":"FEMALE"},{"lang":"uk-UA","name":"uk-UA-Wavenet-A","gender":"FEMALE"}]}
     factory.voiceGenders = ['MALE', 'FEMALE'];
     factory.voiceLangs  = Object.keys( factory.voices );
+    factory.searchText = "";
     factory.deleteWidget = function(ev) {
       var confirm = $mdDialog.confirm()
             .title('Are you sure you want to remove this widget ?')
@@ -110,7 +124,17 @@ angular
             .ok('Yes')
             .cancel('No');
       $mdDialog.show(confirm).then(function() {
+        var models = [];
+        for (var index in factory.models) {
+          var model = factory.models[ index ];
+          if (model.cell.id === factory.cellModel.cell.id) {
+            continue; 
+          }
+          models.push( model );
+        }
+        console.log("models are now ", models);
         factory.cellModel.cell.remove();
+        factory.models = models;
       }, function() {
       });
     }
@@ -131,6 +155,7 @@ angular
         scope.createModel(  newCell, name );
     }
     factory.canDelete = function() {
+      console.log("canDelete called ", arguments, factory.cellModel);
       if (factory.cellModel && factory.cellModel.cell.attributes.type !== "devs.LaunchModel") {
         return true;
       }
@@ -153,24 +178,56 @@ angular
         // get widget auto complete options
     factory.loadACOptions = function() {
       var options = [];
+      console.log("loadACOptions called. models are ", factory.models);
       for (var index in factory.models) {
         var model = factory.models[index];
-        if ( model.cell.attributes.type === 'devs.DialModel' ) {
+        if ( model.cell.attributes.type === 'devs.LaunchModel' ) {
+          options.push(createOption(model,'call.from'));
+          options.push(createOption(model,'call.to'));
+        } else if ( model.cell.attributes.type === 'devs.DialModel' ) {
           options.push(createOption(model,'from'));
           options.push(createOption(model,'to'));
-          options.push(createOption(model,'direction'));
-          options.push(createOption(model,'status'));
-          options.push(createOption(model,'duration'));
-          options.push(createOption(model,'started_at'));
-          options.push(createOption(model,'ended_at'));
-          options.push(createOption(model,'created_at'));
-          options.push(createOption(model,'updated_at'));
+          options.push(createOption(model,'call_id'));
+          options.push(createOption(model,'dial_status'));
+        } else if ( model.cell.attributes.type === 'devs.BridgeModel' ) {
+          options.push(createOption(model,'from'));
+          options.push(createOption(model,'to'));
+          options.push(createOption(model,'call_id'));
+          options.push(createOption(model,'dial_status'));
+        } else if ( model.cell.attributes.type === 'devs.ProcessInputModel' ) {
+          options.push(createOption(model,'from'));
+          options.push(createOption(model,'to'));
+          options.push(createOption(model,'digits'));
+          options.push(createOption(model,'call_id'));
+          options.push(createOption(model,'speech'));
+        } else if ( model.cell.attributes.type === 'devs.RecordVoicemailModel' ) {
+          options.push(createOption(model,'from'));
+          options.push(createOption(model,'to'));
+          options.push(createOption(model,'call_id'));
+          options.push(createOption(model,'recording_id'));
+          options.push(createOption(model,'recording_uri'));
         }
+
       }
+      console.log("loadACOptions created ", options);
+      return options;
+    }
+
+    factory.loadLinkACOptions = function() {
+      var options = [];
+      for (var index in factory.models) {
+        var model = factory.models[ index ];
+        options.push( { "display": model.name, "value": model.name });
+      }
+      return options;
     }
     factory.querySearch   = querySearch;
     factory.selectedItemChange = selectedItemChange;
     factory.searchTextChange   = searchTextChange;
+
+    factory.queryLinkSearch   = queryLinkSearch;
+    factory.selectedLinkItemChange = selectedLinkItemChange;
+    factory.searchLinkTextChange   = searchLinkTextChange;
 
     factory.newState = newState;
 
@@ -187,24 +244,84 @@ angular
      * remote dataservice call.
      */
     function querySearch (query) {
-      var results = query ? factory.states.filter(createFilterFor(query)) : factory.states,
+      console.log("querySearch was called..");
+      var data = factory.loadACOptions();
+      var results = query ? data.filter(createFilterFor(query)) : data,
           deferred;
       if (factory.simulateQuery) {
         deferred = $q.defer();
         $timeout(function () { deferred.resolve(results); }, Math.random() * 1000, false);
         return deferred.promise;
       } else {
+        console.log("results are ", results);
+        return results;
+      }
+    }
+    function queryLinkSearch (query) {
+      console.log("queryLinkSearch was called..");
+      var data = factory.loadLinkACOptions();
+      var results = query ? data.filter(createFilterFor(query)) : data,
+          deferred;
+      if (factory.simulateQuery) {
+        deferred = $q.defer();
+        $timeout(function () { deferred.resolve(results); }, Math.random() * 1000, false);
+        return deferred.promise;
+      } else {
+        console.log("results are ", results);
         return results;
       }
     }
 
-    function searchTextChange(text) {
-      $log.info('Text changed to ' + text);
+    function searchTextChange(model, key) {
+      console.log("searchTextChange called ", model);
+      model.data[key] = model.tempData.searchText;
+    }
+    function searchLinkTextChange(link) {
+      console.log("searchLinkTextChange called ", link);
+      link.cell = link.tempData.searchText;
     }
 
-    function selectedItemChange(item) {
+    function selectedItemChange(model, key, item) {
       $log.info('Item changed to ' + JSON.stringify(item));
+      factory.cellModel.tempData.ACItem = item;
+      model.data[ key ] = item.value;
+      console.log('model data is now ', model.data);
     }
+    function selectedLinkItemChange(link, item) {
+      $log.info('Item changed to ' + JSON.stringify(item));
+      link.tempData.ACItem = item;
+      link.cell = item.value;
+      console.log('link data is now ', link);
+      var srcModel = factory.cellModel.cell, dstModel;
+      var graph = diagram['graph'];
+      for (var index in factory.models) {
+        var model = factory.models[ index ];
+        if ( link.cell === model.name ) {
+          dstModel = model.cell;
+        }
+      }
+
+        var link = new joint.shapes.devs.Link({
+           source: {
+             id: srcModel.id,
+             port: link.label
+           },
+           target: {
+             id: dstModel.id,
+             port: 'In'
+           },
+           attrs: {
+              ".connection": {
+                "stroke-width": 1
+              } 
+            },
+            connector: GRAPH_CONNECTOR,
+            router: GRAPH_ROUTER,
+         });
+        // Assume graph has the srcModel and dstModel with in and out ports.
+        graph.addCell(link)
+    }
+
 
     /**
      * Build `states` list of key/value pairs
@@ -232,8 +349,9 @@ angular
     function createFilterFor(query) {
       var lowercaseQuery = query.toLowerCase();
 
-      return function filterFn(state) {
-        return (state.value.indexOf(lowercaseQuery) === 0);
+      return function filterFn(option) {
+        var subject = option.value.toLowerCase();
+        return (subject.indexOf(lowercaseQuery) === 0);
       };
 
     }
@@ -303,6 +421,7 @@ angular
     }
 
     $scope.canDelete = function() {
+      console.log("canDelete called ", arguments, $scope.cellModel);
       if ($shared.cellModel && $shared.cellModel.cell.attributes.type !== "devs.LaunchModel") {
         return true;
       }
@@ -628,10 +747,12 @@ angular
                           links.push(obj1);
                       }
                       var obj2 = new Model(cell, model.name, links, model.data);
+                      addCellArgs(obj2);
                       $shared.models.push(obj2);
                     }
                   }
                 }
+                $shared.cellModel = null;
               } else {
                 var launch = new joint.shapes.devs.LaunchModel({
                     position: {
