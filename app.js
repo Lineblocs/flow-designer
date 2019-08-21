@@ -486,7 +486,7 @@ angular
       var flowId = query.flowId;
       if (flowId) {
         var serverData = {};
-        serverData['name'] = "";
+        serverData['name'] = $shared.flow.name;
         serverData['flow_json'] = JSON.stringify( params );
 
         $http.post( $const.FLOW_REMOTE_URL + "/updateFlow/" + flowId, serverData ).then(function() {
@@ -523,7 +523,10 @@ angular
         console.log("response headers ", res.headers('X-Flow-ID'));
         console.log("response body ", res.body);
         var id = res.headers('X-Flow-ID');
-        $location.url("/edit?flowId=" + id);
+        var urlObj = URI(document.location.href);
+       var query = urlObj.query( true );
+        var token = query.auth;
+        $location.url("/edit?flowId=" + id + "&auth=" + token);
       });
     }
   }).controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $timeout) {
