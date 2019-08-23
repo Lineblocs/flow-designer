@@ -156,18 +156,24 @@ angular
     }
     factory.canDelete = function() {
       console.log("canDelete called ", arguments, factory.cellModel);
-      if (factory.cellModel && factory.cellModel.cell.attributes.type !== "devs.LaunchModel") {
+      if (factory.cellModel && factory.cellModel.cell && factory.cellModel.cell.attributes.type !== "devs.LaunchModel") {
         return true;
       }
       return false;
     }
     factory.canDuplicate = function() {
-      if (factory.cellModel && factory.cellModel.cell.attributes.type !== "devs.LaunchModel") {
+      if (factory.cellModel && factory.cellModel.cell && factory.cellModel.cell.attributes.type !== "devs.LaunchModel") {
         return true;
       }
       return false;
     }
-
+    factory.hasCellModel = function() {
+      console.log("hasCellModel ", factory.cellModel);
+      if (factory.cellModel && factory.cellModel.cell) {
+        return true;
+      }
+      return false;
+    }
     function createOption(model, label) {
       var tag = model.name+"."+label;
       return {
@@ -274,7 +280,9 @@ angular
 
     function searchTextChange(model, key) {
       console.log("searchTextChange called ", model);
-      model.data[key] = model.tempData.searchText;
+      if (model && model.data) {
+        model.data[key] = model.tempData.searchText;
+      }
     }
     function searchLinkTextChange(link) {
       console.log("searchLinkTextChange called ", link);
@@ -383,8 +391,9 @@ angular
       return langs;
     }
     factory.getVoices = function() {
+      console.log("getVoices ", factory.cellModel);
       var cellModel = factory.cellModel;
-      if (!cellModel || !cellModel.data.text_language) {
+      if (!cellModel || !cellModel.data || !cellModel.data.text_language) {
         return []; 
       }
       var options = factory.voices[ cellModel.data.text_language ];
@@ -781,7 +790,7 @@ angular
   } 
   $scope.load = load;
       load();
-      $mdSidenav('rightWidgets').open();
+      //$mdSidenav('rightWidgets').open();
   }).controller('PaperCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http) {
     $scope.$shared = $shared;
   });

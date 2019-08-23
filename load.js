@@ -106,6 +106,24 @@ function appendStencilModels(graph, list)
       paperScale(graphScale, graphScale);
   };
 
+
+function setGrid(paper, gridSize, color) {
+    // Set grid size on the JointJS paper object (joint.dia.Paper instance)
+    paper.options.gridSize = gridSize;
+    // Draw a grid into the HTML 5 canvas and convert it to a data URI image
+    var canvas = $('<canvas/>', { width: gridSize, height: gridSize });
+    canvas[0].width = gridSize;
+    canvas[0].height = gridSize;
+    var context = canvas[0].getContext('2d');
+    context.beginPath();
+    context.rect(1, 1, 2, 2);
+    context.fillStyle = color || '#AAAAAA';
+    context.fill();
+    // Finally, set the grid background image of the paper container element.
+    var gridBackgroundImage = canvas[0].toDataURL('image/png');
+    paper.$el.css('background-image', 'url("' + gridBackgroundImage + '")');
+}
+
 function initializeDiagram() {
   var graph = new joint.dia.Graph;
   var PAPER_HEIGHT = 768;
@@ -113,12 +131,13 @@ function initializeDiagram() {
   diagram['graph'] = graph;
   var paper = new joint.dia.Paper({
 el: $('#canvas'),
-gridSize: 1,
+gridSize: 15,
 width: PAPER_WIDTH,
 height: PAPER_HEIGHT,
 model: graph,
 defaultConnector: GRAPH_CONNECTOR,
 defaultRouter: GRAPH_ROUTER,
+drawGrid: true,
   //defaultLink: DEFAULT_LINK, 
 validateMagnet: function(cellView, magnet) {
     // Prevent links from ports that already have a link
@@ -133,6 +152,8 @@ validateMagnet: function(cellView, magnet) {
     return magnet.getAttribute('magnet') !== 'passive';
 }
 }); 
+// Example usage:
+setGrid(paper, 15, '#E3E3E3');
   diagram['paper'] = paper;
   var commandManager = new joint.dia.CommandManager({ graph: graph });
   diagram['commandManager'] = commandManager;

@@ -39,7 +39,7 @@
     <div class="widgets">
         <md-sidenav class="md-sidenav-right" md-component-id="rightWidgets" md-whiteframe="4" md-is-locked-open="true">
 
-            <div ng-show="!$shared.cellModel" class="sidebar">
+            <div ng-show="!$shared.hasCellModel()" class="sidebar">
                 <md-toolbar class="md-theme-indigo">
                     <h1 class="md-toolbar-tools">Available Widgets</h1>
                 </md-toolbar>
@@ -47,7 +47,7 @@
                 <md-content layout-padding>
                 </md-content>
             </div>
-            <div ng-show="$shared.cellModel" class="sidebar">
+            <div ng-show="$shared.hasCellModel()" class="sidebar">
                     <md-toolbar class="md-theme-light">
                         <h1 class="md-toolbar-tools">Widget Options</h1>
                     </md-toolbar>
