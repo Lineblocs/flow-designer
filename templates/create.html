@@ -4,12 +4,32 @@
             <h2>Create Flow</h2>
         </div>
     </md-toolbar>
-   <md-content md-theme="docs-dark" layout-gt-sm="row" layout-padding>
+   <md-content layout="row" layout-padding>
         <div>
         <md-input-container>
             <label>Name</label>
             <input ng-model="values.name">
         </md-input-container>
+        <div layout="row" class="templates-list">
+          <div flex="33" ng-repeat="template in templates">
+            <md-card>
+              <md-card-title>
+                <md-card-title-text>
+                  <span class="md-headline">{{template.name}}</span>
+                  <span class="md-subhead"></span>
+                </md-card-title-text>
+                <md-card-title-media>
+                  <div class="md-media-sm card-media"></div>
+                </md-card-title-media>
+              </md-card-title>
+              <md-card-actions layout="row" layout-align="end center">
+                <md-button ng-show="!isSelected(template)" class="md-raised md-primary" ng-click="useTemplate(template)">Use Template</md-button>
+                <md-button ng-show="isSelected(template)" ng-disabled="true" class="md-raised md-primary">Use Template</md-button>
+              </md-card-actions>
+            </md-card>
+          </div>
+        </div>
+
               <md-button ng-click="submit()" class="md-raised md-primary">Create</md-button>
         </div>
   </md-content>

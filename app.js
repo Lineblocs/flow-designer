@@ -105,10 +105,11 @@ angular
     var factory = this;
     factory.LINK_CONDITION_MATCHES = "LINK_CONDITION_MATCHES";
     factory.LINK_NO_CONDITION_MATCHES = "LINK_NO_CONDITION_MATCHES";
-    factory.FLOW_REMOTE_URL = "http://45.76.62.46:8086/api/flow";
+    factory.SERVER_REMOTE_URL = "http://45.76.62.46:8086";
+    factory.FLOW_REMOTE_URL = factory.SERVER_REMOTE_URL + "/api/flow";
     return factory;
   })
-  .factory("$shared", function($mdDialog, $mdSidenav, $log) {
+  .factory("$shared", function($mdDialog, $mdSidenav, $log, $const, $http) {
     var factory = this;
     factory.models = [];
     factory.voices = {"da-DK":[{"lang":"da-DK","name":"da-DK-Standard-A","gender":"FEMALE"},{"lang":"da-DK","name":"da-DK-Wavenet-A","gender":"FEMALE"}],"nl-NL":[{"lang":"nl-NL","name":"nl-NL-Standard-A","gender":"FEMALE"},{"lang":"nl-NL","name":"nl-NL-Wavenet-A","gender":"FEMALE"}],"en-AU":[{"lang":"en-AU","name":"en-AU-Standard-A","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Standard-B","gender":"MALE"},{"lang":"en-AU","name":"en-AU-Standard-C","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Standard-D","gender":"MALE"},{"lang":"en-AU","name":"en-AU-Wavenet-A","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Wavenet-B","gender":"MALE"},{"lang":"en-AU","name":"en-AU-Wavenet-C","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Wavenet-D","gender":"MALE"}],"en-GB":[{"lang":"en-GB","name":"en-GB-Standard-A","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Standard-B","gender":"MALE"},{"lang":"en-GB","name":"en-GB-Standard-C","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Standard-D","gender":"MALE"},{"lang":"en-GB","name":"en-GB-Wavenet-A","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Wavenet-B","gender":"MALE"},{"lang":"en-GB","name":"en-GB-Wavenet-C","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Wavenet-D","gender":"MALE"}],"en-US":[{"lang":"en-US","name":"en-US-Standard-B","gender":"MALE"},{"lang":"en-US","name":"en-US-Standard-C","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Standard-D","gender":"MALE"},{"lang":"en-US","name":"en-US-Standard-E","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Wavenet-A","gender":"MALE"},{"lang":"en-US","name":"en-US-Wavenet-B","gender":"MALE"},{"lang":"en-US","name":"en-US-Wavenet-C","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Wavenet-D","gender":"MALE"},{"lang":"en-US","name":"en-US-Wavenet-E","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Wavenet-F","gender":"FEMALE"}],"fr-CA":[{"lang":"fr-CA","name":"fr-CA-Standard-A","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Standard-B","gender":"MALE"},{"lang":"fr-CA","name":"fr-CA-Standard-C","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Standard-D","gender":"MALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-A","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-B","gender":"MALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-C","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-D","gender":"MALE"}],"fr-FR":[{"lang":"fr-FR","name":"fr-FR-Standard-A","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Standard-B","gender":"MALE"},{"lang":"fr-FR","name":"fr-FR-Standard-C","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Standard-D","gender":"MALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-A","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-B","gender":"MALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-C","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-D","gender":"MALE"}],"de-DE":[{"lang":"de-DE","name":"de-DE-Standard-A","gender":"FEMALE"},{"lang":"de-DE","name":"de-DE-Standard-B","gender":"MALE"},{"lang":"de-DE","name":"de-DE-Wavenet-A","gender":"FEMALE"},{"lang":"de-DE","name":"de-DE-Wavenet-B","gender":"MALE"},{"lang":"de-DE","name":"de-DE-Wavenet-C","gender":"FEMALE"},{"lang":"de-DE","name":"de-DE-Wavenet-D","gender":"MALE"}],"it-IT":[{"lang":"it-IT","name":"it-IT-Standard-A","gender":"FEMALE"},{"lang":"it-IT","name":"it-IT-Wavenet-A","gender":"FEMALE"}],"ja-JP":[{"lang":"ja-JP","name":"ja-JP-Standard-A","gender":"FEMALE"},{"lang":"ja-JP","name":"ja-JP-Wavenet-A","gender":"FEMALE"}],"ko-KR":[{"lang":"ko-KR","name":"ko-KR-Standard-A","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Standard-B","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Standard-C","gender":"MALE"},{"lang":"ko-KR","name":"ko-KR-Standard-D","gender":"MALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-A","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-B","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-C","gender":"MALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-D","gender":"MALE"}],"nb-NO":[{"lang":"nb-NO","name":"nb-no-Standard-E","gender":"FEMALE"},{"lang":"nb-NO","name":"nb-no-Wavenet-E","gender":"FEMALE"}],"pl-PL":[{"lang":"pl-PL","name":"pl-PL-Standard-A","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Standard-B","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Standard-C","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Standard-D","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Standard-E","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-A","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-B","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-C","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-D","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-E","gender":"FEMALE"}],"pt-BR":[{"lang":"pt-BR","name":"pt-BR-Standard-A","gender":"FEMALE"},{"lang":"pt-BR","name":"pt-BR-Wavenet-A","gender":"FEMALE"}],"pt-PT":[{"lang":"pt-PT","name":"pt-PT-Standard-A","gender":"FEMALE"},{"lang":"pt-PT","name":"pt-PT-Standard-B","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Standard-C","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Standard-D","gender":"FEMALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-A","gender":"FEMALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-B","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-C","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-D","gender":"FEMALE"}],"ru-RU":[{"lang":"ru-RU","name":"ru-RU-Standard-A","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Standard-B","gender":"MALE"},{"lang":"ru-RU","name":"ru-RU-Standard-C","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Standard-D","gender":"MALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-A","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-B","gender":"MALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-C","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-D","gender":"MALE"}],"sk-SK":[{"lang":"sk-SK","name":"sk-SK-Standard-A","gender":"FEMALE"},{"lang":"sk-SK","name":"sk-SK-Wavenet-A","gender":"FEMALE"}],"es-ES":[{"lang":"es-ES","name":"es-ES-Standard-A","gender":"FEMALE"}],"sv-SE":[{"lang":"sv-SE","name":"sv-SE-Standard-A","gender":"FEMALE"},{"lang":"sv-SE","name":"sv-SE-Wavenet-A","gender":"FEMALE"}],"tr-TR":[{"lang":"tr-TR","name":"tr-TR-Standard-A","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Standard-B","gender":"MALE"},{"lang":"tr-TR","name":"tr-TR-Standard-C","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Standard-D","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Standard-E","gender":"MALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-A","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-B","gender":"MALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-C","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-D","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-E","gender":"MALE"}],"uk-UA":[{"lang":"uk-UA","name":"uk-UA-Standard-A","gender":"FEMALE"},{"lang":"uk-UA","name":"uk-UA-Wavenet-A","gender":"FEMALE"}]}
@@ -410,6 +411,7 @@ angular
       });
       return options;
     }
+
     return factory;
   })
   .controller('ControlsCtrl', function ($scope, $timeout, $mdSidenav, $log, $mdDialog, $shared, $http, $location, $const, $mdSidenav) {
@@ -524,9 +526,15 @@ angular
     $scope.values = {
       name: ""
     };
+    $scope.templates = [];
     $scope.submit = function() {
       var data = angular.copy( $scope.values );
       data['flow_json'] = null;
+      data['template_id'] = null;
+      data['started'] = true;
+      if ($scope.selectedTemplate) {
+        data['template_id'] = $scope.selectedTemplate.id;
+      }
       $http.post( $const.FLOW_REMOTE_URL + "/saveFlow", data).then(function(res) {
         console.log("response arguments ", arguments);
         console.log("response headers ", res.headers('X-Flow-ID'));
@@ -538,9 +546,26 @@ angular
         $location.url("/edit?flowId=" + id + "&auth=" + token);
       });
     }
-  }).controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $timeout) {
+    $scope.useTemplate = function(template) {
+      $scope.selectedTemplate = template;
+    };
+    $scope.isSelected = function(template) {
+      if ($scope.selectedTemplate && template.id === $scope.selectedTemplate.id) {
+        return true;
+      }
+      return false;
+    }
+    function init() {
+      $http.get( $const.FLOW_REMOTE_URL + "/listTemplates" ).then(function(res) {
+        console.log("flow templates are ", res.data);
+        $scope.templates = res.data.data;
+      });
+    }
+    init();  
+  }).controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $timeout, $q) {
     $scope.$shared = $shared;
     $scope.$const = $const;
+    $scope.extensions = [];
 
     $scope.conditions = [
       'Equals',
@@ -548,6 +573,11 @@ angular
       'Ends With',
       'Matches Any'
     ];
+    $scope.callTypes = [
+      'Extension',
+      'Phone Number'
+    ];
+
     $scope.playbackTypes = [
       'Say',
       'Play'
@@ -569,8 +599,8 @@ angular
       cellModel = cellModel || $shared.cellModel;
       type = type || $const.LINK_CONDITION_MATCHES;
       if (typeof label === 'undefined') {
-        var label = "COndition Matches";
-        label += parseInt($shared.cellModel.links.length + 1).toString();
+        var label = "Condition Matches";
+        label += " " + parseInt($shared.cellModel.links.length + 1).toString();
       }
       var port = {
         id: label,
@@ -662,6 +692,16 @@ angular
       console.log("changePlaybackType ", value);
       $shared.cellModel.data.playback_type = value;
     }
+    $scope.changeCallType = function(value) {
+      console.log("changeCallType ", value);
+      $shared.cellModel.data.call_type = value;
+    }
+    $scope.changeExtension =  function(value) {
+      console.log("changeExtension ", value);
+      $shared.cellModel.data.extension = value;
+    }
+
+
 
     $scope.changeFinishRecordType = function(value) {
       console.log("changeFinishRecordType ", value);
@@ -675,6 +715,38 @@ angular
         $scope.$apply();
       }, 0);
     }
+
+    $scope.flowWasStarted = function() {
+      console.log("flowWasStarted ", $shared.flow);
+      if ($shared.flow && $shared.flow.started) {
+        return true;
+      }
+
+      return false;
+    }
+    $scope.useTemplate = function(template) {
+      $scope.selectedTemplate = template;
+    };
+    $scope.isSelected = function(template) {
+      if ($scope.selectedTemplate && template.id === $scope.selectedTemplate.id) {
+        return true;
+      }
+      return false;
+    }
+    $scope.addTemplate = function() {
+      var data = {};
+      data['flow_json'] = null;
+      data['template_id'] = null;
+      data['started'] = true;
+      if ($scope.selectedTemplate) {
+        data['template_id'] = $scope.selectedTemplate.id;
+      }
+      $http.post( $const.FLOW_REMOTE_URL + "/updateFlow/" + $shared.flow.id, data).then(function(res) {
+        $shared.flow.started = true;
+        load();
+      } );
+    }
+
     /**
      * Supplies a function that will continue to operate until the
      * time is up.
@@ -713,22 +785,34 @@ angular
 
       var search = $location.search();
       console.log("load search is ", search);
+      $shared.flow = { "started": true };
       $timeout(function() {
         //var data = JSON.parse(testJSON);
         //graph.fromJSON(data.graph);
         window['angularScope'] = angular.element(document.getElementById('scopeCtrl')).scope();
-        initializeDiagram();
-        var graph = diagram['graph'];
+        var graph;
         if (search.flowId) {
           //fetch( $const.FLOW_REMOTE_URL + "/flowData/" + search.flowId ).then(function(res) {
-          $http.get( $const.FLOW_REMOTE_URL + "/flowData/" + search.flowId ).then(function(res) {
+          $q.all([
+            $http.get( $const.FLOW_REMOTE_URL + "/flowData/" + search.flowId ),
+            $http.get( $const.FLOW_REMOTE_URL + "/listTemplates" )
+          ]).then(function(res) {
+            console.log("flow templates are ", res[1].data);
+            $scope.templates = res[1].data.data;
             //res.json().then(function(res) {
-              console.log("fetch JSON is ", res);
-              $shared.flow = res.data;
-              if (res.data.flow_json) {
+              console.log("fetch JSON is ", res[0]);
+              $shared.flow = res[0].data;
+              if (!$shared.flow.started) {
+                return;
+              }
+              initializeDiagram();
+              graph = diagram['graph'];
+
+              if (res[0].data.flow_json) {
+
               //if (false) {
                 //var data = JSON.parse(res.data.flow_json);
-                var data = JSON.parse( res.data.flow_json );
+                var data = JSON.parse( res[0].data.flow_json );
                 console.log("loading graph data ", data);
                 graph.fromJSON(data.graph);
                 var cells = graph.getCells();
@@ -786,6 +870,13 @@ angular
             //});
           });
         }
+        $http.get( $const.SERVER_REMOTE_URL + "/api/extension/listExtensions" ).then(function(res) {
+          console.log("extensions are ", res.data);
+          $scope.extensions = res.data.data.map(function(extension) {
+            return extension.username;
+          } );
+        } );
+
       }, 0);
   } 
   $scope.load = load;
