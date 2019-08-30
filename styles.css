@@ -46,9 +46,16 @@ md-tabs {
     transition: 0s !important;
 }
 md-toolbar.md-default-theme.md-hue-2:not(.md-menu-toolbar), md-toolbar.md-hue-1:not(.md-menu-toolbar) {
-    background-color: rgb(1,74,182);
-    color: rgba(255,255,255,0.87);
+    /*background-color: rgb(1,74,182);*/
+    background: #FFF;
+    /*color: rgba(255,255,255,0.87);*/
+    color: #000;
+    border-bottom: 1px solid #CCCCCC;
 }
+md-toolbar.md-default-theme.md-hue-1:not(.md-menu-toolbar), md-toolbar.md-hue-1:not(.md-menu-toolbar) md-icon {
+  color: #000;
+}
+
 .sidebar {
     border: 1px solid #E3E3E3;
     border-top: none;
@@ -72,4 +79,7 @@ md-card md-card-title {
 }
 .templates-list {
   width: 800px;
+}
+.custom-bg {
+  background: #FFF;
 }
