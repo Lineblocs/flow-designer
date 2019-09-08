@@ -83,3 +83,6 @@ md-card md-card-title {
 .custom-bg {
   background: #FFF;
 }
+.loading {
+  padding-top: 40px;
+}

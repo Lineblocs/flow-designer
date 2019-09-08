@@ -8,7 +8,17 @@
 </head>
 <body ng-app="basicUsageSidenavDemo">
     <base href="/"></base>
-    <div id="scopeCtrl" ng-view></div>
+    <div ng-controller="RootCtrl">
+      <div class="loading" ng-show="$shared.isLoading">
+        <center>
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            <p>Please wait..</p>
+        </center>
+      </div>
+      <div ng-show="!$shared.isLoading">
+        <div id="scopeCtrl" ng-view></div>
+      </div>
+    </div>
     <!-- dependencies -->
     <script src="/node_modules/jquery/dist/jquery.min.js"></script>
     <script src="/node_modules/angular/angular.js"></script>
