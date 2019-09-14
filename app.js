@@ -105,7 +105,7 @@ angular
     var factory = this;
     factory.LINK_CONDITION_MATCHES = "LINK_CONDITION_MATCHES";
     factory.LINK_NO_CONDITION_MATCHES = "LINK_NO_CONDITION_MATCHES";
-    factory.SERVER_REMOTE_URL = "http://45.76.62.46:8090";
+    factory.SERVER_REMOTE_URL = "http://lineblocs.com";
     factory.FLOW_REMOTE_URL = factory.SERVER_REMOTE_URL + "/api/flow";
     return factory;
   })
