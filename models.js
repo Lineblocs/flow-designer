@@ -325,3 +325,13 @@ joint.shapes.devs.RecordVoicemailModel = joint.shapes.devs.Model.extend({
 });
 
 joint.shapes.devs.ProcessInputView = joint.shapes.devs.ModelView;
+joint.shapes.devs.Link.define('devs.FlowLink', {
+      attrs: {
+              ".connection": {
+                "stroke-width": 1
+              } 
+            }
+}, {
+    // inherit joint.shapes.standard.Link.markup
+}, {
+});

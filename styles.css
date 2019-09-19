@@ -86,3 +86,41 @@ md-card md-card-title {
 .loading {
   padding-top: 40px;
 }
+.load-mask {
+  position:relative; 
+  z-index: 9999999;
+      box-sizing: border-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+.load-mask  .container {
+    position: absolute;
+    height: 768px;
+    width: 100%;
+}
+.load-mask  .container .mask {
+  position: absolute;
+  height: 768px;
+  width: 100%;
+}
+.load-mask  .container .mask .block {
+      background: #FFF;
+      opacity: .5;
+      height: 768px;
+      width: 100%;
+}
+.load-mask  .container .spinner {
+  position: absolute;
+  top: 40px;
+  left: 0;
+right: 0;
+margin-left: auto;
+margin-right: auto;
+}
+.dont-show {
+  display: none;
+}

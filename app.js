@@ -101,6 +101,12 @@ angular
         $locationProvider.html5Mode(true);  
           $httpProvider.interceptors.push('JWTHttpInterceptor');
   })
+  .run(function() {
+    angular.element(document).ready(function () {
+        angular.element(".loading").removeClass("dont-show");
+        angular.element(".isnt-loading").removeClass("dont-show");
+    });
+  })
   .factory("$const", function() {
     var factory = this;
     factory.LINK_CONDITION_MATCHES = "LINK_CONDITION_MATCHES";
@@ -114,6 +120,7 @@ angular
     factory.models = [];
     factory.voices = {"da-DK":[{"lang":"da-DK","name":"da-DK-Standard-A","gender":"FEMALE"},{"lang":"da-DK","name":"da-DK-Wavenet-A","gender":"FEMALE"}],"nl-NL":[{"lang":"nl-NL","name":"nl-NL-Standard-A","gender":"FEMALE"},{"lang":"nl-NL","name":"nl-NL-Wavenet-A","gender":"FEMALE"}],"en-AU":[{"lang":"en-AU","name":"en-AU-Standard-A","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Standard-B","gender":"MALE"},{"lang":"en-AU","name":"en-AU-Standard-C","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Standard-D","gender":"MALE"},{"lang":"en-AU","name":"en-AU-Wavenet-A","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Wavenet-B","gender":"MALE"},{"lang":"en-AU","name":"en-AU-Wavenet-C","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Wavenet-D","gender":"MALE"}],"en-GB":[{"lang":"en-GB","name":"en-GB-Standard-A","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Standard-B","gender":"MALE"},{"lang":"en-GB","name":"en-GB-Standard-C","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Standard-D","gender":"MALE"},{"lang":"en-GB","name":"en-GB-Wavenet-A","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Wavenet-B","gender":"MALE"},{"lang":"en-GB","name":"en-GB-Wavenet-C","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Wavenet-D","gender":"MALE"}],"en-US":[{"lang":"en-US","name":"en-US-Standard-B","gender":"MALE"},{"lang":"en-US","name":"en-US-Standard-C","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Standard-D","gender":"MALE"},{"lang":"en-US","name":"en-US-Standard-E","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Wavenet-A","gender":"MALE"},{"lang":"en-US","name":"en-US-Wavenet-B","gender":"MALE"},{"lang":"en-US","name":"en-US-Wavenet-C","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Wavenet-D","gender":"MALE"},{"lang":"en-US","name":"en-US-Wavenet-E","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Wavenet-F","gender":"FEMALE"}],"fr-CA":[{"lang":"fr-CA","name":"fr-CA-Standard-A","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Standard-B","gender":"MALE"},{"lang":"fr-CA","name":"fr-CA-Standard-C","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Standard-D","gender":"MALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-A","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-B","gender":"MALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-C","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-D","gender":"MALE"}],"fr-FR":[{"lang":"fr-FR","name":"fr-FR-Standard-A","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Standard-B","gender":"MALE"},{"lang":"fr-FR","name":"fr-FR-Standard-C","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Standard-D","gender":"MALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-A","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-B","gender":"MALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-C","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-D","gender":"MALE"}],"de-DE":[{"lang":"de-DE","name":"de-DE-Standard-A","gender":"FEMALE"},{"lang":"de-DE","name":"de-DE-Standard-B","gender":"MALE"},{"lang":"de-DE","name":"de-DE-Wavenet-A","gender":"FEMALE"},{"lang":"de-DE","name":"de-DE-Wavenet-B","gender":"MALE"},{"lang":"de-DE","name":"de-DE-Wavenet-C","gender":"FEMALE"},{"lang":"de-DE","name":"de-DE-Wavenet-D","gender":"MALE"}],"it-IT":[{"lang":"it-IT","name":"it-IT-Standard-A","gender":"FEMALE"},{"lang":"it-IT","name":"it-IT-Wavenet-A","gender":"FEMALE"}],"ja-JP":[{"lang":"ja-JP","name":"ja-JP-Standard-A","gender":"FEMALE"},{"lang":"ja-JP","name":"ja-JP-Wavenet-A","gender":"FEMALE"}],"ko-KR":[{"lang":"ko-KR","name":"ko-KR-Standard-A","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Standard-B","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Standard-C","gender":"MALE"},{"lang":"ko-KR","name":"ko-KR-Standard-D","gender":"MALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-A","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-B","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-C","gender":"MALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-D","gender":"MALE"}],"nb-NO":[{"lang":"nb-NO","name":"nb-no-Standard-E","gender":"FEMALE"},{"lang":"nb-NO","name":"nb-no-Wavenet-E","gender":"FEMALE"}],"pl-PL":[{"lang":"pl-PL","name":"pl-PL-Standard-A","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Standard-B","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Standard-C","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Standard-D","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Standard-E","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-A","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-B","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-C","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-D","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-E","gender":"FEMALE"}],"pt-BR":[{"lang":"pt-BR","name":"pt-BR-Standard-A","gender":"FEMALE"},{"lang":"pt-BR","name":"pt-BR-Wavenet-A","gender":"FEMALE"}],"pt-PT":[{"lang":"pt-PT","name":"pt-PT-Standard-A","gender":"FEMALE"},{"lang":"pt-PT","name":"pt-PT-Standard-B","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Standard-C","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Standard-D","gender":"FEMALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-A","gender":"FEMALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-B","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-C","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-D","gender":"FEMALE"}],"ru-RU":[{"lang":"ru-RU","name":"ru-RU-Standard-A","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Standard-B","gender":"MALE"},{"lang":"ru-RU","name":"ru-RU-Standard-C","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Standard-D","gender":"MALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-A","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-B","gender":"MALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-C","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-D","gender":"MALE"}],"sk-SK":[{"lang":"sk-SK","name":"sk-SK-Standard-A","gender":"FEMALE"},{"lang":"sk-SK","name":"sk-SK-Wavenet-A","gender":"FEMALE"}],"es-ES":[{"lang":"es-ES","name":"es-ES-Standard-A","gender":"FEMALE"}],"sv-SE":[{"lang":"sv-SE","name":"sv-SE-Standard-A","gender":"FEMALE"},{"lang":"sv-SE","name":"sv-SE-Wavenet-A","gender":"FEMALE"}],"tr-TR":[{"lang":"tr-TR","name":"tr-TR-Standard-A","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Standard-B","gender":"MALE"},{"lang":"tr-TR","name":"tr-TR-Standard-C","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Standard-D","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Standard-E","gender":"MALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-A","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-B","gender":"MALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-C","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-D","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-E","gender":"MALE"}],"uk-UA":[{"lang":"uk-UA","name":"uk-UA-Standard-A","gender":"FEMALE"},{"lang":"uk-UA","name":"uk-UA-Wavenet-A","gender":"FEMALE"}]}
       factory.isLoading = false;
+      factory.isCreateLoading = false;
     factory.voiceGenders = ['MALE', 'FEMALE'];
     factory.voiceLangs  = Object.keys( factory.voices );
     factory.searchText = "";
@@ -311,7 +318,7 @@ angular
         }
       }
 
-        var link = new joint.shapes.devs.Link({
+        var link = new joint.shapes.devs.FlowLink({
            source: {
              id: srcModel.id,
              port: link.label
@@ -329,6 +336,7 @@ angular
             router: GRAPH_ROUTER,
          });
         // Assume graph has the srcModel and dstModel with in and out ports.
+        console.log("adding link ", link);
         graph.addCell(link)
     }
 
@@ -503,8 +511,9 @@ angular
         var serverData = {};
         serverData['name'] = $shared.flow.name;
         serverData['flow_json'] = JSON.stringify( params );
-
+        $shared.isCreateLoading = true;
         $http.post( $const.FLOW_REMOTE_URL + "/updateFlow/" + flowId, serverData ).then(function() {
+          $shared.isCreateLoading = false;
           showSaved(ev);
         }, function(err) {
           alert("An error occured");
@@ -539,7 +548,9 @@ angular
       if ($scope.selectedTemplate) {
         data['template_id'] = $scope.selectedTemplate.id;
       }
+      $shared.isCreateLoading = true;
       $http.post( $const.FLOW_REMOTE_URL + "/saveFlow", data).then(function(res) {
+        $shared.isCreateLoading = false;
         console.log("response arguments ", arguments);
         console.log("response headers ", res.headers('X-Flow-ID'));
         console.log("response body ", res.body);

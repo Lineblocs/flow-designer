@@ -6,16 +6,37 @@
     <link rel="stylesheet" href="./styles.css">
     <link rel="stylesheet" href="./custom/JointTooledViewPlugin/tooledViewPlugin.css">
 </head>
-<body ng-app="basicUsageSidenavDemo">
+<body ng-app="basicUsageSidenavDemo" ng-cloak>
+    <style>
+.dont-show {
+  display: none;
+}
+    </style>
     <base href="/"></base>
     <div ng-controller="RootCtrl">
-      <div class="loading" ng-show="$shared.isLoading">
+      <div class="loading dont-show" ng-show="$shared.isLoading">
         <center>
             <md-progress-circular md-mode="indeterminate"></md-progress-circular>
             <p>Please wait..</p>
         </center>
       </div>
-      <div ng-show="!$shared.isLoading">
+      <div class="isnt-loading dont-show" ng-show="!$shared.isLoading">
+        <div ng-show="$shared.isCreateLoading">
+          <div class="load-mask">
+            <div class="container">
+              <div class="mask">
+                <div class="block"></div>
+              </div>
+              <div class="spinner">
+                <center>
+                  <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+                  <small>Please wait..</small>
+                </center>
+              </div>
+            </div>
+          </div>
+
+        </div>
         <div id="scopeCtrl" ng-view></div>
       </div>
     </div>

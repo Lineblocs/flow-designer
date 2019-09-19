@@ -137,6 +137,7 @@ height: PAPER_HEIGHT,
 model: graph,
 defaultConnector: GRAPH_CONNECTOR,
 defaultRouter: GRAPH_ROUTER,
+defaultLink: new joint.shapes.devs.FlowLink(),
 drawGrid: true,
   //defaultLink: DEFAULT_LINK, 
 validateMagnet: function(cellView, magnet) {
