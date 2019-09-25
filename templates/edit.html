@@ -75,9 +75,9 @@
                     <md-toolbar class="md-theme-indigo">
                         <h1 class="md-toolbar-tools">Available Widgets</h1>
                     </md-toolbar>
-                    <div ng-non-bindable id="stencil"></div>
-                    <md-content layout-padding>
-                    </md-content>
+                    <div class="widget-scroller">
+                      <div ng-non-bindable id="stencil"></div>
+                    </div>
                 </div>
                 <div ng-show="$shared.hasCellModel()" class="sidebar">
                         <md-toolbar class="md-theme-light">
@@ -89,6 +89,7 @@
                         <div ng-show="$shared.cellModel.cell.attributes.type === 'devs.BridgeModel'" ng-include="'models/bridge.html'"></div>
                         <div ng-show="$shared.cellModel.cell.attributes.type === 'devs.ProcessInputModel'" ng-include="'models/process_input.html'"></div>
                         <div ng-show="$shared.cellModel.cell.attributes.type === 'devs.RecordVoicemailModel'" ng-include="'models/record_voicemail.html'"></div>
+                        <div ng-show="$shared.cellModel.cell.attributes.type === 'devs.PlaybackModel'" ng-include="'models/playback.html'"></div>
                 </div>
 
             </md-sidenav>

@@ -66,6 +66,17 @@ function addCellArgs(model) {
   }
 }
 
+var href = document.location.href.includes("http://localhost");
+if (href) {
+    var baseUrl = "http://lineblocs.com/api";
+} else {
+    var baseUrl = "/api";
+}
+function createUrl(path) {
+    return baseUrl + path;
+}
+
+
 angular
   .module('basicUsageSidenavDemo', ['ngMaterial', 'ngRoute'])
       .service('JWTHttpInterceptor', function() {
@@ -512,7 +523,7 @@ angular
         serverData['name'] = $shared.flow.name;
         serverData['flow_json'] = JSON.stringify( params );
         $shared.isCreateLoading = true;
-        $http.post( $const.FLOW_REMOTE_URL + "/updateFlow/" + flowId, serverData ).then(function() {
+        $http.post( createUrl(  "/flow/updateFlow/" + flowId ), serverData ).then(function() {
           $shared.isCreateLoading = false;
           showSaved(ev);
         }, function(err) {
@@ -549,7 +560,7 @@ angular
         data['template_id'] = $scope.selectedTemplate.id;
       }
       $shared.isCreateLoading = true;
-      $http.post( $const.FLOW_REMOTE_URL + "/saveFlow", data).then(function(res) {
+      $http.post( createUrl( "/flow/saveFlow" ), data).then(function(res) {
         $shared.isCreateLoading = false;
         console.log("response arguments ", arguments);
         console.log("response headers ", res.headers('X-Flow-ID'));
@@ -572,7 +583,7 @@ angular
     }
     function init() {
       $shared.isLoading =true;
-      $http.get( $const.FLOW_REMOTE_URL + "/listTemplates" ).then(function(res) {
+      $http.get( createUrl( "/flow/listTemplates" ) ).then(function(res) {
         $shared.isLoading =false;
         console.log("flow templates are ", res.data);
         $scope.templates = res.data.data;
@@ -758,7 +769,7 @@ angular
       if ($scope.selectedTemplate) {
         data['template_id'] = $scope.selectedTemplate.id;
       }
-      $http.post( $const.FLOW_REMOTE_URL + "/updateFlow/" + $shared.flow.id, data).then(function(res) {
+      $http.post( createUrl(  "/flow/updateFlow/" + $shared.flow.id ), data).then(function(res) {
         $shared.flow.started = true;
         load();
       } );
@@ -804,7 +815,8 @@ angular
       console.log("load search is ", search);
       $shared.flow = { "started": true };
        $shared.isLoading =true;
-      $http.get( $const.SERVER_REMOTE_URL + "/api/extension/listExtensions" ).then(function(res) {
+       var url = createUrl( "/extension/listExtensions" );
+      $http.get( url ).then(function(res) {
           console.log("extensions are ", res.data);
           $scope.extensions = res.data.data.map(function(extension) {
             return extension.username;
@@ -814,8 +826,8 @@ angular
             var graph;
             if (search.flowId) {
               $q.all([
-                $http.get( $const.FLOW_REMOTE_URL + "/flowData/" + search.flowId ),
-                $http.get( $const.FLOW_REMOTE_URL + "/listTemplates" )
+                $http.get( createUrl("/flow/flowData/" + search.flowId  )),
+                $http.get( createUrl( "/flow/listTemplates"  ) )
               ]).then(function(res) {
                 console.log("flow templates are ", res[1].data);
                 $scope.templates = res[1].data.data;

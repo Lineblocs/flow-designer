@@ -76,6 +76,7 @@ function appendStencilModels(graph, list)
         yPos += padding;
         yPos += widget.attributes.size.height;
   });
+  $("#stencil").height(yPos);
 }
 
 
@@ -90,12 +91,18 @@ function appendStencilModels(graph, list)
   };
 
   var zoomOut = function() {
+      if (numberOfZoom === -5) {
+        return;
+      }
       graphScale -= 0.1;
       numberOfZoom -= 1;
       paperScale(graphScale, graphScale);
   };
 
   var zoomIn = function() {
+      if (numberOfZoom === 5) {
+        return;
+      }
       graphScale += 0.1;
       numberOfZoom += 1;
       paperScale(graphScale, graphScale);
@@ -275,6 +282,12 @@ var stencilGraph = new joint.dia.Graph,
        joint.shapes.devs.BridgeModel,
        joint.shapes.devs.ProcessInputModel,
        joint.shapes.devs.RecordVoicemailModel,
+       joint.shapes.devs.PlaybackModel,
+
+       joint.shapes.devs.PlaybackModel,
+       joint.shapes.devs.PlaybackModel,
+       joint.shapes.devs.PlaybackModel,
+       joint.shapes.devs.PlaybackModel,
        joint.shapes.devs.PlaybackModel,
   ]);
 stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {

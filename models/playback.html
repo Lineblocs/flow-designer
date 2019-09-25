@@ -1,0 +1,68 @@
+<div>
+    <form ng-submit="$shared.saveWidget()">
+        <div ng-cloak>
+            <md-content>
+                <md-tabs class="md-primary widget-options" md-center-tabs md-dynamic-height="true">
+                    <md-tab label="info">
+                        <md-content class="md-padding">
+                                <md-input-container>
+                                    <label for="testInput">Widget Name</label>
+                                    <input type="text" ng-model="cellModel.name" md-autofocus>
+                                </md-input-container>
+                                <md-input-container>
+                                    <label for="testInput">Playback Type</label>
+                                    <md-select ng-change="changePlaybackType(cellModel.data.playback_type)" ng-model="cellModel.data.playback_type">
+                                        <md-option><em>None</em></md-option>
+                                        <md-option ng-value="type" ng-repeat="type in playbackTypes">
+                                        {{type}}
+                                        </md-option>
+                                    </md-select>
+                                </md-input-container>
+                                <div ng-show="cellModel.data.playback_type==='Say'">
+                                    <md-input-container>
+                                        <label for="testInput">Text To Say</label>
+                                        <input type="text" ng-model="cellModel.data.text_to_say" md-autofocus>
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label>Language</label>
+                                        <md-select ng-model="cellModel.data.text_language" ng-change="changeTextLanguage(cellModel.data.text_language)">
+                                            <md-option ng-repeat="language in $shared.voiceLangs" ng-value="language">
+                                            {{language}}
+                                            </md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label>Gender</label>
+                                        <md-select ng-model="cellModel.data.text_gender" ng-change="changeTextGender(cellModel.data.text_gender)">
+                                            <md-option ng-repeat="gender in $shared.voiceGenders" ng-value="gender">
+                                            {{gender}}
+                                            </md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label>Voice</label>
+                                        <md-select ng-model="cellModel.data.voice" ng-change="changeVoice(cellModel.data.voice)">
+                                            <md-option ng-repeat="voice in $shared.getVoices()" ng-value="voice">
+                                            {{voice}}
+                                            </md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                    <md-input-container>
+                                        <label for="testInput">Number Of Loops</label>
+                                        <input type="text" ng-model="cellModel.data.number_of_loops" md-autofocus>
+                                    </md-input-container>
+                                </div>
+                                <div ng-show="cellModel.data.playback_type==='Play'">
+                                    <md-input-container>
+                                        <label for="testInput">URL of audio file</label>
+                                        <input type="text" ng-model="cellModel.data.url_audio" md-autofocus>
+                                    </md-input-container>
+                                </div>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+        <div ng-include="'/templates/widget_buttons.html'"></div>
+    </form>
+</div>

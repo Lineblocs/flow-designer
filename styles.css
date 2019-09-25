@@ -124,3 +124,12 @@ margin-right: auto;
 .dont-show {
   display: none;
 }
+
+.widget-options md-tab-content {
+  overflow-y: scroll;
+  height: 480px;
+}
+.widget-scroller {
+  overflow-y: scroll;
+  height: 576px;
+}
