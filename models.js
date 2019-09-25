@@ -325,6 +325,60 @@ joint.shapes.devs.RecordVoicemailModel = joint.shapes.devs.Model.extend({
 });
 
 joint.shapes.devs.ProcessInputView = joint.shapes.devs.ModelView;
+
+
+joint.shapes.devs.PlaybackModel = joint.shapes.devs.Model.extend({
+
+  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
+
+  defaults: joint.util.deepSupplement({
+    name: 'Playback',
+    type: 'devs.PlaybackModel',
+    size: widgetDimens,
+    attrs: {
+      rect: {
+        stroke: '#009900',
+        fill: '#eb9b34',
+      },
+      circle: {
+        stroke: 'gray'
+      },
+      '.label': {
+        text: 'Playback',
+        fill: '#FFFFFF',
+        'ref-y': 50
+      },
+      '.inPorts circle': {
+        fill: '#c8c8c8'
+      },
+      '.outPorts circle': {
+        fill: '#262626'
+      }
+    },
+  inPorts: ['In'],
+  outPorts: ['Finished'],
+  ports: {
+        groups: {
+            'in': {
+                position: 'top',
+                label: {
+                position: 'outside'
+                }
+            },
+            'out': {
+                position: 'bottom',
+                label: {
+                position: 'outside'
+                }
+            }
+        }
+    }
+
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.ProcessInputView = joint.shapes.devs.ModelView;
+
 joint.shapes.devs.Link.define('devs.FlowLink', {
       attrs: {
               ".connection": {
