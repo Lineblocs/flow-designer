@@ -20,18 +20,54 @@
                                     </md-select>
                                 </md-input-container>
                                 -->
-                                <md-input-container>
-                                    <label for="testInput">Max Recording Length</label>
-                                    <input type="text" ng-model="cellModel.data.max_recording_length" md-autofocus>
-                                </md-input-container>
-                                <md-input-container>
-                                    <label for="testInput">Finish Key</label>
-                                    <input type="text" ng-model="cellModel.data.finish_key" md-autofocus>
-                                </md-input-container>
-                                <md-input-container>
-                                    <label for="testInput">Seconds Of Silence</label>
-                                    <input type="text" ng-model="cellModel.data.seconds_of_silence" md-autofocus>
-                                </md-input-container>
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Max Recording Length</label>
+                                            <input type="text" ng-model="cellModel.data.max_recording_length" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            Choose how to bridge the call.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Finish Key</label>
+                                            <input type="text" ng-model="cellModel.data.finish_key" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            Choose how to bridge the call.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Seconds Of Silence</label>
+                                            <input type="text" ng-model="cellModel.data.seconds_of_silence" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            Choose how to bridge the call.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
                         </md-content>
                     </md-tab>
                 </md-tabs>

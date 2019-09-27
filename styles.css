@@ -133,3 +133,13 @@ margin-right: auto;
   overflow-y: scroll;
   height: 576px;
 }
+
+.tooltip-icon {
+  left: auto;
+  right: 0px;
+  margin-top: 28px;
+}
+.helper-tooltip {
+  margin-top: 45px;
+  width: 128px;
+}

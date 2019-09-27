@@ -9,67 +9,115 @@
                                     <label for="testInput">Widget Name</label>
                                     <input type="text" ng-model="cellModel.name" md-autofocus>
                                 </md-input-container>
-                                <md-autocomplete flex required
-                                  md-no-cache="true"
-                                  md-selected-item="$shared.cellModel.tempData.selectedItem"
-                                  md-search-text-change="$shared.searchTextChange($shared.cellModel, 'test')"
-                                  md-search-text="$shared.cellModel.tempData.searchText"
-                                  md-selected-item-change="$shared.selectedItemChange($shared.cellModel, 'test', item)"
-                                  md-items="item in $shared.querySearch($shared.cellModel.tempData.searchText)"
-                                  md-item-text="item.display"
-                                  md-min-length="1"
-                                  placeholder="Ex. Launch.call.from"
-                                  md-require-match=""
-                                  md-floating-label="Variable To Test"
-                                  input-aria-describedby="the Variable to test">
-                                <md-item-template>
-                                  <span md-highlight-text="cellModel.tempData.searchText" md-highlight-flags="^i">{{item.display}}</span>
-                                </md-item-template>
-                                <md-not-found>
-                                  No states matching "{{ctrl.searchText}}" were found.
-                                  <a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>
-                                </md-not-found>
-                              </md-autocomplete>
-                        </md-content>
-                    </md-tab>
-                    <md-tab label="links">
-                        <md-content class="md-padding">
-                            <ul class="switch-links">
-                                <li ng-repeat="link in $shared.cellModel.links" ng-show="link.type !== $const.LINK_NO_CONDITION_MATCHES">
-                                    <md-input-container>
-                                        <label for="testInput">Condition</label>
-                                        <md-select ng-model="link.condition" ng-change="changeConditionType(link, link.condition)">
-                                            <md-option><em>None</em></md-option>
-                                            <md-option ng-repeat="condition in conditions" ng-value="condition">
-                                            {{condition}}
-                                            </md-option>
-                                        </md-select>
-                                    </md-input-container>
-                                    <md-input-container>
-                                        <label for="testInput">Value</label>
-                                        <input ng-model="link.value" />
-                                    </md-input-container>
+                                <div layout="row">
+                                    <div flex="95">
                                     <md-autocomplete flex required
                                       md-no-cache="true"
-                                      md-selected-item="link.tempData.selectedItem"
-                                      md-search-text-change="$shared.searchLinkTextChange(link)"
-                                      md-search-text="link.tempData.searchText"
-                                      md-selected-item-change="$shared.selectedLinkItemChange(link, item)"
-                                      md-items="item in $shared.queryLinkSearch(link.tempData.searchText)"
+                                      md-selected-item="$shared.cellModel.tempData.selectedItem"
+                                      md-search-text-change="$shared.searchTextChange($shared.cellModel, 'test')"
+                                      md-search-text="$shared.cellModel.tempData.searchText"
+                                      md-selected-item-change="$shared.selectedItemChange($shared.cellModel, 'test', item)"
+                                      md-items="item in $shared.querySearch($shared.cellModel.tempData.searchText)"
                                       md-item-text="item.display"
                                       md-min-length="1"
-                                      placeholder="Ex. Dial"
-                                      md-floating-label="Cell to link"
-                                      input-aria-describedby="the Cell to link">
+                                      placeholder="Ex. Launch.call.from"
+                                      md-require-match=""
+                                      md-floating-label="Variable To Test"
+                                      input-aria-describedby="the Variable to test">
                                     <md-item-template>
-                                      <span md-highlight-text="link.tempData.searchText" md-highlight-flags="^i">{{item.display}}</span>
+                                      <span md-highlight-text="cellModel.tempData.searchText" md-highlight-flags="^i">{{item.display}}</span>
                                     </md-item-template>
                                     <md-not-found>
                                       No states matching "{{ctrl.searchText}}" were found.
                                       <a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>
                                     </md-not-found>
                                   </md-autocomplete>
+                                </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            Choose how to bridge the call.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="links">
+                        <md-content class="md-padding">
+                            <ul class="switch-links">
+                                <li ng-repeat="link in $shared.cellModel.links" ng-show="link.type !== $const.LINK_NO_CONDITION_MATCHES">
+                                <div layout="row">
+                                    <div flex="95">
+                                      <md-input-container>
 
+                                          <label for="testInput">Condition</label>
+                                          <md-select ng-model="link.condition" ng-change="changeConditionType(link, link.condition)">
+                                              <md-option><em>None</em></md-option>
+                                              <md-option ng-repeat="condition in conditions" ng-value="condition">
+                                              {{condition}}
+                                              </md-option>
+                                          </md-select>
+                                      </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            Choose how to bridge the call.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                    <md-input-container>
+                                        <label for="testInput">Value</label>
+                                        <input ng-model="link.value" />
+                                    </md-input-container>
+                                  </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            Choose how to bridge the call.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                      <md-autocomplete flex required
+                                        md-no-cache="true"
+                                        md-selected-item="link.tempData.selectedItem"
+                                        md-search-text-change="$shared.searchLinkTextChange(link)"
+                                        md-search-text="link.tempData.searchText"
+                                        md-selected-item-change="$shared.selectedLinkItemChange(link, item)"
+                                        md-items="item in $shared.queryLinkSearch(link.tempData.searchText)"
+                                        md-item-text="item.display"
+                                        md-min-length="1"
+                                        placeholder="Ex. Dial"
+                                        md-floating-label="Cell to link"
+                                        input-aria-describedby="the Cell to link">
+                                      <md-item-template>
+                                        <span md-highlight-text="link.tempData.searchText" md-highlight-flags="^i">{{item.display}}</span>
+                                      </md-item-template>
+                                      <md-not-found>
+                                        No states matching "{{ctrl.searchText}}" were found.
+                                        <a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>
+                                      </md-not-found>
+                                    </md-autocomplete>
+                                  </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            Choose how to bridge the call.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
                                 </li>
                             </ul>
                             <md-button ng-click="addLink()" type="button" class="md-raised md-primary">

@@ -9,39 +9,97 @@
                                     <label for="testInput">Widget Name</label>
                                     <input type="text" ng-model="cellModel.name" md-autofocus>
                                 </md-input-container>
-                                <md-input-container>
-                                    <label for="testInput">Call Type</label>
-                                    <md-select ng-change="changeCallType(cellModel.data.call_type)" ng-model="cellModel.data.call_type">
-                                        <md-option><em>None</em></md-option>
-                                        <md-option ng-value="type" ng-repeat="type in callTypes">
-                                        {{type}}
-                                        </md-option>
-                                    </md-select>
-                                </md-input-container>
+                                <div layout="row">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label for="testInput">Call Type</label>
+                                                <md-select ng-change="changeCallType(cellModel.data.call_type)" ng-model="cellModel.data.call_type">
+                                                    <md-option><em>None</em></md-option>
+                                                    <md-option ng-value="type" ng-repeat="type in callTypes">
+                                                    {{type}}
+                                                    </md-option>
+                                                </md-select>
+                                            </md-input-container>
+                                        </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            Choose how to bridge the call.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row" ng-show="cellModel.data.call_type === 'Phone Number'">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label for="testInput">Number To Call</label>
+                                                <input type="text" ng-model="cellModel.data.number_to_call" md-autofocus>
+                                            </md-input-container>
+                                        </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            Choose how to bridge the call.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row" ng-show="cellModel.data.call_type === 'Extension'">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label for="testInput">Extension To Call</label>
+                                                <md-select ng-change="changeExtension(cellModel.data.extension)" ng-model="cellModel.data.extension">
+                                                    <md-option><em>None</em></md-option>
+                                                    <md-option ng-value="extension" ng-repeat="extension in extensions">
+                                                    {{extension}}
+                                                    </md-option>
+                                                </md-select>
 
-                                <md-input-container ng-show="cellModel.data.call_type === 'Phone Number'">
-                                    <label for="testInput">Number To Call</label>
-                                    <input type="text" ng-model="cellModel.data.number_to_call" md-autofocus>
-                                </md-input-container>
-                                <md-input-container ng-show="cellModel.data.call_type === 'Extension'">
-                                    <label for="testInput">Extension To Call</label>
-                                    <md-select ng-change="changeExtension(cellModel.data.extension)" ng-model="cellModel.data.extension">
-                                        <md-option><em>None</em></md-option>
-                                        <md-option ng-value="extension" ng-repeat="extension in extensions">
-                                        {{extension}}
-                                        </md-option>
-                                    </md-select>
-
-                                </md-input-container>
-
-                                <md-input-container>
-                                    <label for="testInput">Caller ID</label>
-                                    <input type="text" ng-model="cellModel.data.caller_id" md-autofocus>
-                                </md-input-container>
-                                <md-input-container>
-                                    <label for="testInput">Ring Time</label>
-                                    <input type="text" ng-model="cellModel.data.ring_time" md-autofocus>
-                                </md-input-container>
+                                            </md-input-container>
+                                        </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            Choose how to bridge the call.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label for="testInput">Caller ID</label>
+                                                <input type="text" ng-model="cellModel.data.caller_id" md-autofocus>
+                                            </md-input-container>
+                                        </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            Choose how to bridge the call.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Ring Time</label>
+                                            <input type="text" ng-model="cellModel.data.ring_time" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            Choose how to bridge the call.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
                                 <md-checkbox id="recordInput" ng-model="cellModel.data.do_record" aria-label="Checkbox 1">
                                     Do Record
                                 </md-checkbox>
