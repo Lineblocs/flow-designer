@@ -154,6 +154,15 @@ margin-right: auto;
   margin-top: 28px;
 }
 .helper-tooltip {
-  margin-top: 45px;
-  width: 128px;
+  top: 45px;
+  left: -100px;
+  /*width: 128px;*/
+  white-space: inherit;
+    max-width: 500px; // Or whatever you need.
+  width: 500px;
 }
+
+md-tooltip .md-content {
+    height: auto !important;
+}
+
