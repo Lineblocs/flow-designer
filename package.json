@@ -12,12 +12,24 @@
         "angular-sanitize": "^1.7.8",
         "angularjs-slider": "^7.0.0",
         "backbone": "^1.4.0",
+        "connect-livereload": "^0.5.3",
+        "del": "^5.1.0",
+        "gulp": "^3.8.11",
+        "gulp-autoprefixer": "^2.1.0",
         "gulp-concat": "^2.6.1",
+        "gulp-livereload": "^3.8.0",
+        "gulp-load-plugins": "^0.8.0",
         "gulp-minify": "^3.1.0",
+        "gulp-plumber": "^0.6.6",
+        "gulp-sass": "^3.0.0",
         "jointjs": "^3.0.2",
         "jquery": "^3.4.1",
+        "karma": "^4.4.1",
         "lodash": "^4.17.11",
+        "serve-index": "^1.6.2",
+        "serve-static": "^1.9.1",
         "uri-js": "^4.2.2",
-        "urijs": "^1.19.1"
+        "urijs": "^1.19.1",
+        "yargs": "^14.2.0"
     }
 }

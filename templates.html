@@ -1,0 +1,1014 @@
+<script type="text/ng-template" id="templates/create.html">
+              <div>
+    <md-toolbar class="md-hue-1">
+        <div class="md-toolbar-tools">
+            <h2>Create Flow</h2>
+        </div>
+    </md-toolbar>
+   <md-content layout="row" layout-padding>
+        <div>
+        <md-input-container>
+            <label>Name</label>
+            <input ng-model="values.name">
+        </md-input-container>
+        <div layout="row" class="templates-list">
+          <div flex="33" ng-repeat="template in templates">
+            <md-card>
+              <md-card-title>
+                <md-card-title-text>
+                  <span class="md-headline">{{template.name}}</span>
+                  <span class="md-subhead"></span>
+                </md-card-title-text>
+                <md-card-title-media>
+                  <div class="md-media-sm card-media"></div>
+                </md-card-title-media>
+              </md-card-title>
+              <md-card-actions layout="row" layout-align="end center">
+                <md-button ng-show="!isSelected(template)" class="md-raised md-primary" ng-click="useTemplate(template)">Use Template</md-button>
+                <md-button ng-show="isSelected(template)" ng-disabled="true" class="md-raised md-primary">Use Template</md-button>
+              </md-card-actions>
+            </md-card>
+          </div>
+        </div>
+
+              <md-button ng-click="submit()" class="md-raised md-primary">Create</md-button>
+        </div>
+  </md-content>
+</div>
+ 
+            </script>
+<script type="text/ng-template" id="templates/edit.html">
+              <!-- content -->
+<div>
+  <div ng-show="!flowWasStarted()">
+<md-content layout="row" layout-padding>
+        <div>
+        <h5>Select Template</h5>
+        <hr/>
+        <div layout="row" class="templates-list">
+          <div flex="33" ng-repeat="template in templates">
+            <md-card>
+              <md-card-title>
+                <md-card-title-text>
+                  <span class="md-headline">{{template.name}}</span>
+                  <span class="md-subhead"></span>
+                </md-card-title-text>
+                <md-card-title-media>
+                  <div class="md-media-sm card-media"></div>
+                </md-card-title-media>
+              </md-card-title>
+              <md-card-actions layout="row" layout-align="end center">
+                <md-button ng-show="!isSelected(template)" class="md-raised md-primary" ng-click="useTemplate(template)">Use Template</md-button>
+                <md-button ng-show="isSelected(template)" ng-disabled="true" class="md-raised md-primary">Use Template</md-button>
+              </md-card-actions>
+            </md-card>
+          </div>
+        </div>
+
+              <md-button ng-click="addTemplate()" class="md-raised md-primary">Create</md-button>
+        </div>
+  </md-content>
+
+  </div>
+  <div ng-show="flowWasStarted()">
+    <md-toolbar class="md-hue-1">
+        <div class="md-toolbar-tools" ng-controller="ControlsCtrl">
+            <md-button class="md-icon-button" aria-label="Settings" ng-disabled="true">
+            <md-icon md-svg-icon="img/icons/menu.svg"></md-icon>
+            </md-button>
+
+            <h2>{{$shared.flow.name}}</h2>
+            <md-button ng-click="undo()" aria-label="Undo" class="md-icon-button undo">
+            <md-icon md-svg-icon="img/icons/undo.svg"></md-icon>
+            </md-button>
+            <md-button  ng-click="redo()" aria-label="Redo" class="md-icon-button redo">
+            <md-icon md-svg-icon="img/icons/redo.svg"></md-icon>
+            </md-button>
+            <md-button ng-click="zoomIn()" aria-label="Zoom In" class="md-icon-button zoom_in">
+            <md-icon md-svg-icon="img/icons/zoom_in.svg"></md-icon>
+            </md-button>
+            <md-button  ng-click="zoomOut()" aria-label="Zoom Out" class="md-icon-button zoom_out">
+            <md-icon md-svg-icon="img/icons/zoom_out.svg"></md-icon>
+            </md-button>
+            <md-button  ng-click="centerFocus()" aria-label="Go to center" class="md-icon-button center_focus">
+            <md-icon md-svg-icon="img/icons/center_focus.svg"></md-icon>
+            </md-button>
+            <md-button  ng-show="$shared.canDelete()" ng-click="$shared.deleteWidget($event)" aria-label="Go to center" class="md-icon-button delete">
+            <md-icon md-svg-icon="img/icons/delete.svg"></md-icon>
+            </md-button>
+            <md-button  ng-show="$shared.canDuplicate()" ng-click="$shared.duplicateWidget($event)" aria-label="Duplicate cell" class="md-icon-button duplicate">
+            <md-icon md-svg-icon="img/icons/duplicate.svg"></md-icon>
+            </md-button>
+            <md-button  ng-click="saveChanges($event)" aria-label="Save" class="md-raised md-primary">
+                Save
+            </md-button>
+        </div>
+    </md-toolbar>
+    <div ng-controller="PaperCtrl" class="papers">
+        <div class="graph" ng-non-bindable>
+            <div id="canvas"></div>
+        </div>
+        <div class="widgets">
+            <md-sidenav class="md-sidenav-right" md-component-id="rightWidgets" md-whiteframe="4" md-is-locked-open="true">
+
+                <div ng-show="!$shared.hasCellModel()" class="sidebar">
+                    <md-toolbar class="md-theme-indigo">
+                        <h1 class="md-toolbar-tools">Available Widgets</h1>
+                    </md-toolbar>
+                    <div class="widget-scroller">
+                      <div ng-non-bindable id="stencil"></div>
+                    </div>
+                </div>
+                <div ng-show="$shared.hasCellModel()" class="sidebar">
+                        <md-toolbar class="md-theme-light">
+                            <h1 class="md-toolbar-tools">Widget Options</h1>
+                        </md-toolbar>
+                        <div ng-show="$shared.cellModel.cell.attributes.type === 'devs.LaunchModel'" ng-include="'models/launch.html'"></div>
+                        <div ng-show="$shared.cellModel.cell.attributes.type === 'devs.SwitchModel'" ng-include="'models/switch.html'"></div>
+                        <div ng-show="$shared.cellModel.cell.attributes.type  === 'devs.DialModel'" ng-include="'models/dial.html'"></div>
+                        <div ng-show="$shared.cellModel.cell.attributes.type === 'devs.BridgeModel'" ng-include="'models/bridge.html'"></div>
+                        <div ng-show="$shared.cellModel.cell.attributes.type === 'devs.ProcessInputModel'" ng-include="'models/process_input.html'"></div>
+                        <div ng-show="$shared.cellModel.cell.attributes.type === 'devs.RecordVoicemailModel'" ng-include="'models/record_voicemail.html'"></div>
+                        <div ng-show="$shared.cellModel.cell.attributes.type === 'devs.PlaybackModel'" ng-include="'models/playback.html'"></div>
+                </div>
+
+            </md-sidenav>
+        </div>
+    </div>
+  
+  </div>
+ 
+            </script>
+<script type="text/ng-template" id="templates/widget_buttons.html">
+              <div>
+    <md-button type="submit" class="md-raised md-primary">
+        Save
+    </md-button>
+    <md-button ng-show="$shared.canDelete()" ng-click="$shared.deleteWidget($event)" type="button" class="md-raised md-warn">
+        Remove
+    </md-button>
+</div> 
+            </script>
+<script type="text/ng-template" id="models/bridge.html">
+              <div>
+    <form ng-submit="$shared.saveWidget()">
+        <div ng-cloak>
+            <md-content>
+                <md-tabs class="md-primary widget-options" md-center-tabs md-dynamic-height="true">
+                    <md-tab label="info">
+                        <md-content class="md-padding">
+                                <md-input-container>
+                                    <label for="testInput">Widget Name</label>
+                                    <input type="text" ng-model="cellModel.name" md-autofocus>
+                                </md-input-container>
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">
+                                                Call Type
+                                            </label>
+                                            <md-select ng-change="changeCallType(cellModel.data.call_type)" ng-model="cellModel.data.call_type">
+                                                <md-option><em>None</em></md-option>
+                                                <md-option ng-value="type" ng-repeat="type in callTypes">
+                                                {{type}}
+                                                </md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                        </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            Choose how to bridge the call. <br/>
+                                            * Number this will call out to a phone number <br/>
+                                            * Extension this will call an extension on your account
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+
+                                <div layout="row" ng-show="cellModel.data.call_type === 'Phone Number'">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label for="testInput">Number To Call</label>
+                                                <input type="text" ng-model="cellModel.data.number_to_call" md-autofocus>
+                                            </md-input-container>
+                                            </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            The number to call. please use E164 format for number. e.g:<br/>
+                                            +12023034040
+                                        </md-tooltip>
+                                    </md-icon>
+                                    </div>
+                                </div>
+                                <div layout="row" ng-show="cellModel.data.call_type === 'Extension'">
+                                    <div flex="95">
+                                            <md-input-container ng-show="cellModel.data.call_type === 'Extension'">
+                                                <label for="testInput">Extension To Call</label>
+                                                <md-select ng-change="changeExtension(cellModel.data.extension)" ng-model="cellModel.data.extension">
+                                                    <md-option><em>None</em></md-option>
+                                                    <md-option ng-value="extension" ng-repeat="extension in extensions">
+                                                    {{extension}}
+                                                    </md-option>
+                                                </md-select>
+
+                                            </md-input-container>
+                                        </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                          The extension to dial on your account.
+                                        </md-tooltip>
+                                    </md-icon>
+                                    </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label for="testInput">Caller ID</label>
+                                                <input type="text" ng-model="cellModel.data.caller_id" md-autofocus>
+                                            </md-input-container>
+                                        </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                          The Caller ID to use for the call. You can specify the number or the name and number. examples:<br/>
+                                          +12023034040<br/>
+                                          John Doe &gt;+12023034040&lt;
+                                        </md-tooltip>
+                                    </md-icon>
+                                    </div>
+
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label for="testInput">Timeout</label>
+                                                <input type="text" ng-model="cellModel.data.timeout" md-autofocus>
+                                            </md-input-container>
+                                        </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                          This lets you control how long you let the call ring until it is cancelled.
+                                        </md-tooltip>
+                                    </md-icon>
+                                    </div>
+
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                            <md-checkbox id="recordInput" ng-model="cellModel.data.do_record" aria-label="Checkbox 1">
+                                                Do Record
+                                            </md-checkbox>
+                                        </div>
+                                  <div flex="5">
+                                    </div>
+                                </div>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+        <div ng-include="'/templates/widget_buttons.html'"></div>
+    </form>
+</div>
+ 
+            </script>
+<script type="text/ng-template" id="models/dial.html">
+              <div>
+    <form ng-submit="$shared.saveWidget()">
+        <div ng-cloak>
+            <md-content>
+                <md-tabs class="md-primary widget-options" md-center-tabs md-dynamic-height="true">
+                    <md-tab label="info">
+                        <md-content class="md-padding">
+                                <md-input-container>
+                                    <label for="testInput">Widget Name</label>
+                                    <input type="text" ng-model="cellModel.name" md-autofocus>
+                                </md-input-container>
+                                <div layout="row">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label for="testInput">Call Type</label>
+                                                <md-select ng-change="changeCallType(cellModel.data.call_type)" ng-model="cellModel.data.call_type">
+                                                    <md-option><em>None</em></md-option>
+                                                    <md-option ng-value="type" ng-repeat="type in callTypes">
+                                                    {{type}}
+                                                    </md-option>
+                                                </md-select>
+                                            </md-input-container>
+                                        </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            Choose how to make the call.<br/>
+                                            * Number this will call out to a phone number<br/>
+                                            * Extension this will call an extension on your account
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row" ng-show="cellModel.data.call_type === 'Phone Number'">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label for="testInput">Number To Call</label>
+                                                <input type="text" ng-model="cellModel.data.number_to_call" md-autofocus>
+                                            </md-input-container>
+                                        </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            The number to call. please use E164 format for number. e.g:<br/>
+                                            +12023034040
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row" ng-show="cellModel.data.call_type === 'Extension'">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label for="testInput">Extension To Call</label>
+                                                <md-select ng-change="changeExtension(cellModel.data.extension)" ng-model="cellModel.data.extension">
+                                                    <md-option><em>None</em></md-option>
+                                                    <md-option ng-value="extension" ng-repeat="extension in extensions">
+                                                    {{extension}}
+                                                    </md-option>
+                                                </md-select>
+
+                                            </md-input-container>
+                                        </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                          The extension to dial on your account.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label for="testInput">Caller ID</label>
+                                                <input type="text" ng-model="cellModel.data.caller_id" md-autofocus>
+                                            </md-input-container>
+                                        </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                          The Caller ID to use for the call. You can specify the number or the name and number. examples:<br/>
+                                          +12023034040<br/>
+                                          John Doe &gt;+12023034040&lt;
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Ring Time</label>
+                                            <input type="text" ng-model="cellModel.data.ring_time" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                          This lets you control how long you let the call ring until it is cancelled.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <md-checkbox id="recordInput" ng-model="cellModel.data.do_record" aria-label="Checkbox 1">
+                                    Do Record
+                                </md-checkbox>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+        <div ng-include="'/templates/widget_buttons.html'"></div>
+    </form>
+</div>
+ 
+            </script>
+<script type="text/ng-template" id="models/launch.html">
+              <div>
+    <form ng-submit="$shared.saveWidget()">
+        <div ng-cloak>
+            <md-content>
+                <md-tabs class="md-primary widget-options" md-center-tabs md-dynamic-height="true">
+                    <md-tab label="info">
+                        <md-content class="md-padding">
+                                <md-input-container>
+                                    <label for="testInput">Name</label>
+                                    <input type="text" ng-model="cellModel.name" md-autofocus>
+                                </md-input-container>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+        <div ng-include="'/templates/widget_buttons.html'"></div>
+    </form>
+</div> 
+            </script>
+<script type="text/ng-template" id="models/playback.html">
+              <div>
+    <form ng-submit="$shared.saveWidget()">
+        <div ng-cloak>
+            <md-content>
+                <md-tabs class="md-primary widget-options" md-center-tabs md-dynamic-height="true">
+                    <md-tab label="info">
+                        <md-content class="md-padding">
+                                <md-input-container>
+                                    <label for="testInput">Widget Name</label>
+                                    <input type="text" ng-model="cellModel.name" md-autofocus>
+                                </md-input-container>
+
+                                <div layout="row">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label for="testInput">Playback Type</label>
+                                                <md-select ng-change="changePlaybackType(cellModel.data.playback_type)" ng-model="cellModel.data.playback_type">
+                                                    <md-option><em>None</em></md-option>
+                                                    <md-option ng-value="type" ng-repeat="type in playbackTypes">
+                                                    {{type}}
+                                                    </md-option>
+                                                </md-select>
+                                            </md-input-container>
+                                        </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            This lets you choose which kind of playback you want to use.<br/>
+                                            * Say<br/>
+                                            use speech to text to render media. Choose from one of many voice options and locales<br/>
+                                            * Play<br/>
+                                            playback a supported media file from a URL. This option currently supports file formats (wav, mp3).
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div ng-show="cellModel.data.playback_type==='Say'">
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Text To Say</label>
+                                            <input type="text" ng-model="cellModel.data.text_to_say" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            The text to use in text to speech
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label>Language</label>
+                                                <md-select ng-model="cellModel.data.text_language" ng-change="changeTextLanguage(cellModel.data.text_language)">
+                                                    <md-option ng-repeat="language in $shared.voiceLangs" ng-value="language">
+                                                    {{language}}
+                                                    </md-option>
+                                                </md-select>
+                                            </md-input-container>
+                                        </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            The language locale your speech-to-text should be based on. 
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label>Gender</label>
+                                                <md-select ng-model="cellModel.data.text_gender" ng-change="changeTextGender(cellModel.data.text_gender)">
+                                                    <md-option ng-repeat="gender in $shared.voiceGenders" ng-value="gender">
+                                                    {{gender}}
+                                                    </md-option>
+                                                </md-select>
+                                            </md-input-container>
+                                </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            The gender of the speech to text voice.<br/>
+                                            * note: each gender has multiple voices
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label>Voice</label>
+                                                <md-select ng-model="cellModel.data.voice" ng-change="changeVoice(cellModel.data.voice)">
+                                                    <md-option ng-repeat="voice in $shared.getVoices()" ng-value="voice">
+                                                    {{voice}}
+                                                    </md-option>
+                                                </md-select>
+                                            </md-input-container>
+                                        </div>
+                                      <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            The voice used to playback the speech to text.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label for="testInput">Number Of Loops</label>
+                                                <input type="text" ng-model="cellModel.data.number_of_loops" md-autofocus>
+                                            </md-input-container>
+                                        </div>
+                                      <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            The number of times your speech should be played back.<br/>
+                                            * note: using 0 will cause your speech to be played recursively.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                </div>
+                                <div ng-show="cellModel.data.playback_type==='Play'">
+                                <div layout="row">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label for="testInput">URL of audio file</label>
+                                                <input type="text" ng-model="cellModel.data.url_audio" md-autofocus>
+                                            </md-input-container>
+                                        </div>
+                                      <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            The full URL to your media file<br/>
+                                            * note: media files should be accessible by the public internet and use one of the supported file formats: MP3, or wav.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                </div>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+        <div ng-include="'/templates/widget_buttons.html'"></div>
+    </form>
+</div>
+ 
+            </script>
+<script type="text/ng-template" id="models/process_input.html">
+              <div>
+    <form ng-submit="$shared.saveWidget()">
+        <div ng-cloak>
+            <md-content>
+                <md-tabs class="md-primary widget-options" md-center-tabs md-dynamic-height="true">
+                    <md-tab label="info">
+                        <md-content class="md-padding">
+                                <md-input-container>
+                                    <label for="testInput">Widget Name</label>
+                                    <input type="text" ng-model="cellModel.name" md-autofocus>
+                                </md-input-container>
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Playback Type</label>
+                                            <md-select ng-change="changePlaybackType(cellModel.data.playback_type)" ng-model="cellModel.data.playback_type">
+                                                <md-option><em>None</em></md-option>
+                                                <md-option ng-value="type" ng-repeat="type in playbackTypes">
+                                                {{type}}
+                                                </md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            This lets you choose which kind of playback you want to use.<br/>
+                                            * Say<br/>
+                                            use speech to text to render media. Choose from one of many voice options and locales<br/>
+                                            * Play<br/>
+                                            playback a supported media file from a URL. This option currently supports file formats (wav, mp3).
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div ng-show="cellModel.data.playback_type==='Say'">
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Text To Say</label>
+                                            <input type="text" ng-model="cellModel.data.text_to_say" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            The text to use in text to speech
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label>Language</label>
+                                            <md-select ng-model="cellModel.data.text_language" ng-change="changeTextLanguage(cellModel.data.text_language)">
+                                                <md-option ng-repeat="language in $shared.voiceLangs" ng-value="language">
+                                                {{language}}
+                                                </md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            The language locale your speech-to-text should be based on. 
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label>Gender</label>
+                                            <md-select ng-model="cellModel.data.text_gender" ng-change="changeTextGender(cellModel.data.text_gender)">
+                                                <md-option ng-repeat="gender in $shared.voiceGenders" ng-value="gender">
+                                                {{gender}}
+                                                </md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                        </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            The gender of the speech to text voice.<br/>
+                                            * note: each gender has multiple voices
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                            </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label>Voice</label>
+                                            <md-select ng-model="cellModel.data.voice" ng-change="changeVoice(cellModel.data.voice)">
+                                                <md-option ng-repeat="voice in $shared.getVoices()" ng-value="voice">
+                                                {{voice}}
+                                                </md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            The voice used to playback the speech to text.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                            </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Number Of Loops</label>
+                                            <input type="text" ng-model="cellModel.data.number_of_loops" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            The number of times your speech should be played back.<br/>
+                                            * note: using 0 will cause your speech to be played recursively.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                            </div>
+                                </div>
+                                <div ng-show="cellModel.data.playback_type==='Play'">
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">URL of audio file</label>
+                                            <input type="text" ng-model="cellModel.data.url_audio" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            The full URL to your media file<br/>
+                                            * note: media files should be accessible by the public internet and use one of the supported file formats: MP3, or wav.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                            </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Stop Timeout</label>
+                                            <input type="text" ng-model="cellModel.data.stop_timeout" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            This lets you control how long to wait to gather input.<br/>
+                                            * note: this is ideal to use when you don't use a terminating digit in your gather. It is best to<br/>
+                                            use this option when you do not know how many digits you will receive as input.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                            </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                <md-input-container>
+                                    <label for="testInput">Stop gather on keypress</label>
+                                    <md-checkbox ng-model="cellModel.data.stop_gather_on_keypress" aria-label="Checkbox 1"></md-checkbox>
+                                </md-input-container>
+                            </div>
+                                        <div flex="5">
+                                </div>
+                            </div>
+                                <div layout="row" ng-show="cellModel.data.stop_gather_on_keypress">
+                                    <div flex="95">
+                                <md-input-container>
+                                    <label for="testInput">Keypress Key Stop</label>
+                                    <input type="text" ng-model="cellModel.data.keypress_key_stop" md-autofocus>
+                                </md-input-container>
+                            </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            The terminating digit for the gather.<br/>
+                                            * note: when the terminating digit is pressed by the user it will cancel any keypress timeout you have.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                            </div>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+        <div ng-include="'/templates/widget_buttons.html'"></div>
+    </form>
+</div>
+ 
+            </script>
+<script type="text/ng-template" id="models/record_voicemail.html">
+              <div>
+    <form ng-submit="$shared.saveWidget()">
+        <div ng-cloak>
+            <md-content>
+                <md-tabs class="md-primary widget-options" md-center-tabs md-dynamic-height="true">
+                    <md-tab label="info">
+                        <md-content class="md-padding">
+                                <md-input-container>
+                                    <label for="testInput">Widget Name</label>
+                                    <input type="text" ng-model="cellModel.name" md-autofocus>
+                                </md-input-container>
+                                <!--
+                                <md-input-container>
+                                    <label for="testInput">Finish Record Type</label>
+                                    <md-select ng-change="changeFinishRecordType(cellModel.data.finish_record_type)" ng-model="cellModel.data.finish_record_type">
+                                        <md-option><em>None</em></md-option>
+                                        <md-option ng-value="type" ng-repeat="type in finishRecordTypes">
+                                        {{type}}
+                                        </md-option>
+                                    </md-select>
+                                </md-input-container>
+                                -->
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Max Recording Length</label>
+                                            <input type="text" ng-model="cellModel.data.max_recording_length" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            The time to wait in seconds to record.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Finish Key</label>
+                                            <input type="text" ng-model="cellModel.data.finish_key" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            The terminating digit for the recording.<br/>
+                                            * note: the terminating digit will have the same effect as a hangup would.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Seconds Of Silence</label>
+                                            <input type="text" ng-model="cellModel.data.seconds_of_silence" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            This lets you control how many seconds of silence you want to wait before ending the recording
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+        <div ng-include="'/templates/widget_buttons.html'"></div>
+    </form>
+</div>
+ 
+            </script>
+<script type="text/ng-template" id="models/switch.html">
+              <div>
+    <form ng-submit="$shared.saveWidget()">
+        <div ng-cloak>
+            <md-content>
+                <md-tabs class="md-primary widget-options" md-center-tabs md-dynamic-height="true">
+                    <md-tab label="info">
+                        <md-content class="md-padding">
+                                <md-input-container>
+                                    <label for="testInput">Widget Name</label>
+                                    <input type="text" ng-model="cellModel.name" md-autofocus>
+                                </md-input-container>
+                                <div layout="row">
+                                    <div flex="95">
+                                    <md-autocomplete flex required
+                                      md-no-cache="true"
+                                      md-selected-item="$shared.cellModel.tempData.selectedItem"
+                                      md-search-text-change="$shared.searchTextChange($shared.cellModel, 'test')"
+                                      md-search-text="$shared.cellModel.tempData.searchText"
+                                      md-selected-item-change="$shared.selectedItemChange($shared.cellModel, 'test', item)"
+                                      md-items="item in $shared.querySearch($shared.cellModel.tempData.searchText)"
+                                      md-item-text="item.display"
+                                      md-min-length="1"
+                                      placeholder="Ex. Launch.call.from"
+                                      md-require-match=""
+                                      md-floating-label="Variable To Test"
+                                      input-aria-describedby="the Variable to test">
+                                    <md-item-template>
+                                      <span md-highlight-text="cellModel.tempData.searchText" md-highlight-flags="^i">{{item.display}}</span>
+                                    </md-item-template>
+                                    <md-not-found>
+                                      No states matching "{{ctrl.searchText}}" were found.
+                                      <a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>
+                                    </md-not-found>
+                                  </md-autocomplete>
+                                </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                          This is the variable you base your switch on. The test variable is used to match agaisnt<br/>
+                                          any of the conditions you set in the "Links" section.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                        </md-content>
+                    </md-tab>
+                    <md-tab label="links">
+                        <md-content class="md-padding">
+                            <ul class="switch-links">
+                                <li ng-repeat="link in $shared.cellModel.links" ng-show="link.type !== $const.LINK_NO_CONDITION_MATCHES">
+                                <div layout="row">
+                                    <div flex="95">
+                                      <md-input-container>
+
+                                          <label for="testInput">Condition</label>
+                                          <md-select ng-model="link.condition" ng-change="changeConditionType(link, link.condition)">
+                                              <md-option><em>None</em></md-option>
+                                              <md-option ng-repeat="condition in conditions" ng-value="condition">
+                                              {{condition}}
+                                              </md-option>
+                                          </md-select>
+                                      </md-input-container>
+                                    </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                          The type of condition to use for the link.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                    <md-input-container>
+                                        <label for="testInput">Value</label>
+                                        <input ng-model="link.value" />
+                                    </md-input-container>
+                                  </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                          The value for the condition.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                      <md-autocomplete flex required
+                                        md-no-cache="true"
+                                        md-selected-item="link.tempData.selectedItem"
+                                        m-search-text-change="$shared.searchLinkTextChange(link)"
+                                        md-search-text="link.tempData.searchText"
+                                        md-selected-item-change="$shared.selectedLinkItemChange(link, item)"
+                                        md-items="item in $shared.queryLinkSearch(link.tempData.searchText)"
+                                        md-item-text="item.display"
+                                        md-min-length="1"
+                                        placeholder="Ex. Dial"
+                                        md-floating-label="Cell to link"
+                                        input-aria-describedby="the Cell to link">
+                                      <md-item-template>
+                                        <span md-highlight-text="link.tempData.searchText" md-highlight-flags="^i">{{item.display}}</span>
+                                      </md-item-template>
+                                      <md-not-found>
+                                        No states matching "{{ctrl.searchText}}" were found.
+                                        <a ng-click="ctrl.newState(ctrl.searchText)">Create a new one!</a>
+                                      </md-not-found>
+                                    </md-autocomplete>
+                                  </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                          The cell the link will move to if it is matched successfully.
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                                </div>
+                                </li>
+                            </ul>
+                            <md-button ng-click="addLink()" type="button" class="md-raised md-primary">
+                                Add Link
+                            </md-button>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+        <div ng-include="'/templates/widget_buttons.html'"></div>
+    </form>
+</div>
+ 
+            </script>

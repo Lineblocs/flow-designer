@@ -1,873 +1,3 @@
-/*! JointJS+ - Set of JointJS compatible plugins
-
-Copyright (c) 2013 client IO
-
- 2014-01-22 
-
-
-This Source Code Form is subject to the terms of the JointJS+ License
-, v. 1.0. If a copy of the JointJS+ License was not distributed with this
-file, You can obtain one at http://jointjs.com/license/jointjs_plus_v1.txt
- or from the JointJS+ archive as was distributed by client IO. See the LICENSE file.*/
-
-
-// Command manager implements undo/redo functionality.
-
-joint.dia.CommandManager = Backbone.Model.extend({
-
-    defaults: {
-	cmdBeforeAdd: null,
-	cmdNameRegex: /^(?:add|remove|change:\w+)$/
-    },
-
-    // length of prefix 'change:' in the event name
-    PREFIX_LENGTH: 7,
-
-    initialize: function(options) {
-
-        _.bindAll(this, 'initBatchCommand', 'storeBatchCommand');
-
-        this.graph = options.graph;
-
-        this.reset();
-        this.listen();
-    },
-
-    listen: function() {
-
-        this.listenTo(this.graph, 'all', this.addCommand, this);
-
-	this.listenTo(this.graph, 'batch:start', this.initBatchCommand, this);
-	this.listenTo(this.graph, 'batch:stop', this.storeBatchCommand, this);
-    },
-
-    createCommand: function(options) {
-	
-	var cmd = {
-	    action: undefined,
-	    data: { id: undefined, type: undefined, previous: {}, next: {}},
-	    batch: options && options.batch
-	}
-	
-	return cmd;
-    },
-
-    addCommand: function(cmdName, cell, graph, options) {
-
-	if (!this.get('cmdNameRegex').test(cmdName)) {
-	    return;
-	}
-
-	if (typeof this.get('cmdBeforeAdd') == 'function' && !this.get('cmdBeforeAdd').apply(this, arguments)) {
-	    return;
-	}
-
-	var push = _.bind(function(cmd) {
-	    
-	    this.redoStack = [];
-
-	    if (!cmd.batch) {
-		this.undoStack.push(cmd);
-		this.trigger('add', cmd);
-	    } else {
-                this.lastCmdIndex = Math.max(this.lastCmdIndex, 0);
-		// Commands possible thrown away. Someone might be interested.
-		this.trigger('batch', cmd);
-	    }
-	    
-	}, this);
-	
-	var command = undefined;
-
-	if (this.batchCommand) {
-            // set command as the one used last.
-            // in most cases we are working with same object, doing same action
-            // etc. translate an object piece by piece
-	    command = this.batchCommand[Math.max(this.lastCmdIndex,0)];
-
-            // Check if we are start working with new object or performing different action with it.
-            // Note, that command is uninitialized when lastCmdIndex equals -1. (see 'initBatchCommand()') 
-            // in that case we are done, command we were looking for is already set
-	    if (this.lastCmdIndex >= 0 && (command.data.id !== cell.id || command.action !== cmdName)) {
-
-                // trying to find command first, which was performing same action with the object
-                // as we are doing now with cell
-                command = _.find(this.batchCommand, function(cmd, index) {
-                    this.lastCmdIndex = index;
-                    return cmd.data.id === cell.id && cmd.action === cmdName;
-                }, this);
-
-		if (!command) {
-                    // command with such an id and action was not found. Let's create new one
-		    this.lastCmdIndex = this.batchCommand.push(this.createCommand({ batch:  true })) - 1;
-		    command = _.last(this.batchCommand);
-                }
-	    }
-	    
-	} else {
-	    
-            // single command
-	    command = this.createCommand();
-	    command.batch = false;
-	    
-	}
-
-        if (cmdName === 'add' || cmdName === 'remove') {
-
-            command.action = cmdName;
-            command.data.id = cell.id;
-	    command.data.type = cell.attributes.type;
-            command.data.attributes = _.merge({}, cell.toJSON());
-	    command.options = options || {};
-	    
-	    return push(command);
-	}
-
-        // `changedAttribute` holds the attribute name corresponding
-	// to the change event triggered on the model.
-        var changedAttribute = cmdName.substr(this.PREFIX_LENGTH);
-	
-	if (!command.batch || !command.action) {
-	    // Do this only once. Set previous box and action (also serves as a flag so that
-	    // we don't repeat this branche).
-	    command.action = cmdName;
-	    command.data.id = cell.id;
-	    command.data.type = cell.attributes.type;
-	    command.data.previous[changedAttribute] = _.clone(cell.previous(changedAttribute));
-	    command.options = options || {};
-	}
-
-	command.data.next[changedAttribute] = _.clone(cell.get(changedAttribute));
-
-	return push(command);
-    },
-
-    // Batch commands are those that merge certain commands applied in a row (1) and those that 
-    // hold multiple commands where one action consists of more than one command (2)
-    // (1) This is useful for e.g. when the user is dragging an object in the paper which would
-    // normally lead to 1px translation commands. Applying undo() on such commands separately is
-    // most likely undesirable.
-    // (2) e.g When you are removing an element, you don't want all links connected to that element, which
-    // are also being removed to be part of different command
-
-    initBatchCommand: function() {
-
-	if (!this.batchCommand) {
-
-            this.batchCommand = [this.createCommand({ batch:  true})];
-            this.lastCmdIndex = -1;
-
-	    // batch level counts how many times has been initBatchCommand executed.
-	    // It is useful when we doing an operation recursively.
-	    this.batchLevel = 0;
-
-	} else {
-
-	    // batch command is already active
-	    this.batchLevel++;
-	}
-    },
-
-    storeBatchCommand: function() {
-
-	// In order to store batch command it is necesary to run storeBatchCommand as many times as 
-	// initBatchCommand was executed
-        if (this.batchCommand && this.batchLevel <= 0) {
-
-	    // checking if there is any valid command in batch
-	    // for example: calling `initBatchCommand` immediately followed by `storeBatchCommand`
-	    if (this.lastCmdIndex >= 0) {
-
-		this.redoStack = [];
-
-		this.undoStack.push(this.batchCommand);
-		this.trigger('add', this.batchCommand);
-	    }
-
-            delete this.batchCommand;
-            delete this.lastCmdIndex;
-	    delete this.batchLevel;
-
-        } else if (this.batchCommand && this.batchLevel > 0) {
-
-	    // low down batch command level, but not store it yet
-	    this.batchLevel--;
-	}
-    },
-
-    revertCommand: function(command) {
-	
-        this.stopListening();
-
-	var batchCommand;
-
-	if (_.isArray(command)) {
-	    batchCommand = command;
-	} else {
-	    batchCommand = [command];
-	}
-	
-	for (var i = batchCommand.length - 1; i >= 0; i--)  {
-
-            var cmd = batchCommand[i], cell = this.graph.getCell(cmd.data.id);
-        
-            switch (cmd.action) {
-		
-            case 'add':
-		cell.remove();
-		break;
-
-            case 'remove':
-		this.graph.addCell(cmd.data.attributes);
-		break;
-
-            default:
-                var attribute = cmd.action.substr(this.PREFIX_LENGTH);
-                cell.set(attribute, cmd.data.previous[attribute]);
-                break;
-            }
-
-	}
-
-        this.listen();
-    },
-
-    applyCommand: function(command) {
-
-        this.stopListening();
-
-	var batchCommand;
-
-	if (_.isArray(command)) {
-	    batchCommand = command;
-	} else {
-	    batchCommand = [command];
-	}
-	
-	for (var i = 0; i < batchCommand.length; i++)  {
-
-            var cmd = batchCommand[i], cell = this.graph.getCell(cmd.data.id);
-        
-            switch (cmd.action) {
-            
-            case 'add':
-		this.graph.addCell(cmd.data.attributes);
-		break;
-
-            case 'remove':
-		cell.remove();
-		break;
-
-            default:
-                var attribute = cmd.action.substr(this.PREFIX_LENGTH);
-                cell.set(attribute, cmd.data.next[attribute]);
-                break;
-
-	    }
-	    
-	}
-	    
-        this.listen();
-    },
-
-    undo: function() {
-
-        var command = this.undoStack.pop();
-
-        if (command) {
-
-            this.revertCommand(command);
-            this.redoStack.push(command);
-        }
-    },
-
-
-    redo: function() {
-
-        var command = this.redoStack.pop();
-
-        if (command) {
-
-            this.applyCommand(command);
-            this.undoStack.push(command);
-        }
-    },
-
-    cancel: function() {
-
-	if (this.hasUndo()) {
-
-	    this.revertCommand(this.undoStack.pop());
-	    this.redoStack = [];
-	}
-    },
-
-    reset: function() {
-
-        this.undoStack = [];
-        this.redoStack = [];
-    },
-
-    hasUndo: function() {
-
-        return this.undoStack.length > 0;
-    },
-
-    hasRedo: function() {
-
-        return this.redoStack.length > 0;
-    }
-});
-
-function adjustVertices(graph, cell) {
-
-    // if `cell` is a view, find its model
-    cell = cell.model || cell;
-
-    if (cell instanceof joint.dia.Element) {
-        // `cell` is an element
-
-        _.chain(graph.getConnectedLinks(cell))
-            .groupBy(function(link) {
-
-                // the key of the group is the model id of the link's source or target
-                // cell id is omitted
-                return _.omit([link.source().id, link.target().id], cell.id)[0];
-            })
-            .each(function(group, key) {
-
-                // if the member of the group has both source and target model
-                // then adjust vertices
-                if (key !== 'undefined') adjustVertices(graph, _.first(group));
-            })
-            .value();
-
-        return;
-    }
-
-    // `cell` is a link
-    // get its source and target model IDs
-    var sourceId = cell.get('source').id || cell.previous('source').id;
-    var targetId = cell.get('target').id || cell.previous('target').id;
-
-    // if one of the ends is not a model
-    // (if the link is pinned to paper at a point)
-    // the link is interpreted as having no siblings
-    if (!sourceId || !targetId) {
-        // no vertices needed
-        cell.unset('vertices');
-        return;
-    }
-
-    // identify link siblings
-    var siblings = graph.getLinks().filter(function(sibling) {
-
-        var siblingSourceId = sibling.source().id;
-        var siblingTargetId = sibling.target().id;
-
-        // if source and target are the same
-        // or if source and target are reversed
-        return ((siblingSourceId === sourceId) && (siblingTargetId === targetId))
-            || ((siblingSourceId === targetId) && (siblingTargetId === sourceId));
-    });
-
-    var numSiblings = siblings.length;
-    switch (numSiblings) {
-
-        case 0: {
-            // the link has no siblings
-            break;
-        }
-        default: {
-
-            if (numSiblings === 1) {
-                // there is only one link
-                // no vertices needed
-                cell.unset('vertices');
-            }
-
-            // there are multiple siblings
-            // we need to create vertices
-
-            // find the middle point of the link
-            var sourceCenter = graph.getCell(sourceId).getBBox().center();
-            var targetCenter = graph.getCell(targetId).getBBox().center();
-            var midPoint = g.Line(sourceCenter, targetCenter).midpoint();
-
-            // find the angle of the link
-            var theta = sourceCenter.theta(targetCenter);
-
-            // constant
-            // the maximum distance between two sibling links
-            var GAP = 20;
-
-            _.each(siblings, function(sibling, index) {
-
-                // we want offset values to be calculated as 0, 20, 20, 40, 40, 60, 60 ...
-                var offset = GAP * Math.ceil(index / 2);
-
-                // place the vertices at points which are `offset` pixels perpendicularly away
-                // from the first link
-                //
-                // as index goes up, alternate left and right
-                //
-                //  ^  odd indices
-                //  |
-                //  |---->  index 0 sibling - centerline (between source and target centers)
-                //  |
-                //  v  even indices
-                var sign = ((index % 2) ? 1 : -1);
-
-                // to assure symmetry, if there is an even number of siblings
-                // shift all vertices leftward perpendicularly away from the centerline
-                if ((numSiblings % 2) === 0) {
-                    offset -= ((GAP / 2) * sign);
-                }
-
-                // make reverse links count the same as non-reverse
-                var reverse = ((theta < 180) ? 1 : -1);
-
-                // we found the vertex
-                var angle = g.toRad(theta + (sign * reverse * 90));
-                var vertex = g.Point.fromPolar(offset, angle, midPoint).toJSON();
-
-                // replace vertices array with `vertex`
-                sibling.vertices([vertex]);
-            });
-        }
-    }
-}
-
-function bindInteractionEvents(adjustVertices, graph, paper) {
-
-    // bind `graph` to the `adjustVertices` function
-    var adjustGraphVertices = _.partial(adjustVertices, graph);
-
-    // adjust vertices when a cell is removed or its source/target was changed
-    graph.on('add remove change:source change:target', adjustGraphVertices);
-
-    // adjust vertices when the user stops interacting with an element
-    paper.on('cell:pointerup', adjustGraphVertices);
-}
-
-function addTools(paper, link) {
-
-    var toolsView = new joint.dia.ToolsView({
-        tools: [
-            new joint.linkTools.SourceArrowhead(),
-            new joint.linkTools.TargetArrowhead()
-        ]
-    });
-    link.findView(paper).addTools(toolsView);
-}
-
-function bindToolEvents(paper) {
-
-    // show link tools
-    paper.on('link:mouseover', function(linkView) {
-        linkView.showTools();
-    });
-
-    // hide link tools
-    paper.on('link:mouseout', function(linkView) {
-        linkView.hideTools();
-    });
-    paper.on('blank:mouseover cell:mouseover', function() {
-        paper.hideTools();
-    });
-}
-var widgetDimens = {
-  width: 256,
-  height: 128
-};
-joint.shapes.devs.LaunchModel = joint.shapes.devs.Model.extend({
-
-  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
-
-  defaults: joint.util.deepSupplement({
-
-    type: 'devs.LaunchModel',
-    size: widgetDimens,
-    attrs: {
-      rect: {
-        stroke: '#d1d1d1',
-        fill: '#3366cc',
-      },
-      circle: {
-        stroke: 'gray'
-      },
-      '.label': {
-        text: 'Launch',
-        fill: '#FFFFFF',
-        'ref-y': 50
-      },
-      '.inPorts circle': {
-        fill: '#c8c8c8'
-      },
-      '.outPorts circle': {
-        fill: '#262626'
-      },
-      /*
-      image: {
-        'xlink:href': 'https://jointjs.com/images/logo.png',
-        width: 80,
-        height: 50,
-        'ref-x': .5,
-        'ref-y': .5,
-        ref: 'rect',
-        'x-alignment': 'middle',
-        'y-alignment': 'middle'
-      }
-      */
-    },
-    inPorts: [],
-    outPorts: ['Incoming Call'],
-    ports: {
-        groups: {
-            'in': {
-                position: 'top',
-                label: {
-                position: 'outside'
-                }
-            },
-            'out': {
-                position: 'bottom',
-                label: {
-                position: 'outside'
-                }
-            }
-        }
-    }
-
-  }, joint.shapes.devs.Model.prototype.defaults)
-});
-
-joint.shapes.devs.LaunchView = joint.shapes.devs.ModelView;
-
-joint.shapes.devs.SwitchModel = joint.shapes.devs.Model.extend({
-
-  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
-
-  defaults: joint.util.deepSupplement({
-    name: 'Switch',
-    type: 'devs.SwitchModel',
-    size: widgetDimens, 
-    attrs: {
-      rect: {
-        stroke: '#d1d1d1',
-        fill: '#3366cc',
-      },
-      circle: {
-        stroke: 'gray'
-      },
-      '.label': {
-        text: 'Switch',
-        fill: '#FFFFFF',
-        'ref-y': 50
-      },
-      '.inPorts circle': {
-        fill: '#c8c8c8'
-      },
-      '.outPorts circle': {
-        fill: '#262626'
-      }
-    },
-    inPorts: ['In'],
-    outPorts: ['No Condition Matches'],
-    ports: {
-        groups: {
-            'in': {
-                position: 'top',
-                label: {
-                position: 'outside'
-                }
-            },
-            'out': {
-                position: 'bottom',
-                label: {
-                position: 'outside'
-                }
-            }
-        }
-    }
-
-  }, joint.shapes.devs.Model.prototype.defaults)
-});
-
-joint.shapes.devs.SwitchView = joint.shapes.devs.ModelView;
-
-joint.shapes.devs.DialModel = joint.shapes.devs.Model.extend({
-
-  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
-
-  defaults: joint.util.deepSupplement({
-    name: 'Dial',
-    type: 'devs.DialModel',
-    size: widgetDimens,
-    attrs: {
-      rect: {
-        stroke: '#d1d1d1',
-        fill: '#3366cc'
-      },
-      circle: {
-        stroke: 'gray'
-      },
-      '.label': {
-        text: 'Dial',
-        fill: '#FFFFFF',
-        'ref-y': 50
-      },
-      '.inPorts circle': {
-        fill: '#c8c8c8'
-      },
-      '.outPorts circle': {
-        fill: '#262626'
-      }
-    },
-  inPorts: ['In'],
-  outPorts: ['Answer', 'No Answer', 'Call Failed'],
-  ports: {
-        groups: {
-            'in': {
-                position: 'top',
-                label: {
-                position: 'outside'
-                }
-            },
-            'out': {
-                position: 'bottom',
-                label: {
-                position: 'outside'
-                }
-            }
-        }
-    }
-
-  }, joint.shapes.devs.Model.prototype.defaults)
-});
-
-joint.shapes.devs.DialView = joint.shapes.devs.ModelView;
-
-joint.shapes.devs.BridgeModel = joint.shapes.devs.Model.extend({
-
-  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
-
-  defaults: joint.util.deepSupplement({
-    name: 'Bridge',
-    type: 'devs.BridgeModel',
-    size: widgetDimens,
-    attrs: {
-      rect: {
-        stroke: '#d1d1d1',
-        fill: '#cc0000'
-      },
-      circle: {
-        stroke: 'gray'
-      },
-      '.label': {
-        text: 'Bridge',
-        fill: '#FFFFFF',
-        'ref-y': 50
-      },
-      '.inPorts circle': {
-        fill: '#c8c8c8'
-      },
-      '.outPorts circle': {
-        fill: '#262626'
-      }
-    },
-  inPorts: ['In'],
-  outPorts: ['Connected Call Ended', 'Caller Hung Uo'],
-  ports: {
-        groups: {
-            'in': {
-                position: 'top',
-                label: {
-                position: 'outside'
-                }
-            },
-            'out': {
-                position: 'bottom',
-                label: {
-                position: 'outside'
-                }
-            }
-        }
-    }
-
-  }, joint.shapes.devs.Model.prototype.defaults)
-});
-
-joint.shapes.devs.BridgeView = joint.shapes.devs.ModelView;
-
-joint.shapes.devs.ProcessInputModel = joint.shapes.devs.Model.extend({
-
-  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
-
-  defaults: joint.util.deepSupplement({
-    name: 'ProcessInput',
-    type: 'devs.ProcessInputModel',
-    size: widgetDimens,
-    attrs: {
-      rect: {
-        stroke: '#009900',
-        fill: '#009900'
-      },
-      circle: {
-        stroke: 'gray'
-      },
-      '.label': {
-        text: 'Process Input',
-        fill: '#FFFFFF',
-        'ref-y': 50
-      },
-      '.inPorts circle': {
-        fill: '#c8c8c8'
-      },
-      '.outPorts circle': {
-        fill: '#262626'
-      }
-    },
-  inPorts: ['In'],
-  outPorts: ['Digits Received', 'Speech Received'],
-  ports: {
-        groups: {
-            'in': {
-                position: 'top',
-                label: {
-                position: 'outside'
-                }
-            },
-            'out': {
-                position: 'bottom',
-                label: {
-                position: 'outside'
-                }
-            }
-        }
-    }
-
-  }, joint.shapes.devs.Model.prototype.defaults)
-});
-
-joint.shapes.devs.ProcessInputView = joint.shapes.devs.ModelView;
-
-joint.shapes.devs.RecordVoicemailModel = joint.shapes.devs.Model.extend({
-
-  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
-
-  defaults: joint.util.deepSupplement({
-    name: 'RecordVoicemail',
-    type: 'devs.RecordVoicemailModel',
-    size: widgetDimens,
-    attrs: {
-      rect: {
-        stroke: '#009900',
-        fill: '#808080',
-      },
-      circle: {
-        stroke: 'gray'
-      },
-      '.label': {
-        text: 'Record Voicemail',
-        fill: '#FFFFFF',
-        'ref-y': 50
-      },
-      '.inPorts circle': {
-        fill: '#c8c8c8'
-      },
-      '.outPorts circle': {
-        fill: '#262626'
-      }
-    },
-  inPorts: ['In'],
-  outPorts: ['Record Complete', 'No Audio', 'Hangup'],
-  ports: {
-        groups: {
-            'in': {
-                position: 'top',
-                label: {
-                position: 'outside'
-                }
-            },
-            'out': {
-                position: 'bottom',
-                label: {
-                position: 'outside'
-                }
-            }
-        }
-    }
-
-  }, joint.shapes.devs.Model.prototype.defaults)
-});
-
-joint.shapes.devs.ProcessInputView = joint.shapes.devs.ModelView;
-
-
-joint.shapes.devs.PlaybackModel = joint.shapes.devs.Model.extend({
-
-  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
-
-  defaults: joint.util.deepSupplement({
-    name: 'Playback',
-    type: 'devs.PlaybackModel',
-    size: widgetDimens,
-    attrs: {
-      rect: {
-        stroke: '#009900',
-        fill: '#eb9b34',
-      },
-      circle: {
-        stroke: 'gray'
-      },
-      '.label': {
-        text: 'Playback',
-        fill: '#FFFFFF',
-        'ref-y': 50
-      },
-      '.inPorts circle': {
-        fill: '#c8c8c8'
-      },
-      '.outPorts circle': {
-        fill: '#262626'
-      }
-    },
-  inPorts: ['In'],
-  outPorts: ['Finished'],
-  ports: {
-        groups: {
-            'in': {
-                position: 'top',
-                label: {
-                position: 'outside'
-                }
-            },
-            'out': {
-                position: 'bottom',
-                label: {
-                position: 'outside'
-                }
-            }
-        }
-    }
-
-  }, joint.shapes.devs.Model.prototype.defaults)
-});
-
-joint.shapes.devs.ProcessInputView = joint.shapes.devs.ModelView;
-
-joint.shapes.devs.Link.define('devs.FlowLink', {
-      attrs: {
-              ".connection": {
-                "stroke-width": 1
-              } 
-            }
-}, {
-    // inherit joint.shapes.standard.Link.markup
-}, {
-});
-
 function Model(cell, name, links, data) {
   console.log("creating new model ", arguments);
   this.cell =cell;
@@ -1783,189 +913,327 @@ angular
     $scope.$shared = $shared;
   });
 
-joint.plugins = joint.plugins || {};
-joint.plugins.TooledModelInterface = {
-    interface: 'Tools',
-    portsToolMarkup: '<g class="handleInPorts"><path class="aggregate"/><rect class="remove"/></g><g class="handleOutPorts"><path class="aggregate"/><rect class="remove"/></g>',
-    resizeToolMarkup: '<path class="resize"/>',
-    moveToolMarkup: '<circle class="area"/><path class="visual"/>',
-    deleteToolMarkup: '<circle fill="red" r="11"/><path transform="scale(.8) translate(-16, -16)" d="M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z"/><title>Remove this element from the model</title>',
+/*! JointJS+ - Set of JointJS compatible plugins
 
-    moveTool: true,
-    resizeTool: true,
-    portsTool: {handleInPorts: true,
-                handleOutPorts: true,
-                addPortFunction: 'addPort',
-                removePortFunction: 'removePort'},
+Copyright (c) 2013 client IO
 
-    addPortsDefaultMessage: "Introduce the name of the new <%= portType %>Port:",
-    addPort: function(portType){
-        var portsArray = (portType == "in") ? this.get("inPorts") : this.attributes.outPorts;
-        var name = prompt(_.template(this.addPortsDefaultMessage, {portType: portType}), portType + "Port" + (portsArray.length + 1));
-        portsArray.push(name);
-        this.trigger("change:" + portType + "Ports");
-    },
-    removePort: function(portType){
-        var portsArray = (portType == "in") ? this.attributes.inPorts : this.get("outPorts");
-        portsArray.splice(-1, 1);
-        this.trigger("change:" + portType + "Ports");
+ 2014-01-22 
+
+
+This Source Code Form is subject to the terms of the JointJS+ License
+, v. 1.0. If a copy of the JointJS+ License was not distributed with this
+file, You can obtain one at http://jointjs.com/license/jointjs_plus_v1.txt
+ or from the JointJS+ archive as was distributed by client IO. See the LICENSE file.*/
+
+
+// Command manager implements undo/redo functionality.
+
+joint.dia.CommandManager = Backbone.Model.extend({
+
+    defaults: {
+	cmdBeforeAdd: null,
+	cmdNameRegex: /^(?:add|remove|change:\w+)$/
     },
 
-    toolsDefaults: {
-        '.portsTool path.aggregate': {'d': "m0,5l5,0l0,-5l5,0l0,5l5,0l0,5-5,0l0,5l-5,0l0,-5l-5,0z", 'stroke-width': 2, stroke:'#000', fill: '#5F5'},
-        '.portsTool rect.remove': {width: 15, height: 6, 'stroke-width': 3, stroke:'#000', fill: '#F55', y: 21},
-        '.portsTool .handleInPorts': {ref: '.body', 'ref-x':-30, 'ref-y':-40},
-        '.portsTool .handleOutPorts': {ref: '.body', 'ref-dx':10, 'ref-y':-40},
-        '.resizeTool .resize': {
-            'd': 'M 0,10l10,0l0,-10z M -2,13l15,0l0,-14l0,14',
-            fill: 'black', stroke: 'black',
-            ref: '.body', 'ref-dx':10, 'ref-dy':10 },
-        '.moveTool .visual': {
-            'd': 'M 0,15l5,-3l0,6l-5,-3l30,0l-5,-3l0,6l5,-3l-15,0l0,15l-3,-5l6,0l-3,5l0,-30l-3,5l6,0l-3,-5l0,15',
-            fill: 'black', stroke: 'black',
-            ref: '.body', 'ref-x':-40, 'ref-dy':10 
-        },
-        '.moveTool .area': {
-            ref:'.moveTool .visual', 'ref-x': 0, 'ref-y': 0, cx:'15', cy:'15', r:'15', 'fill-opacity':'0', 'stroke-width':'0'
-        }
+    // length of prefix 'change:' in the event name
+    PREFIX_LENGTH: 7,
+
+    initialize: function(options) {
+
+        _.bindAll(this, 'initBatchCommand', 'storeBatchCommand');
+
+        this.graph = options.graph;
+
+        this.reset();
+        this.listen();
     },
-    checkMarkup: function(thisInterface){
-        //Get all the properties defined in this interface
-        //ending with a 'Tool' expression in their names
-        var tools = _.filter(Object.getOwnPropertyNames(thisInterface), function(name){ return /Tool$/.test(name)});
-        var errorMsg = _.template(this.get("type") + " element extended " + this.interface + " Interface but didn't deactivated it's <%= property %> property and/or didn't included '<g class=\"<%= property %>\"/>' in it's markup.");
-        var requiredMarkup = _.template("<g.+class=['\"]?<%= tool %>['\"]?.*/>");
+
+    listen: function() {
+
+        this.listenTo(this.graph, 'all', this.addCommand, this);
+
+	this.listenTo(this.graph, 'batch:start', this.initBatchCommand, this);
+	this.listenTo(this.graph, 'batch:stop', this.storeBatchCommand, this);
+    },
+
+    createCommand: function(options) {
+	
+	var cmd = {
+	    action: undefined,
+	    data: { id: undefined, type: undefined, previous: {}, next: {}},
+	    batch: options && options.batch
+	}
+	
+	return cmd;
+    },
+
+    addCommand: function(cmdName, cell, graph, options) {
+
+	if (!this.get('cmdNameRegex').test(cmdName)) {
+	    return;
+	}
+
+	if (typeof this.get('cmdBeforeAdd') == 'function' && !this.get('cmdBeforeAdd').apply(this, arguments)) {
+	    return;
+	}
+
+	var push = _.bind(function(cmd) {
+	    
+	    this.redoStack = [];
+
+	    if (!cmd.batch) {
+		this.undoStack.push(cmd);
+		this.trigger('add', cmd);
+	    } else {
+                this.lastCmdIndex = Math.max(this.lastCmdIndex, 0);
+		// Commands possible thrown away. Someone might be interested.
+		this.trigger('batch', cmd);
+	    }
+	    
+	}, this);
+	
+	var command = undefined;
+
+	if (this.batchCommand) {
+            // set command as the one used last.
+            // in most cases we are working with same object, doing same action
+            // etc. translate an object piece by piece
+	    command = this.batchCommand[Math.max(this.lastCmdIndex,0)];
+
+            // Check if we are start working with new object or performing different action with it.
+            // Note, that command is uninitialized when lastCmdIndex equals -1. (see 'initBatchCommand()') 
+            // in that case we are done, command we were looking for is already set
+	    if (this.lastCmdIndex >= 0 && (command.data.id !== cell.id || command.action !== cmdName)) {
+
+                // trying to find command first, which was performing same action with the object
+                // as we are doing now with cell
+                command = _.find(this.batchCommand, function(cmd, index) {
+                    this.lastCmdIndex = index;
+                    return cmd.data.id === cell.id && cmd.action === cmdName;
+                }, this);
+
+		if (!command) {
+                    // command with such an id and action was not found. Let's create new one
+		    this.lastCmdIndex = this.batchCommand.push(this.createCommand({ batch:  true })) - 1;
+		    command = _.last(this.batchCommand);
+                }
+	    }
+	    
+	} else {
+	    
+            // single command
+	    command = this.createCommand();
+	    command.batch = false;
+	    
+	}
+
+        if (cmdName === 'add' || cmdName === 'remove') {
+
+            command.action = cmdName;
+            command.data.id = cell.id;
+	    command.data.type = cell.attributes.type;
+            command.data.attributes = _.merge({}, cell.toJSON());
+	    command.options = options || {};
+	    
+	    return push(command);
+	}
+
+        // `changedAttribute` holds the attribute name corresponding
+	// to the change event triggered on the model.
+        var changedAttribute = cmdName.substr(this.PREFIX_LENGTH);
+	
+	if (!command.batch || !command.action) {
+	    // Do this only once. Set previous box and action (also serves as a flag so that
+	    // we don't repeat this branche).
+	    command.action = cmdName;
+	    command.data.id = cell.id;
+	    command.data.type = cell.attributes.type;
+	    command.data.previous[changedAttribute] = _.clone(cell.previous(changedAttribute));
+	    command.options = options || {};
+	}
+
+	command.data.next[changedAttribute] = _.clone(cell.get(changedAttribute));
+
+	return push(command);
+    },
+
+    // Batch commands are those that merge certain commands applied in a row (1) and those that 
+    // hold multiple commands where one action consists of more than one command (2)
+    // (1) This is useful for e.g. when the user is dragging an object in the paper which would
+    // normally lead to 1px translation commands. Applying undo() on such commands separately is
+    // most likely undesirable.
+    // (2) e.g When you are removing an element, you don't want all links connected to that element, which
+    // are also being removed to be part of different command
+
+    initBatchCommand: function() {
+
+	if (!this.batchCommand) {
+
+            this.batchCommand = [this.createCommand({ batch:  true})];
+            this.lastCmdIndex = -1;
+
+	    // batch level counts how many times has been initBatchCommand executed.
+	    // It is useful when we doing an operation recursively.
+	    this.batchLevel = 0;
+
+	} else {
+
+	    // batch command is already active
+	    this.batchLevel++;
+	}
+    },
+
+    storeBatchCommand: function() {
+
+	// In order to store batch command it is necesary to run storeBatchCommand as many times as 
+	// initBatchCommand was executed
+        if (this.batchCommand && this.batchLevel <= 0) {
+
+	    // checking if there is any valid command in batch
+	    // for example: calling `initBatchCommand` immediately followed by `storeBatchCommand`
+	    if (this.lastCmdIndex >= 0) {
+
+		this.redoStack = [];
+
+		this.undoStack.push(this.batchCommand);
+		this.trigger('add', this.batchCommand);
+	    }
+
+            delete this.batchCommand;
+            delete this.lastCmdIndex;
+	    delete this.batchLevel;
+
+        } else if (this.batchCommand && this.batchLevel > 0) {
+
+	    // low down batch command level, but not store it yet
+	    this.batchLevel--;
+	}
+    },
+
+    revertCommand: function(command) {
+	
+        this.stopListening();
+
+	var batchCommand;
+
+	if (_.isArray(command)) {
+	    batchCommand = command;
+	} else {
+	    batchCommand = [command];
+	}
+	
+	for (var i = batchCommand.length - 1; i >= 0; i--)  {
+
+            var cmd = batchCommand[i], cell = this.graph.getCell(cmd.data.id);
         
-        //Check that the markup of the Object is well defined
-        //for the use of each Tool not deactivated
-        for(var i = 0; i < tools.length; i++){
-            var tool = tools[i];
-            if(!_.isUndefined(this.attributes[tool]))
-                this[tool] = this[tool] & this.attributes[tool];
-            if(this[tool]){
-                var neededMarkup = requiredMarkup({tool: tool});
-                var regEx = new RegExp(neededMarkup);
-                if(false == regEx.test(this.markup)){
-                    throw new Error(errorMsg({property: tool}));
-                }
-            }
-        }
-    },
-    initialize: function(){
-//        console.log("initialize del PortsModelInterface", this);
-        var thisInterface = Object.getPrototypeOf(this);
-        while(!thisInterface.hasOwnProperty("interface") || !(thisInterface.interface == "Tools")){
-            thisInterface = thisInterface.constructor.__super__;
-        }
-        this.checkMarkup(thisInterface);
-        var parentWithInitialize = thisInterface.constructor.__super__;
-        while(!parentWithInitialize.hasOwnProperty("initialize")){
-            parentWithInitialize = parentWithInitialize.constructor.__super__;
-        }
-        parentWithInitialize.initialize.apply(this, arguments);
-        var attrs = _.clone(this.toolsDefaults);
-        joint.util.deepMixin(attrs, this.attributes.attrs);
-        this.attributes.attrs = attrs;
-    }
-};
-joint.plugins.TooledViewInterface = {
-    interface: 'Tools',
-    renderDeleteTool: function () {
-    var deleteContainer = this.$('.deleteTool').empty();
-    var markup = V(this.model.deleteToolMarkup);
-    for(var id in markup)
-        deleteContainer.append(markup[id].node);
+            switch (cmd.action) {
+		
+            case 'add':
+		cell.remove();
+		break;
 
-    var out = this;
-    this.$('.deleteTool').on('click', function() {
-        out.model.remove();
-    });
-},
-    renderMoveTool: function () {
-        var moveContainer = this.$('.moveTool').empty();
-//        for(var elem of V(this.model.moveToolMarkup))
-//            moveContainer.append(elem.node);
-//        As ↑this↑ code is not ES5 valid, I remake it ES5-valid in order to have ng-annotate working
-        var markup = V(this.model.moveToolMarkup);
-        for(var id in markup)
-            moveContainer.append(markup[id].node);
+            case 'remove':
+		this.graph.addCell(cmd.data.attributes);
+		break;
+
+            default:
+                var attribute = cmd.action.substr(this.PREFIX_LENGTH);
+                cell.set(attribute, cmd.data.previous[attribute]);
+                break;
+            }
+
+	}
+
+        this.listen();
     },
-    renderPortsTool: function (config) {
-        //Add the Nodes
-        var $portsContainer = this.$('.portsTool').empty();
-        var SVGPortsElements = V(this.model.portsToolMarkup);
-        var funcRemove = this.model[config.removePortFunction];
-        var funcAggregate = this.model[config.addPortFunction];
-        var modelo = this.model;
-        if(config.hasOwnProperty('handleInPorts') && config.handleInPorts){
-            var inPortsGroup = SVGPortsElements[0];
-            $portsContainer.append(inPortsGroup.node);
-            this.$('.portsTool .handleInPorts .aggregate').on('click',function(){ funcAggregate.apply(modelo, ["in"])});
-            this.$('.portsTool .handleInPorts .remove').on('click', function(){ funcRemove.apply(modelo, ["in"])});
-        }
-        if(config.hasOwnProperty('handleOutPorts') && config.handleOutPorts){
-            var outPortsGroup = SVGPortsElements[1];
-            $portsContainer.append(outPortsGroup.node);
-            this.$('.portsTool .handleOutPorts .aggregate').on('click', function(){ funcAggregate.apply(modelo, ["out"])});
-            this.$('.portsTool .handleOutPorts .remove').on('click', function(){ funcRemove.apply(modelo, ["out"])});
-        }
-        //Inherited from joint.shapes.basic.PortsViewInterface
-        //this.renderPorts(); <al parecer ya no es necesario>
+
+    applyCommand: function(command) {
+
+        this.stopListening();
+
+	var batchCommand;
+
+	if (_.isArray(command)) {
+	    batchCommand = command;
+	} else {
+	    batchCommand = [command];
+	}
+	
+	for (var i = 0; i < batchCommand.length; i++)  {
+
+            var cmd = batchCommand[i], cell = this.graph.getCell(cmd.data.id);
+        
+            switch (cmd.action) {
+            
+            case 'add':
+		this.graph.addCell(cmd.data.attributes);
+		break;
+
+            case 'remove':
+		cell.remove();
+		break;
+
+            default:
+                var attribute = cmd.action.substr(this.PREFIX_LENGTH);
+                cell.set(attribute, cmd.data.next[attribute]);
+                break;
+
+	    }
+	    
+	}
+	    
+        this.listen();
     },
-    renderResizeTool: function () {
-        var resizeContainer = this.$('.resizeTool').empty();
-        resizeContainer.append(V(this.model.resizeToolMarkup).node);
-        //resizeContainer.find('path.resize')[0]
-        var modelo = this.model;
-        var performanceLock = false;
-        resizeContainer.children()[0].addEventListener("mousedown", function(e){
-            document.resizeInitialValues = {x: e.pageX, y:e.pageY, model: modelo, bbox: $(this).closest(".element").find(".scalable")[0].getBoundingClientRect()};
-            document.onmousemove = function(e){
-                if(!performanceLock){
-                    performanceLock = true;
-                    setTimeout(function(){
-                        performanceLock = false;
-                    }, 77);
-                    var model = document.resizeInitialValues.model;
-                    var bbox = document.resizeInitialValues.bbox;
-                    var difX = e.pageX - document.resizeInitialValues.x;
-                    var difY = e.pageY - document.resizeInitialValues.y;
-                    model.resize(bbox.width + difX, bbox.height + difY);
-                }
-            };
-            document.onmouseup = function(e){
-                document.resizeInitialValues = null;
-                document.onmousemove = null;
-                document.onmouseup = null;
-            };
-            e.stopPropagation();
-        }, true);
+
+    undo: function() {
+
+        var command = this.undoStack.pop();
+
+        if (command) {
+
+            this.revertCommand(command);
+            this.redoStack.push(command);
+        }
     },
-    update: function(){
-//        console.log("se ejecuto el update de " + this.model.prop('type'));
-console.log("model rendering ", this.model);
-        if(this.model.moveTool){
-            this.renderMoveTool();
+
+
+    redo: function() {
+
+        var command = this.redoStack.pop();
+
+        if (command) {
+
+            this.applyCommand(command);
+            this.undoStack.push(command);
         }
-        if(this.model.resizeTool){
-            this.renderResizeTool();
-        }
-        if(this.model.portsTool && (_.isObject(this.model.portsTool) && !_.isEmpty(this.model.portsTool))){
-            this.renderPortsTool(this.model.portsTool);
-        }
-        this.renderDeleteTool();
-        var thisInterface = Object.getPrototypeOf(this);
-        while(!(thisInterface.hasOwnProperty("interface") && (thisInterface.interface == "Tools"))){
-            thisInterface = thisInterface.constructor.__super__;
-        }
-        var parentWithUpdate = thisInterface.constructor.__super__;
-        while(!parentWithUpdate.hasOwnProperty("update")){
-            parentWithUpdate = parentWithUpdate.constructor.__super__;
-        }
-        parentWithUpdate.update.apply(this, arguments);
+    },
+
+    cancel: function() {
+
+	if (this.hasUndo()) {
+
+	    this.revertCommand(this.undoStack.pop());
+	    this.redoStack = [];
+	}
+    },
+
+    reset: function() {
+
+        this.undoStack = [];
+        this.redoStack = [];
+    },
+
+    hasUndo: function() {
+
+        return this.undoStack.length > 0;
+    },
+
+    hasRedo: function() {
+
+        return this.redoStack.length > 0;
     }
-};
-var testJSON = '{"graph":{"cells":[{"type":"devs.LaunchModel","size":{"width":256,"height":128},"inPorts":[],"outPorts":["Incoming Call"],"ports":{"groups":{"in":{"position":"top","label":{"position":"outside"},"attrs":{".port-label":{"fill":"#000"},".port-body":{"fill":"#fff","stroke":"#000","r":10,"magnet":true}}},"out":{"position":"bottom","label":{"position":"outside"},"attrs":{".port-label":{"fill":"#000"},".port-body":{"fill":"#fff","stroke":"#000","r":10,"magnet":true}}}},"items":[{"id":"Incoming Call","group":"out","attrs":{".port-label":{"text":"Incoming Call"}}}]},"position":{"x":633.275,"y":320},"angle":0,"id":"968cc99c-00f3-49b7-8b40-9e3b8bfd1b24","z":1,"attrs":{}},{"type":"devs.SwitchModel","size":{"width":256,"height":128},"inPorts":["In"],"outPorts":["No Condition Matches"],"ports":{"groups":{"in":{"position":"top","label":{"position":"outside"},"attrs":{".port-label":{"fill":"#000"},".port-body":{"fill":"#fff","stroke":"#000","r":10,"magnet":true}}},"out":{"position":"bottom","label":{"position":"outside"},"attrs":{".port-label":{"fill":"#000"},".port-body":{"fill":"#fff","stroke":"#000","r":10,"magnet":true}}}},"items":[{"id":"In","group":"in","attrs":{".port-label":{"text":"In"}}},{"id":"No Condition Matches","group":"out","attrs":{".port-label":{"text":"No Condition Matches"}}},{"id":"COndition Matches1","group":"out","args":{},"label":{"position":{"name":"bottom","args":{}}},"attrs":{"text":{"text":"COndition Matches1"}}}]},"position":{"x":390,"y":535},"angle":0,"id":"02e814fe-abfb-4fa0-afcd-e74949f52553","z":1,"attrs":{}},{"type":"devs.DialModel","size":{"width":256,"height":128},"inPorts":["In"],"outPorts":["Busy","No Answer","Call Failed"],"ports":{"groups":{"in":{"position":"top","label":{"position":"outside"},"attrs":{".port-label":{"fill":"#000"},".port-body":{"fill":"#fff","stroke":"#000","r":10,"magnet":true}}},"out":{"position":"bottom","label":{"position":"outside"},"attrs":{".port-label":{"fill":"#000"},".port-body":{"fill":"#fff","stroke":"#000","r":10,"magnet":true}}}},"items":[{"id":"In","group":"in","attrs":{".port-label":{"text":"In"}}},{"id":"Busy","group":"out","attrs":{".port-label":{"text":"Busy"}}},{"id":"No Answer","group":"out","attrs":{".port-label":{"text":"No Answer"}}},{"id":"Call Failed","group":"out","attrs":{".port-label":{"text":"Call Failed"}}}]},"position":{"x":989,"y":643},"angle":0,"id":"40f20d53-a1d1-45ab-90d8-1d8ba89e3467","z":2,"attrs":{}},{"type":"link","source":{"id":"968cc99c-00f3-49b7-8b40-9e3b8bfd1b24","port":"Incoming Call"},"target":{"id":"02e814fe-abfb-4fa0-afcd-e74949f52553","port":"In"},"id":"ddba670c-1bf6-4546-94b0-36529311d085","z":3,"vertices":[{"x":639.6375,"y":491.5}],"attrs":{}},{"type":"link","source":{"id":"02e814fe-abfb-4fa0-afcd-e74949f52553","port":"COndition Matches1"},"target":{"id":"40f20d53-a1d1-45ab-90d8-1d8ba89e3467","port":"In"},"id":"c1b48b5b-f1c8-4474-a44c-59725aaa92d4","z":4,"vertices":[{"x":817.5,"y":653}],"attrs":{}}]},"models":[{"id":"968cc99c-00f3-49b7-8b40-9e3b8bfd1b24","name":"Untitled Widget","data":{},"links":[]},{"id":"02e814fe-abfb-4fa0-afcd-e74949f52553","name":"test 1234","data":{},"links":[{"to":null,"type":"LINK_CONDITION_MATCHES","value":"12345","label":"COndition Matches1"}]},{"id":"40f20d53-a1d1-45ab-90d8-1d8ba89e3467","name":"Untitled Widget","data":{},"links":[]}]}';
+});
+
 
 var offsetLeft, offsetTop, beforeInfo, launchCell, diagram;
 diagram = {};
@@ -2347,3 +1615,558 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
 }
 
 //initializeDiagram();
+$.get("./templates.html", function(data) {
+     console.log("data is ", data);
+          $(data).appendTo('body');
+          angular.bootstrap(document, ['basicUsageSidenavDemo']);
+});
+
+var widgetDimens = {
+  width: 256,
+  height: 128
+};
+joint.shapes.devs.LaunchModel = joint.shapes.devs.Model.extend({
+
+  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
+
+  defaults: joint.util.deepSupplement({
+
+    type: 'devs.LaunchModel',
+    size: widgetDimens,
+    attrs: {
+      rect: {
+        stroke: '#d1d1d1',
+        fill: '#3366cc',
+      },
+      circle: {
+        stroke: 'gray'
+      },
+      '.label': {
+        text: 'Launch',
+        fill: '#FFFFFF',
+        'ref-y': 50
+      },
+      '.inPorts circle': {
+        fill: '#c8c8c8'
+      },
+      '.outPorts circle': {
+        fill: '#262626'
+      },
+      /*
+      image: {
+        'xlink:href': 'https://jointjs.com/images/logo.png',
+        width: 80,
+        height: 50,
+        'ref-x': .5,
+        'ref-y': .5,
+        ref: 'rect',
+        'x-alignment': 'middle',
+        'y-alignment': 'middle'
+      }
+      */
+    },
+    inPorts: [],
+    outPorts: ['Incoming Call'],
+    ports: {
+        groups: {
+            'in': {
+                position: 'top',
+                label: {
+                position: 'outside'
+                }
+            },
+            'out': {
+                position: 'bottom',
+                label: {
+                position: 'outside'
+                }
+            }
+        }
+    }
+
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.LaunchView = joint.shapes.devs.ModelView;
+
+joint.shapes.devs.SwitchModel = joint.shapes.devs.Model.extend({
+
+  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
+
+  defaults: joint.util.deepSupplement({
+    name: 'Switch',
+    type: 'devs.SwitchModel',
+    size: widgetDimens, 
+    attrs: {
+      rect: {
+        stroke: '#d1d1d1',
+        fill: '#3366cc',
+      },
+      circle: {
+        stroke: 'gray'
+      },
+      '.label': {
+        text: 'Switch',
+        fill: '#FFFFFF',
+        'ref-y': 50
+      },
+      '.inPorts circle': {
+        fill: '#c8c8c8'
+      },
+      '.outPorts circle': {
+        fill: '#262626'
+      }
+    },
+    inPorts: ['In'],
+    outPorts: ['No Condition Matches'],
+    ports: {
+        groups: {
+            'in': {
+                position: 'top',
+                label: {
+                position: 'outside'
+                }
+            },
+            'out': {
+                position: 'bottom',
+                label: {
+                position: 'outside'
+                }
+            }
+        }
+    }
+
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.SwitchView = joint.shapes.devs.ModelView;
+
+joint.shapes.devs.DialModel = joint.shapes.devs.Model.extend({
+
+  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
+
+  defaults: joint.util.deepSupplement({
+    name: 'Dial',
+    type: 'devs.DialModel',
+    size: widgetDimens,
+    attrs: {
+      rect: {
+        stroke: '#d1d1d1',
+        fill: '#3366cc'
+      },
+      circle: {
+        stroke: 'gray'
+      },
+      '.label': {
+        text: 'Dial',
+        fill: '#FFFFFF',
+        'ref-y': 50
+      },
+      '.inPorts circle': {
+        fill: '#c8c8c8'
+      },
+      '.outPorts circle': {
+        fill: '#262626'
+      }
+    },
+  inPorts: ['In'],
+  outPorts: ['Answer', 'No Answer', 'Call Failed'],
+  ports: {
+        groups: {
+            'in': {
+                position: 'top',
+                label: {
+                position: 'outside'
+                }
+            },
+            'out': {
+                position: 'bottom',
+                label: {
+                position: 'outside'
+                }
+            }
+        }
+    }
+
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.DialView = joint.shapes.devs.ModelView;
+
+joint.shapes.devs.BridgeModel = joint.shapes.devs.Model.extend({
+
+  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
+
+  defaults: joint.util.deepSupplement({
+    name: 'Bridge',
+    type: 'devs.BridgeModel',
+    size: widgetDimens,
+    attrs: {
+      rect: {
+        stroke: '#d1d1d1',
+        fill: '#cc0000'
+      },
+      circle: {
+        stroke: 'gray'
+      },
+      '.label': {
+        text: 'Bridge',
+        fill: '#FFFFFF',
+        'ref-y': 50
+      },
+      '.inPorts circle': {
+        fill: '#c8c8c8'
+      },
+      '.outPorts circle': {
+        fill: '#262626'
+      }
+    },
+  inPorts: ['In'],
+  outPorts: ['Connected Call Ended', 'Caller Hung Uo'],
+  ports: {
+        groups: {
+            'in': {
+                position: 'top',
+                label: {
+                position: 'outside'
+                }
+            },
+            'out': {
+                position: 'bottom',
+                label: {
+                position: 'outside'
+                }
+            }
+        }
+    }
+
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.BridgeView = joint.shapes.devs.ModelView;
+
+joint.shapes.devs.ProcessInputModel = joint.shapes.devs.Model.extend({
+
+  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
+
+  defaults: joint.util.deepSupplement({
+    name: 'ProcessInput',
+    type: 'devs.ProcessInputModel',
+    size: widgetDimens,
+    attrs: {
+      rect: {
+        stroke: '#009900',
+        fill: '#009900'
+      },
+      circle: {
+        stroke: 'gray'
+      },
+      '.label': {
+        text: 'Process Input',
+        fill: '#FFFFFF',
+        'ref-y': 50
+      },
+      '.inPorts circle': {
+        fill: '#c8c8c8'
+      },
+      '.outPorts circle': {
+        fill: '#262626'
+      }
+    },
+  inPorts: ['In'],
+  outPorts: ['Digits Received', 'Speech Received'],
+  ports: {
+        groups: {
+            'in': {
+                position: 'top',
+                label: {
+                position: 'outside'
+                }
+            },
+            'out': {
+                position: 'bottom',
+                label: {
+                position: 'outside'
+                }
+            }
+        }
+    }
+
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.ProcessInputView = joint.shapes.devs.ModelView;
+
+joint.shapes.devs.RecordVoicemailModel = joint.shapes.devs.Model.extend({
+
+  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
+
+  defaults: joint.util.deepSupplement({
+    name: 'RecordVoicemail',
+    type: 'devs.RecordVoicemailModel',
+    size: widgetDimens,
+    attrs: {
+      rect: {
+        stroke: '#009900',
+        fill: '#808080',
+      },
+      circle: {
+        stroke: 'gray'
+      },
+      '.label': {
+        text: 'Record Voicemail',
+        fill: '#FFFFFF',
+        'ref-y': 50
+      },
+      '.inPorts circle': {
+        fill: '#c8c8c8'
+      },
+      '.outPorts circle': {
+        fill: '#262626'
+      }
+    },
+  inPorts: ['In'],
+  outPorts: ['Record Complete', 'No Audio', 'Hangup'],
+  ports: {
+        groups: {
+            'in': {
+                position: 'top',
+                label: {
+                position: 'outside'
+                }
+            },
+            'out': {
+                position: 'bottom',
+                label: {
+                position: 'outside'
+                }
+            }
+        }
+    }
+
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.ProcessInputView = joint.shapes.devs.ModelView;
+
+
+joint.shapes.devs.PlaybackModel = joint.shapes.devs.Model.extend({
+
+  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
+
+  defaults: joint.util.deepSupplement({
+    name: 'Playback',
+    type: 'devs.PlaybackModel',
+    size: widgetDimens,
+    attrs: {
+      rect: {
+        stroke: '#009900',
+        fill: '#eb9b34',
+      },
+      circle: {
+        stroke: 'gray'
+      },
+      '.label': {
+        text: 'Playback',
+        fill: '#FFFFFF',
+        'ref-y': 50
+      },
+      '.inPorts circle': {
+        fill: '#c8c8c8'
+      },
+      '.outPorts circle': {
+        fill: '#262626'
+      }
+    },
+  inPorts: ['In'],
+  outPorts: ['Finished'],
+  ports: {
+        groups: {
+            'in': {
+                position: 'top',
+                label: {
+                position: 'outside'
+                }
+            },
+            'out': {
+                position: 'bottom',
+                label: {
+                position: 'outside'
+                }
+            }
+        }
+    }
+
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.ProcessInputView = joint.shapes.devs.ModelView;
+
+joint.shapes.devs.Link.define('devs.FlowLink', {
+      attrs: {
+              ".connection": {
+                "stroke-width": 1
+              } 
+            }
+}, {
+    // inherit joint.shapes.standard.Link.markup
+}, {
+});
+
+function adjustVertices(graph, cell) {
+
+    // if `cell` is a view, find its model
+    cell = cell.model || cell;
+
+    if (cell instanceof joint.dia.Element) {
+        // `cell` is an element
+
+        _.chain(graph.getConnectedLinks(cell))
+            .groupBy(function(link) {
+
+                // the key of the group is the model id of the link's source or target
+                // cell id is omitted
+                return _.omit([link.source().id, link.target().id], cell.id)[0];
+            })
+            .each(function(group, key) {
+
+                // if the member of the group has both source and target model
+                // then adjust vertices
+                if (key !== 'undefined') adjustVertices(graph, _.first(group));
+            })
+            .value();
+
+        return;
+    }
+
+    // `cell` is a link
+    // get its source and target model IDs
+    var sourceId = cell.get('source').id || cell.previous('source').id;
+    var targetId = cell.get('target').id || cell.previous('target').id;
+
+    // if one of the ends is not a model
+    // (if the link is pinned to paper at a point)
+    // the link is interpreted as having no siblings
+    if (!sourceId || !targetId) {
+        // no vertices needed
+        cell.unset('vertices');
+        return;
+    }
+
+    // identify link siblings
+    var siblings = graph.getLinks().filter(function(sibling) {
+
+        var siblingSourceId = sibling.source().id;
+        var siblingTargetId = sibling.target().id;
+
+        // if source and target are the same
+        // or if source and target are reversed
+        return ((siblingSourceId === sourceId) && (siblingTargetId === targetId))
+            || ((siblingSourceId === targetId) && (siblingTargetId === sourceId));
+    });
+
+    var numSiblings = siblings.length;
+    switch (numSiblings) {
+
+        case 0: {
+            // the link has no siblings
+            break;
+        }
+        default: {
+
+            if (numSiblings === 1) {
+                // there is only one link
+                // no vertices needed
+                cell.unset('vertices');
+            }
+
+            // there are multiple siblings
+            // we need to create vertices
+
+            // find the middle point of the link
+            var sourceCenter = graph.getCell(sourceId).getBBox().center();
+            var targetCenter = graph.getCell(targetId).getBBox().center();
+            var midPoint = g.Line(sourceCenter, targetCenter).midpoint();
+
+            // find the angle of the link
+            var theta = sourceCenter.theta(targetCenter);
+
+            // constant
+            // the maximum distance between two sibling links
+            var GAP = 20;
+
+            _.each(siblings, function(sibling, index) {
+
+                // we want offset values to be calculated as 0, 20, 20, 40, 40, 60, 60 ...
+                var offset = GAP * Math.ceil(index / 2);
+
+                // place the vertices at points which are `offset` pixels perpendicularly away
+                // from the first link
+                //
+                // as index goes up, alternate left and right
+                //
+                //  ^  odd indices
+                //  |
+                //  |---->  index 0 sibling - centerline (between source and target centers)
+                //  |
+                //  v  even indices
+                var sign = ((index % 2) ? 1 : -1);
+
+                // to assure symmetry, if there is an even number of siblings
+                // shift all vertices leftward perpendicularly away from the centerline
+                if ((numSiblings % 2) === 0) {
+                    offset -= ((GAP / 2) * sign);
+                }
+
+                // make reverse links count the same as non-reverse
+                var reverse = ((theta < 180) ? 1 : -1);
+
+                // we found the vertex
+                var angle = g.toRad(theta + (sign * reverse * 90));
+                var vertex = g.Point.fromPolar(offset, angle, midPoint).toJSON();
+
+                // replace vertices array with `vertex`
+                sibling.vertices([vertex]);
+            });
+        }
+    }
+}
+
+function bindInteractionEvents(adjustVertices, graph, paper) {
+
+    // bind `graph` to the `adjustVertices` function
+    var adjustGraphVertices = _.partial(adjustVertices, graph);
+
+    // adjust vertices when a cell is removed or its source/target was changed
+    graph.on('add remove change:source change:target', adjustGraphVertices);
+
+    // adjust vertices when the user stops interacting with an element
+    paper.on('cell:pointerup', adjustGraphVertices);
+}
+
+function addTools(paper, link) {
+
+    var toolsView = new joint.dia.ToolsView({
+        tools: [
+            new joint.linkTools.SourceArrowhead(),
+            new joint.linkTools.TargetArrowhead()
+        ]
+    });
+    link.findView(paper).addTools(toolsView);
+}
+
+function bindToolEvents(paper) {
+
+    // show link tools
+    paper.on('link:mouseover', function(linkView) {
+        linkView.showTools();
+    });
+
+    // hide link tools
+    paper.on('link:mouseout', function(linkView) {
+        linkView.hideTools();
+    });
+    paper.on('blank:mouseover cell:mouseover', function() {
+        paper.hideTools();
+    });
+}

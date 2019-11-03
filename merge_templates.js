@@ -5,12 +5,8 @@ function doMerge() {
   return new Promise(function(resolve, reject) {
     // options is optional
     var areas = [
-      './app/views/*.html',
-      './app/views/dialogs/*.html',
-      './app/views/layouts/*.html',
-      './app/views/pages/*.html',
-      './app/views/pages/dashboard/*.html',
-      './app/views/pages/did/*.html'
+      './templates/*.html',
+      './models/*.html'
     ];
     var promises = [];
     areas.forEach(function(area) {
@@ -34,7 +30,8 @@ function doMerge() {
           console.log("merged files are ", merged);
           var output = "";
           merged.forEach(function(file) {
-            var id = file.replace('./app/views/', 'views/');
+            var id = file.replace('./', '');
+            //var id = file;
             console.log("creating template ", id);
             var fileUrl = new URL('file://' + file);
 

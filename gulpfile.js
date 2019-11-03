@@ -9,7 +9,8 @@ var $ = require('gulp-load-plugins')();
 // Require plugins
 var concat = require('gulp-concat');
 var minify = require('gulp-minify');
-var mergeTemplates = require('./merge-templates');
+var mergeTemplates = require('./merge_templates');
+var fs = require("fs");
 
 
 gulp.task('styles', function() {
@@ -42,8 +43,7 @@ gulp.task('connect', ['styles'], function() {
     var serveIndex = require('serve-index');
     var app = require('connect')()
     .use(require('connect-livereload')({port: 35729}))
-    .use(serveStatic('.tmp'))
-    .use(serveStatic('app'))
+    .use(serveStatic('./'))
 // paths to bower_components should be relative to the current file
 // e.g. in app/index.html you should use ../bower_components
 .use('/bower_components', serveStatic('bower_components'))
@@ -56,7 +56,7 @@ require('http').createServer(app)
 });
 });
 
-gulp.task('serve', ['wiredep', 'connect', 'fonts', 'lang', 'watch'], function() {
+gulp.task('serve', [ 'connect',  'watch'], function() {
     if (argv.open) {
         require('opn')('http://localhost:9000');
     }
@@ -77,23 +77,22 @@ gulp.task('watch', ['connect'], function() {
 gulp.watch([
     'templates/*.html',
     'models/*.html',
-    '*.js'
+    'src/*.js',
+    'src/custom/JointTooledViewPlugin/*.js'
     ]).on('change', function() {
-    $.livereload.changed();
+            gulp.start('scripts');
+            mergeTemplates().then(function(output) {
+                fs.writeFileSync("./templates.html", output);
+            });
+            $.livereload.changed.apply(null, arguments);
     });
-});
 });
 
 var deps = [
 ];
 var files = [
-  "./joint.dia.command.js",
-  "./multiple-links.js",
-  "./models.js",
-  "./app.js",
-  "./custom/JointTooledViewPlugin/tooledViewPlugin.js",
-  "./test.js",
-  "./load.js"
+    "./src/*.js",
+  "./src/custom/JointTooledViewPlugin/tooledViewPlugin.js"
 ];
 /*
 var files = deps.concat([
