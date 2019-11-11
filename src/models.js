@@ -1,10 +1,10 @@
 var widgetDimens = {
-  width: 256,
-  height: 128
+  width: 226,
+  height:108 
 };
 joint.shapes.devs.LaunchModel = joint.shapes.devs.Model.extend({
 
-  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
+  markup: '<g class="rotatable"><g class="scalable"><rect rx="10" ry="10" class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
 
   defaults: joint.util.deepSupplement({
 
@@ -29,6 +29,8 @@ joint.shapes.devs.LaunchModel = joint.shapes.devs.Model.extend({
       '.outPorts circle': {
         fill: '#262626'
       },
+     '.inPorts .port-label': { 'font-size': '10px' },
+     '.outPorts .port-label': {'font-size': '10px' }
       /*
       image: {
         'xlink:href': 'https://jointjs.com/images/logo.png',
@@ -68,7 +70,7 @@ joint.shapes.devs.LaunchView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.SwitchModel = joint.shapes.devs.Model.extend({
 
-  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
+  markup: '<g class="rotatable"><g class="scalable"><rect rx="10" ry="10" class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
 
   defaults: joint.util.deepSupplement({
     name: 'Switch',
@@ -120,7 +122,7 @@ joint.shapes.devs.SwitchView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.DialModel = joint.shapes.devs.Model.extend({
 
-  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
+  markup: '<g class="rotatable"><g class="scalable"><rect rx="10" ry="10" class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
 
   defaults: joint.util.deepSupplement({
     name: 'Dial',
@@ -172,7 +174,7 @@ joint.shapes.devs.DialView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.BridgeModel = joint.shapes.devs.Model.extend({
 
-  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
+  markup: '<g class="rotatable"><g class="scalable"><rect rx="10" ry="10" class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
 
   defaults: joint.util.deepSupplement({
     name: 'Bridge',
@@ -224,7 +226,7 @@ joint.shapes.devs.BridgeView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.ProcessInputModel = joint.shapes.devs.Model.extend({
 
-  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
+  markup: '<g class="rotatable"><g class="scalable"><rect rx="10" ry="10" class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
 
   defaults: joint.util.deepSupplement({
     name: 'ProcessInput',
@@ -276,7 +278,7 @@ joint.shapes.devs.ProcessInputView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.RecordVoicemailModel = joint.shapes.devs.Model.extend({
 
-  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
+  markup: '<g class="rotatable"><g class="scalable"><rect rx="10" ry="10" class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
 
   defaults: joint.util.deepSupplement({
     name: 'RecordVoicemail',
@@ -329,7 +331,7 @@ joint.shapes.devs.ProcessInputView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.PlaybackModel = joint.shapes.devs.Model.extend({
 
-  markup: '<g class="rotatable"><g class="scalable"><rect class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
+  markup: '<g class="rotatable"><g class="scalable"><rect rx="10" ry="10" class="body"/></g><image/><text class="label"/><g class="inPorts"/><g class="outPorts"/></g>',
 
   defaults: joint.util.deepSupplement({
     name: 'Playback',

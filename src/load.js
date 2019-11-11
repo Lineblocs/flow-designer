@@ -378,9 +378,56 @@ stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
 });
 }
 
+function bindHotkeys() {
+    var ctrlDown = false,
+        ctrlKey = 17,
+        cmdKey = 91,
+        vKey = 86,
+        cKey = 67;
+    var copiedModel;
+    var copiedView;
+
+    $(document).keydown(function(e) {
+        if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = true;
+    }).keyup(function(e) {
+        if (e.keyCode == ctrlKey || e.keyCode == cmdKey) ctrlDown = false;
+    });
+
+    // Document Ctrl + C/V 
+    $(document).keydown(function(e) {
+        var scope = getAngularScope();
+        if (ctrlDown && (e.keyCode == cKey)) {
+          copiedModel = scope.cellModel;
+          copiedView = scope.cellView;
+          console.log("Document catch Ctrl+C");
+          console.log("copied model is ", copiedModel);
+          console.log("copied view is ", copiedView);
+        }
+        if (ctrlDown && (e.keyCode == vKey)) {
+          console.log("Document catch Ctrl+V");
+          var type = copiedView.model.attributes.type;
+          if (copiedModel && copiedView && type !== "devs.LaunchModel") {
+            scope.$shared.duplicateWidgetAlt(copiedModel, copiedView);
+            copiedModel = null;
+            copiedView = null;
+          }
+        }
+        if (e.keyCode === 8) {
+          console.log("backspace detected");
+          if (scope.$shared.cellModel) {
+            scope.$shared.deleteWidget();
+          }
+        }
+
+    });
+}
+
 //initializeDiagram();
 $.get("./templates.html", function(data) {
      console.log("data is ", data);
           $(data).appendTo('body');
           angular.bootstrap(document, ['basicUsageSidenavDemo']);
+
+      bindHotkeys();
+
 });

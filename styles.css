@@ -166,3 +166,7 @@ md-tooltip .md-content {
     height: auto !important;
 }
 
+.port-label.joint-port-label {
+  font-size: 10px;
+}
+

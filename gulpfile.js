@@ -11,6 +11,7 @@ var concat = require('gulp-concat');
 var minify = require('gulp-minify');
 var mergeTemplates = require('./merge_templates');
 var fs = require("fs");
+var path = require("path");
 
 
 gulp.task('styles', function() {
@@ -39,16 +40,33 @@ gulp.task('jscs', function() {
 gulp.task('clean', require('del').bind(null, ['.tmp', 'dist']));
 
 gulp.task('connect', ['styles'], function() {
+    function wildRoute(req, res) {
+        fs.readFile('./index.html', (err, data) => {
+            if (err) throw err;
+            return res.end(data);
+        });
+    }
     var serveStatic = require('serve-static');
     var serveIndex = require('serve-index');
+    var connectRoute = require('connect-route');
+    var redirects = require('redirects');
+    var modRewrite = require('connect-modrewrite');
+    var serve = serveStatic("./");
     var app = require('connect')()
     .use(require('connect-livereload')({port: 35729}))
     .use(serveStatic('./'))
+    .use(connectRoute(function(router) {
+        router.get("/create", wildRoute);
+        router.get("/edit", wildRoute);
+    }))
 // paths to bower_components should be relative to the current file
 // e.g. in app/index.html you should use ../bower_components
 .use('/bower_components', serveStatic('bower_components'))
-.use(serveIndex('app'));
-
+.use(serveIndex('app'))
+.use(modRewrite([
+    '^/create /',
+    '^/edit$ /index.html [L]'
+  ]));
 require('http').createServer(app)
 .listen(9000)
 .on('listening', function() {
