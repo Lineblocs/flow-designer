@@ -338,6 +338,7 @@ angular
       $log.info('Item changed to ' + JSON.stringify(item));
       link.tempData.ACItem = item;
       link.cell = item.value;
+      var linkLabel = link.label;
       console.log('link data is now ', link);
       var srcModel = factory.cellModel.cell, dstModel;
       var graph = diagram['graph'];
@@ -351,7 +352,7 @@ angular
         var link = new joint.shapes.devs.FlowLink({
            source: {
              id: srcModel.id,
-             port: link.label
+             port: linkLabel
            },
            target: {
              id: dstModel.id,
@@ -365,6 +366,23 @@ angular
             connector: GRAPH_CONNECTOR,
             router: GRAPH_ROUTER,
          });
+
+         // check for any current one
+         var cells = graph.getCells();
+         cells.forEach(function(cell) {
+          var attrs = cell.attributes;
+          if ( attrs.type === 'devs.FlowLink' ) {
+            console.log("compare srcModel.id", srcModel.id);
+            console.log("compare attrs.source.id", attrs.source.id);
+            console.log("compare linkLabel", linkLabel);
+            console.log("compare attrs.soure.port", attrs.source.port);
+
+            if ( attrs.source.id === srcModel.id && attrs.source.port === linkLabel ) {
+              cell.remove();
+            }
+          }
+         });
+
         // Assume graph has the srcModel and dstModel with in and out ports.
         console.log("adding link ", link);
         graph.addCell(link)

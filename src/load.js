@@ -252,6 +252,7 @@ $("#canvas")
 );
   paper.on('cell:pointerdown',
     function(cellView, evt, x, y) { 
+        evt.stopPropagation();
         getAngularScope().loadWidget(cellView, false);
     }
 );
@@ -396,6 +397,12 @@ function bindHotkeys() {
     // Document Ctrl + C/V 
     $(document).keydown(function(e) {
         var scope = getAngularScope();
+        var active = document.activeElement;
+        console.log("active element is ", active);
+        var parent = $(active).parent();
+        if ( $( active ).is("input") || ( parent && $(parent).is("md-select")) || $(active).is("md-option")) {
+          return;
+        }
         if (ctrlDown && (e.keyCode == cKey)) {
           copiedModel = scope.cellModel;
           copiedView = scope.cellView;
