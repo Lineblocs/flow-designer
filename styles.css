@@ -170,3 +170,18 @@ md-tooltip .md-content {
   font-size: 10px;
 }
 
+
+md-toolbar.md-default-theme:not(.md-menu-toolbar), md-toolbar:not(.md-menu-toolbar) {
+ background: #395373;
+}
+a.md-button.md-default-theme.md-primary.md-raised, a.md-button.md-primary.md-raised, a.md-button.md-default-theme.md-primary.md-fab, a.md-button.md-primary.md-fab, .md-button.md-default-theme.md-primary.md-raised, .md-button.md-primary.md-raised, .md-button.md-default-theme.md-primary.md-fab, .md-button.md-primary.md-fab
+{
+ background: #395373;
+}
+.md-raised.md-primary.md-button.md-ink-ripple:hover
+{
+ background: #395373;
+}
+md-tabs.md-default-theme.md-primary, md-tabs.md-primary > md-tabs-wrapper {
+ background: #395373;
+}
