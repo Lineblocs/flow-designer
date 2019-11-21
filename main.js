@@ -644,7 +644,8 @@ angular
        var query = urlObj.query( true );
         var token = query.auth;
         $location.url("/edit?flowId=" + id + "&auth=" + token);
-        top.window.location.href = "/#/dashboard/flows/" + id;
+        top.window.location.href = "http://app.lineblocs.com/#/dashboard/flows/" + id;
+
       });
     }
     $scope.useTemplate = function(template) {
