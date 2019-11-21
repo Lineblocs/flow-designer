@@ -126,7 +126,7 @@ angular
     factory.FLOW_REMOTE_URL = factory.SERVER_REMOTE_URL + "/api/flow";
     return factory;
   })
-  .factory("$shared", function($mdDialog, $mdSidenav, $log, $const, $http, $timeout) {
+  .factory("$shared", function($mdDialog, $mdSidenav, $log, $const, $http, $timeout, $q) {
     var factory = this;
     factory.models = [];
     factory.trash = [];
@@ -143,6 +143,19 @@ angular
         scope.$apply();
       }, 0)
     }
+    factory.loadExtensions = function() {
+       var url = createUrl( "/extension/listExtensions" );
+       return $q(function(resolve, reject) {
+        $http.get( url ).then(function(res) {
+            console.log("extensions are ", res.data);
+            var extensions = res.data.data.map(function(extension) {
+              return extension.username;
+            } );
+            resolve( extensions );
+          }, reject);
+        });
+      }
+
     factory.deleteWidget = function(ev) {
       var confirm = $mdDialog.confirm()
             .title('Are you sure you want to remove this widget ?')
@@ -804,6 +817,14 @@ angular
       console.log("changeExtension ", value);
       $shared.cellModel.data.extension = value;
     }
+    $scope.updateExtensions =  function() {
+      console.log("updateExtensions ");
+      $shared.loadExtensions().then(function(extensions) {
+        $scope.extensions = extensions;
+      });
+    }
+
+
 
 
 
@@ -892,11 +913,9 @@ angular
       $shared.flow = { "started": true };
        $shared.isLoading =true;
        var url = createUrl( "/extension/listExtensions" );
-      $http.get( url ).then(function(res) {
-          console.log("extensions are ", res.data);
-          $scope.extensions = res.data.data.map(function(extension) {
-            return extension.username;
-          } );
+       $shared.loadExtensions().then(function(extensions) {
+          console.log("extensions are ", extensions);
+          $scope.extensions = extensions;
           $timeout(function() {
             window['angularScope'] = angular.element(document.getElementById('scopeCtrl')).scope();
             var graph;
