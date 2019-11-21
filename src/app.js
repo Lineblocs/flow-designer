@@ -129,6 +129,7 @@ angular
   .factory("$shared", function($mdDialog, $mdSidenav, $log, $const, $http, $timeout) {
     var factory = this;
     factory.models = [];
+    factory.trash = [];
     factory.voices = {"da-DK":[{"lang":"da-DK","name":"da-DK-Standard-A","gender":"FEMALE"},{"lang":"da-DK","name":"da-DK-Wavenet-A","gender":"FEMALE"}],"nl-NL":[{"lang":"nl-NL","name":"nl-NL-Standard-A","gender":"FEMALE"},{"lang":"nl-NL","name":"nl-NL-Wavenet-A","gender":"FEMALE"}],"en-AU":[{"lang":"en-AU","name":"en-AU-Standard-A","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Standard-B","gender":"MALE"},{"lang":"en-AU","name":"en-AU-Standard-C","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Standard-D","gender":"MALE"},{"lang":"en-AU","name":"en-AU-Wavenet-A","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Wavenet-B","gender":"MALE"},{"lang":"en-AU","name":"en-AU-Wavenet-C","gender":"FEMALE"},{"lang":"en-AU","name":"en-AU-Wavenet-D","gender":"MALE"}],"en-GB":[{"lang":"en-GB","name":"en-GB-Standard-A","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Standard-B","gender":"MALE"},{"lang":"en-GB","name":"en-GB-Standard-C","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Standard-D","gender":"MALE"},{"lang":"en-GB","name":"en-GB-Wavenet-A","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Wavenet-B","gender":"MALE"},{"lang":"en-GB","name":"en-GB-Wavenet-C","gender":"FEMALE"},{"lang":"en-GB","name":"en-GB-Wavenet-D","gender":"MALE"}],"en-US":[{"lang":"en-US","name":"en-US-Standard-B","gender":"MALE"},{"lang":"en-US","name":"en-US-Standard-C","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Standard-D","gender":"MALE"},{"lang":"en-US","name":"en-US-Standard-E","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Wavenet-A","gender":"MALE"},{"lang":"en-US","name":"en-US-Wavenet-B","gender":"MALE"},{"lang":"en-US","name":"en-US-Wavenet-C","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Wavenet-D","gender":"MALE"},{"lang":"en-US","name":"en-US-Wavenet-E","gender":"FEMALE"},{"lang":"en-US","name":"en-US-Wavenet-F","gender":"FEMALE"}],"fr-CA":[{"lang":"fr-CA","name":"fr-CA-Standard-A","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Standard-B","gender":"MALE"},{"lang":"fr-CA","name":"fr-CA-Standard-C","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Standard-D","gender":"MALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-A","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-B","gender":"MALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-C","gender":"FEMALE"},{"lang":"fr-CA","name":"fr-CA-Wavenet-D","gender":"MALE"}],"fr-FR":[{"lang":"fr-FR","name":"fr-FR-Standard-A","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Standard-B","gender":"MALE"},{"lang":"fr-FR","name":"fr-FR-Standard-C","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Standard-D","gender":"MALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-A","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-B","gender":"MALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-C","gender":"FEMALE"},{"lang":"fr-FR","name":"fr-FR-Wavenet-D","gender":"MALE"}],"de-DE":[{"lang":"de-DE","name":"de-DE-Standard-A","gender":"FEMALE"},{"lang":"de-DE","name":"de-DE-Standard-B","gender":"MALE"},{"lang":"de-DE","name":"de-DE-Wavenet-A","gender":"FEMALE"},{"lang":"de-DE","name":"de-DE-Wavenet-B","gender":"MALE"},{"lang":"de-DE","name":"de-DE-Wavenet-C","gender":"FEMALE"},{"lang":"de-DE","name":"de-DE-Wavenet-D","gender":"MALE"}],"it-IT":[{"lang":"it-IT","name":"it-IT-Standard-A","gender":"FEMALE"},{"lang":"it-IT","name":"it-IT-Wavenet-A","gender":"FEMALE"}],"ja-JP":[{"lang":"ja-JP","name":"ja-JP-Standard-A","gender":"FEMALE"},{"lang":"ja-JP","name":"ja-JP-Wavenet-A","gender":"FEMALE"}],"ko-KR":[{"lang":"ko-KR","name":"ko-KR-Standard-A","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Standard-B","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Standard-C","gender":"MALE"},{"lang":"ko-KR","name":"ko-KR-Standard-D","gender":"MALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-A","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-B","gender":"FEMALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-C","gender":"MALE"},{"lang":"ko-KR","name":"ko-KR-Wavenet-D","gender":"MALE"}],"nb-NO":[{"lang":"nb-NO","name":"nb-no-Standard-E","gender":"FEMALE"},{"lang":"nb-NO","name":"nb-no-Wavenet-E","gender":"FEMALE"}],"pl-PL":[{"lang":"pl-PL","name":"pl-PL-Standard-A","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Standard-B","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Standard-C","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Standard-D","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Standard-E","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-A","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-B","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-C","gender":"MALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-D","gender":"FEMALE"},{"lang":"pl-PL","name":"pl-PL-Wavenet-E","gender":"FEMALE"}],"pt-BR":[{"lang":"pt-BR","name":"pt-BR-Standard-A","gender":"FEMALE"},{"lang":"pt-BR","name":"pt-BR-Wavenet-A","gender":"FEMALE"}],"pt-PT":[{"lang":"pt-PT","name":"pt-PT-Standard-A","gender":"FEMALE"},{"lang":"pt-PT","name":"pt-PT-Standard-B","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Standard-C","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Standard-D","gender":"FEMALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-A","gender":"FEMALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-B","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-C","gender":"MALE"},{"lang":"pt-PT","name":"pt-PT-Wavenet-D","gender":"FEMALE"}],"ru-RU":[{"lang":"ru-RU","name":"ru-RU-Standard-A","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Standard-B","gender":"MALE"},{"lang":"ru-RU","name":"ru-RU-Standard-C","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Standard-D","gender":"MALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-A","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-B","gender":"MALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-C","gender":"FEMALE"},{"lang":"ru-RU","name":"ru-RU-Wavenet-D","gender":"MALE"}],"sk-SK":[{"lang":"sk-SK","name":"sk-SK-Standard-A","gender":"FEMALE"},{"lang":"sk-SK","name":"sk-SK-Wavenet-A","gender":"FEMALE"}],"es-ES":[{"lang":"es-ES","name":"es-ES-Standard-A","gender":"FEMALE"}],"sv-SE":[{"lang":"sv-SE","name":"sv-SE-Standard-A","gender":"FEMALE"},{"lang":"sv-SE","name":"sv-SE-Wavenet-A","gender":"FEMALE"}],"tr-TR":[{"lang":"tr-TR","name":"tr-TR-Standard-A","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Standard-B","gender":"MALE"},{"lang":"tr-TR","name":"tr-TR-Standard-C","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Standard-D","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Standard-E","gender":"MALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-A","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-B","gender":"MALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-C","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-D","gender":"FEMALE"},{"lang":"tr-TR","name":"tr-TR-Wavenet-E","gender":"MALE"}],"uk-UA":[{"lang":"uk-UA","name":"uk-UA-Standard-A","gender":"FEMALE"},{"lang":"uk-UA","name":"uk-UA-Wavenet-A","gender":"FEMALE"}]}
       factory.isLoading = false;
       factory.isCreateLoading = false;
@@ -155,6 +156,7 @@ angular
         for (var index in factory.models) {
           var model = factory.models[ index ];
           if (model.cell.id === factory.cellModel.cell.id) {
+            factory.trash.push(model);
             continue; 
           }
           models.push( model );
@@ -512,13 +514,47 @@ angular
       var paper = diagram['paper'];
       paper.translate(0, 0);
     }
+
+    function changeCell(item) {
+      var graph = diagram['graph'];
+      var cells = graph.getCells();
+      angular.forEach(cells, function(cell) {
+        console.log("changeCell changing ", arguments);
+        if (cell.id === item.cell.id) {
+          item.cell = cell;
+        }
+      });
+    }
+    function syncTrash() {
+      var newTrash = [];
+      angular.forEach($shared.trash, function(item) {
+        var id = item.cell.id;
+        if ( $("g[model-id='" + id + "']").is(":visible") ) {
+          changeCell(item);
+          $shared.models.push( item );
+        } else {
+          newTrash.push(item);
+        }
+      });
+      angular.forEach($shared.models, function(item) {
+        var id = item.cell.id;
+        if ( !$("g[model-id='" + id + "']").is(":visible") ) {
+          newTrash.push(item);
+        }
+      });
+      $shared.trash = newTrash;
+
+    }
+
     $scope.undo = function() {
       var commandManager = diagram['commandManager'];
       commandManager.undo();
+      syncTrash();
     }
     $scope.redo = function() {
       var commandManager = diagram['commandManager'];
       commandManager.redo();
+      syncTrash();
     }
     $scope.zoomOut = function() {
       zoomOut();
@@ -608,6 +644,7 @@ angular
        var query = urlObj.query( true );
         var token = query.auth;
         $location.url("/edit?flowId=" + id + "&auth=" + token);
+        top.window.location.href = "/#/dashboard/flows/" + id;
       });
     }
     $scope.useTemplate = function(template) {
@@ -915,6 +952,7 @@ angular
                             }
                             var obj2 = new Model(cell, model.name, links, model.data);
                             addCellArgs(obj2);
+                            console.log("pushing model ", obj2);
                             $shared.models.push(obj2);
                           }
                         }
