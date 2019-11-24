@@ -1,147 +1,76 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <link rel="stylesheet" href="/node_modules/angular-material/angular-material.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jointjs/1.0.2/joint.css"/>
+  <link rel="stylesheet" href="/node_modules/angular-material/angular-material.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jointjs/1.0.2/joint.css" />
 </head>
+
 <body ng-app="autocompleteDemo">
-    <style>
-        .papers {
-            position: relative;
-        }
-        .papers #paper {
-            background: #FFED0A;
-            width: 80%;
-        }
-        .papers #stencil {
-            background: #146DFF;
-            position: absolute;
-            right: 0;
-            top: 0;
-        }
-
-       </style>
-<div ng-controller="DemoCtrl as ctrl" layout="column">
-  <md-content class="md-padding">
-    <form ng-submit="$event.preventDefault()">
-      <p>Use <code>md-autocomplete</code> to search for matches from local or remote data sources.</p>
-      <md-autocomplete
-          ng-disabled="ctrl.isDisabled"
-          md-no-cache="ctrl.noCache"
-          md-selected-item="ctrl.selectedItem"
-          md-search-text-change="ctrl.searchTextChange(ctrl.searchText)"
-          md-search-text="ctrl.searchText"
-          md-selected-item-change="ctrl.selectedItemChange(item)"
-          md-items="item in ctrl.querySearch(ctrl.searchText)"
-          md-item-text="item.display"
-          md-min-length="0"
-          placeholder="What is your favorite US state?">
-        <md-item-template>
-          <span md-highlight-text="ctrl.searchText" md-highlight-flags="^i">{{item.display}}</span>
-        </md-item-template>
-        <md-not-found>
-          No matches found for "{{ctrl.searchText}}".
-        </md-not-found>
-      </md-autocomplete>
-      <br/>
-      <md-checkbox ng-model="ctrl.simulateQuery">Simulate query for results?</md-checkbox>
-      <md-checkbox ng-model="ctrl.noCache">Disable caching of queries?</md-checkbox>
-      <md-checkbox ng-model="ctrl.isDisabled">Disable the input?</md-checkbox>
-      <p>By default, <code>md-autocomplete</code> will cache results when performing a query.  After the initial call is performed, it will use the cached results to eliminate unnecessary server requests or lookup logic. This can be disabled above.</p>
-    </form>
-  </md-content>
-</div>
-    <!-- dependencies -->
-    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
-    <script src="/node_modules/angular/angular.js"></script>
-    <script>
-    // fix for angular sanitize version 1.4.4
-    angular.lowercase = angular.$$lowercase;  
-    </script>
-    <script src="/node_modules/angular-aria/angular-aria.js"></script>
-    <script src="/node_modules/angular-route/angular-route.js"></script>
-    <script src="/node_modules/angular-animate/angular-animate.js"></script>
-    <script src="/node_modules/angular-sanitize/angular-sanitize.js"></script>
-    <script src="/node_modules/angular-material/angular-material.js"></script>
-    <script src="/node_modules/lodash/lodash.min.js"></script>
-    <script src="/node_modules/backbone/backbone-min.js"></script>
-    <script src="/node_modules/jointjs/dist/joint.js"></script>
-    <script src="/node_modules/urijs/src/URI.min.js"></script>
-
-<script>
-
-(function () {
-  'use strict';
-  angular
-      .module('autocompleteDemo', ['ngMaterial'])
-      .controller('DemoCtrl', DemoCtrl);
-  function DemoCtrl ($timeout, $q, $log) {
-    var self = this;
-    self.simulateQuery = false;
-    self.isDisabled    = false;
-    // list of `state` value/display objects
-    self.states        = loadAll();
-    self.querySearch   = querySearch;
-    self.selectedItemChange = selectedItemChange;
-    self.searchTextChange   = searchTextChange;
-    // ******************************
-    // Internal methods
-    // ******************************
-    /**
-     * Search for states... use $timeout to simulate
-     * remote dataservice call.
-     */
-    function querySearch (query) {
-      var results = query ? self.states.filter( createFilterFor(query) ) : self.states,
-          deferred;
-      if (self.simulateQuery) {
-        deferred = $q.defer();
-        $timeout(function () { deferred.resolve( results ); }, Math.random() * 1000, false);
-        return deferred.promise;
-      } else {
-        console.log("results are ", results);
-        return results;
-      }
-    }
-    function searchTextChange(text) {
-      $log.info('Text changed to ' + text);
-    }
-    function selectedItemChange(item) {
-      $log.info('Item changed to ' + JSON.stringify(item));
-    }
-    /**
-     * Build `states` list of key/value pairs
-     */
-    function loadAll() {
-      var allStates = 'Alabama, Alaska, Arizona, Arkansas, California, Colorado, Connecticut, Delaware,\
-              Florida, Georgia, Hawaii, Idaho, Illinois, Indiana, Iowa, Kansas, Kentucky, Louisiana,\
-              Maine, Maryland, Massachusetts, Michigan, Minnesota, Mississippi, Missouri, Montana,\
-              Nebraska, Nevada, New Hampshire, New Jersey, New Mexico, New York, North Carolina,\
-              North Dakota, Ohio, Oklahoma, Oregon, Pennsylvania, Rhode Island, South Carolina,\
-              South Dakota, Tennessee, Texas, Utah, Vermont, Virginia, Washington, West Virginia,\
-              Wisconsin, Wyoming';
-      return allStates.split(/, +/g).map( function (state) {
-        return {
-          value: state.toLowerCase(),
-          display: state
-        };
-      });
-    }
-    /**
-     * Create filter function for a query string
-     */
-    function createFilterFor(query) {
-      var lowercaseQuery = angular.lowercase(query);
-      return function filterFn(state) {
-        return (state.value.indexOf(lowercaseQuery) === 0);
-      };
-    }
-  }
-})();
-</script>
-
-
-
-</script>
+  <div id="canvas" class="joint-paper joint-theme-default"
+    style="width: 100%; height: 768px; background-image: url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAMUlEQVQ4T2NkoAAwgvQ+fvz4P4iWlZUF84kFlGsm1iZ0dSQ5c1QzA8NogJGY1CgKMACkIggQU68KLgAAAABJRU5ErkJggg==&quot;);">
+    <div class="joint-paper-background" joint-selector="background"></div>
+    <div class="joint-paper-grid" joint-selector="grid"
+      style="background-image: url(&quot;data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGlkPSJ2LTQiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzIGlkPSJ2LTMiPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuXzAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHg9IjAiIHk9IjAiIHdpZHRoPSIxNSIgaGVpZ2h0PSIxNSI+PHJlY3QgaWQ9InYtNSIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0iI0FBQUFBQSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3QgaWQ9InYtNyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuXzApIi8+PC9zdmc+&quot;);">
+    </div><svg width="100%" height="100%" xmlns:xlink="http://www.w3.org/1999/xlink" joint-selector="svg" id="v-2">
+      <defs joint-selector="defs"></defs>
+      <g joint-selector="layers" class="joint-layers">
+        <g joint-selector="cells" class="joint-cells-layer joint-viewport">
+          <g model-id="4bdfe175-5fed-4180-9389-1567ac205a93" data-type="devs.LaunchModel" id="j_7"
+            class="joint-cell joint-type-devs joint-type-devs-launchmodel joint-element joint-theme-default"
+            magnet="false" fill="#ffffff" stroke="none" transform="translate(447.67499999999995,120)">
+            <g class="rotatable" id="v-27">
+              <g class="scalable" transform="scale(1,1)">
+                <rect rx="10" ry="10" class="body" id="v-28" stroke="#000" fill="#3366cc" width="256" height="128">
+                </rect>
+              </g>
+              <image></image><text class="label" id="v-29" font-size="18" xml:space="preserve" y="0.8em" fill="#FFFFFF"
+                text-anchor="middle" transform="matrix(1,0,0,1,128,50)">
+                <tspan dy="0" class="v-line">Launch</tspan>
+              </text>
+              <g class="inPorts"></g>
+              <g class="outPorts"></g>
+              <g id="v-30" class="joint-port" transform="matrix(1,0,0,1,128,128)">
+                <circle class="port-body joint-port-body" id="v-31" port="Incoming Call" port-group="out" fill="#fff"
+                  stroke="#000" r="10" magnet="true"></circle><text class="port-label joint-port-label" id="v-32"
+                  xml:space="preserve" y=".6em" fill="#000" transform="matrix(1,0,0,1,0,15)" text-anchor="middle">
+                  <tspan dy="0" class="v-line">Incoming&nbsp;Call</tspan>
+                </text>
+              </g>
+            </g>
+          </g>
+          <g model-id="b511828b-5552-457f-9cfd-75568cc564ce" data-type="devs.BridgeModel" id="j_8"
+            class="joint-cell joint-type-devs joint-type-devs-bridgemodel joint-element joint-theme-default"
+            magnet="false" fill="#ffffff" stroke="none" transform="translate(720,375)">
+            <g class="rotatable" id="v-33">
+              <g class="scalable" transform="scale(1,1)">
+                <rect rx="10" ry="10" class="body" id="v-34" stroke="#000" fill="#cc0000" width="256" height="128">
+                </rect>
+              </g>
+              <image></image><text class="label" id="v-35" font-size="18" xml:space="preserve" y="0.8em" fill="#FFFFFF"
+                text-anchor="middle" transform="matrix(1,0,0,1,128,50)">
+                <tspan dy="0" class="v-line">Forward&nbsp;Bridge</tspan>
+              </text>
+              <g class="inPorts"></g>
+              <g class="outPorts"></g>
+              <g id="v-36" class="joint-port" transform="matrix(1,0,0,1,128,0)">
+                <circle class="port-body joint-port-body" id="v-37" port="In" port-group="in" fill="#fff" stroke="#000"
+                  r="10" magnet="true"></circle><text class="port-label joint-port-label" id="v-38" xml:space="preserve"
+                  y="0" fill="#000" transform="matrix(1,0,0,1,0,-15)" text-anchor="middle">
+                  <tspan dy="0" class="v-line">In</tspan>
+                </text>
+              </g>
+              <g id="v-39" class="joint-port" transform="matrix(1,0,0,1,64,128)">
+                <circle class="port-body joint-port-body" id="v-40" port="Connected Call Ended" port-group="out"
+                  fill="#fff" stroke="#000" r="10" magnet="true"></circle><text class="port-label joint-port-label"
+                  id="v-41" xml:space="preserve" y=".6em" fill="#000" transform="matrix(1,0,0,1,0,15)"
+                  text-anchor="middle">
+                  <tspan dy="0" class="v-line">Connected&nbsp;Call&nbsp;Ended</tspan>
+                </text>
+              </g>
+              <g id="v-42" class="joint-port" transform="matrix(1,0,0,1,192,128)">
+                <circle class="port-body joint-port-body" id="v-43" port="Caller Hung Uo" port-group="out" fill="#fff"
+                  stroke="#000" r="10" magnet="true"></circle><text class="port-label joint-port-label" id="v-44"
+                  xml:space="preserve" y=".6em" fill="#000" transform="matrix(1,0,0,1,0,15)" text-anchor="middle"><tspan dy="0" class="v-line">Caller&nbsp;Hung&nbsp;Uo</tspan></text></g></g></g><g model-id="fbaf01f5-1482-403c-ab51-edc5fc59a784" data-type="link" id="j_9" class="joint-cell joint-type-link joint-link joint-theme-default"><path class="connection" stroke="black" d="M 576 258 L 576 302 C 575.8 308.3333333333333 579.1333333333333 311.66666666666663 586 312 L 702 312 C 708.5333333333333 311.66666666666663 711.8666666666666 315 712 322 L 712 344 C 711.8666666666666 350.5333333333333 715.1999999999999 353.8666666666667 722 354 L 838 354 C 844.6666666666665 353.8666666666667 847.9999999999999 355.5333333333333 848 359 L 848 365"></path><path class="marker-source" fill="black" stroke="black" d="M 0 0 0 0" transform="matrix(0.0005607285381325514,0.9999998427917409,-0.9999998427917409,0.0005607285381325514,575.6699829101562,258)"></path><path class="marker-target" fill="black" stroke="black" d="M 0 0 0 0" transform="matrix(-1.8369701987210297e-16,-1,1,-1.8369701987210297e-16,848,365)"></path><path class="connection-wrap" d="M 576 258 L 576 302 C 575.8 308.3333333333333 579.1333333333333 311.66666666666663 586 312 L 702 312 C 708.5333333333333 311.66666666666663 711.8666666666666 315 712 322 L 712 344 C 711.8666666666666 350.5333333333333 715.1999999999999 353.8666666666667 722 354 L 838 354 C 844.6666666666665 353.8666666666667 847.9999999999999 355.5333333333333 848 359 L 848 365"></path><g class="marker-vertices"><g class="marker-vertex-group" transform="translate(711.8375, 311.5)" id="v-46"><circle class="marker-vertex" idx="0" r="10"></circle><path class="marker-vertex-remove-area" idx="0" d="M16,5.333c-7.732,0-14,4.701-14,10.5c0,1.982,0.741,3.833,2.016,5.414L2,25.667l5.613-1.441c2.339,1.317,5.237,2.107,8.387,2.107c7.732,0,14-4.701,14-10.5C30,10.034,23.732,5.333,16,5.333z" transform="translate(5, -33)"></path><path class="marker-vertex-remove" idx="0" transform="scale(.8) translate(9.5, -37)" d="M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z"><title>Remove vertex.</title></path></g></g><g class="marker-arrowheads"><g class="marker-arrowhead-group marker-arrowhead-group-source" id="v-47" transform="matrix(0.0005607285381325514,0.9999998427917409,-0.9999998427917409,0.0005607285381325514,588.6700156142032,257.99271257271164)"><path class="marker-arrowhead" end="source" d="M 26 0 L 0 13 L 26 26 z"></path></g><g class="marker-arrowhead-group marker-arrowhead-group-target" id="v-48" transform="matrix(-1.8369701987210297e-16,-1,1,-1.8369701987210297e-16,835,365)"><path class="marker-arrowhead" end="target" d="M 26 0 L 0 13 L 26 26 z"></path></g></g><g class="link-tools"><g class="link-tool" id="v-45" transform="translate(576, 298) "><g class="tool-remove" event="remove"><circle r="11"></circle><path transform="scale(.8) translate(-16, -16)" d="M24.778,21.419 19.276,15.917 24.777,10.415 21.949,7.585 16.447,13.087 10.945,7.585 8.117,10.415 13.618,15.917 8.116,21.419 10.946,24.248 16.447,18.746 21.948,24.248z"></path><title>Remove link.</title></g><g class="tool-options" event="link:options"><circle r="11" transform="translate(25)"></circle><path fill="white" transform="scale(.55) translate(29, -16)" d="M31.229,17.736c0.064-0.571,0.104-1.148,0.104-1.736s-0.04-1.166-0.104-1.737l-4.377-1.557c-0.218-0.716-0.504-1.401-0.851-2.05l1.993-4.192c-0.725-0.91-1.549-1.734-2.458-2.459l-4.193,1.994c-0.647-0.347-1.334-0.632-2.049-0.849l-1.558-4.378C17.165,0.708,16.588,0.667,16,0.667s-1.166,0.041-1.737,0.105L12.707,5.15c-0.716,0.217-1.401,0.502-2.05,0.849L6.464,4.005C5.554,4.73,4.73,5.554,4.005,6.464l1.994,4.192c-0.347,0.648-0.632,1.334-0.849,2.05l-4.378,1.557C0.708,14.834,0.667,15.412,0.667,16s0.041,1.165,0.105,1.736l4.378,1.558c0.217,0.715,0.502,1.401,0.849,2.049l-1.994,4.193c0.725,0.909,1.549,1.733,2.459,2.458l4.192-1.993c0.648,0.347,1.334,0.633,2.05,0.851l1.557,4.377c0.571,0.064,1.148,0.104,1.737,0.104c0.588,0,1.165-0.04,1.736-0.104l1.558-4.377c0.715-0.218,1.399-0.504,2.049-0.851l4.193,1.993c0.909-0.725,1.733-1.549,2.458-2.458l-1.993-4.193c0.347-0.647,0.633-1.334,0.851-2.049L31.229,17.736zM16,20.871c-2.69,0-4.872-2.182-4.872-4.871c0-2.69,2.182-4.872,4.872-4.872c2.689,0,4.871,2.182,4.871,4.872C20.871,18.689,18.689,20.871,16,20.871z"></path><title>Link options.</title></g></g></g></g></g><g joint-selector="tools" class="joint-tools-layer"></g></g></svg></div>  
 </body>
 </html>

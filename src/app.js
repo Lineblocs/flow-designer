@@ -47,12 +47,24 @@ function checkExpires(expiresIn) {
 }
 function changeLabel(cell, text, refY)
 {
-  refY = refY || 50;
+  refY = refY || labelRefY;
   cell.attr('.label', {
         text: text,
         fill: '#FFFFFF',
         'font-size': '18',
         'ref-y': refY
+      });
+}
+function changeDescription(cell, text, refY)
+{
+  refY = refY || descriptionRefY;
+  refX= .5;
+  cell.attr('.description', {
+        text: text,
+        fill: '#FFFFFF',
+        'font-size': '12px',
+        'ref-y': refY,
+        'ref-x': refX
       });
 }
 function addCellArgs(model) {
@@ -441,6 +453,37 @@ angular
       var model = factory.cellModel;
       //model.cell.attr({ text: { text:  model.name } });
       changeLabel(model.cell, model.name);
+      console.log("saveWidget model", model);
+      var data = model.data;
+      if (model.cell.attributes.type === 'devs.DialModel') {
+        if (data.call_type === 'Phone Number') {
+          changeDescription(model.cell, "Call " + data.number_to_call + " on new line");
+        }  else if (data.call_type === "Extension") {
+          changeDescription(model.cell, "Call ext " + data.extension + " on new line");
+        }
+      } else if (model.cell.attributes.type === 'devs.BridgeModel') {
+        if (data.call_type === 'Phone Number') {
+          changeDescription(model.cell, "Connect to " + data.number_to_call);
+        }  else if (data.call_type === "Extension") {
+          changeDescription(model.cell, "Connect to ext " + data.extension);
+        }
+      } else if (model.cell.attributes.type === 'devs.ProcessInputModel') {
+        if (data.playback_type === 'Say') {
+          changeDescription(model.cell, "Use text to speech to process input");
+        } else {
+          changeDescription(model.cell, "Use media file to process input");
+        }
+      } else if (model.cell.attributes.type === 'devs.RecordVoicemailModel') {
+        var length = data.max_recording_length;
+          changeDescription(model.cell, "Record voicemail for " + length + " seconds");
+      } else if (model.cell.attributes.type === 'devs.PlaybackModel') {
+        if (data.playback_type === 'Say') {
+          changeDescription(model.cell, "Use text to speech to create playback");
+        } else {
+          changeDescription(model.cell, "Use media file as playback");
+        }
+      } else if (model.cell.attributes.type === 'devs.SwitchModel') {
+      }
     }
     factory.getCellById = function( id ) {
       var found = null;

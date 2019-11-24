@@ -53,7 +53,7 @@
                                     <div flex="95">
                                             <md-input-container>
                                                 <label for="testInput">Extension To Call</label>
-                                                <md-select ng-change="changeExtension(cellModel.data.extension)" ng-model="cellModel.data.extension">
+                                                <md-select md-on-open="updateExtensions()" ng-change="changeExtension(cellModel.data.extension)" ng-model="cellModel.data.extension">
                                                     <md-option><em>None</em></md-option>
                                                     <md-option ng-value="extension" ng-repeat="extension in extensions">
                                                     {{extension}}
