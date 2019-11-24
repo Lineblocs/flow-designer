@@ -10,7 +10,7 @@ var rectOptions = {
         var labelRefY = 30;
         var descriptionRefY = 70;
 
-function createDefaultAttrs(text) {
+function createDefaultAttrs(name, text) {
 var defaultAttrs = {
       '.body': {
         stroke: '#CCCCCC'
@@ -20,7 +20,7 @@ var defaultAttrs = {
       circle: {
       },
       '.label': {
-        text: 'Dial',
+        text: name,
         fill: '#FFFFFF',
         'ref-y': labelRefY
       },
@@ -77,10 +77,10 @@ joint.shapes.devs.LaunchModel = joint.shapes.devs.Model.extend({
   markup: defaultMarkup,
 
   defaults: joint.util.deepSupplement({
-
+    name: "Launch",
     type: 'devs.LaunchModel',
     size: widgetDimens,
-    attrs: createDefaultAttrs(""),
+    attrs: createDefaultAttrs("Launch", "the flow entrypoint"),
     inPorts: [],
     outPorts: ['Incoming Call'],
     ports: defaultPorts
@@ -98,7 +98,7 @@ joint.shapes.devs.SwitchModel = joint.shapes.devs.Model.extend({
     name: 'Switch',
     type: 'devs.SwitchModel',
     size: widgetDimens, 
-    attrs: createDefaultAttrs("Change flow based on condition"),
+    attrs: createDefaultAttrs("Switch", "Change flow based on condition"),
     inPorts: ['In'],
     outPorts: ['No Condition Matches'],
     ports: defaultPorts
@@ -116,7 +116,7 @@ joint.shapes.devs.DialModel = joint.shapes.devs.Model.extend({
     name: 'Dial',
     type: 'devs.DialModel',
     size: widgetDimens,
-    attrs: createDefaultAttrs("Dial a number on a new line"), 
+    attrs: createDefaultAttrs("Dial", "Dial a number on a new line"), 
     inPorts: ['In'],
     outPorts: ['Answer', 'No Answer', 'Call Failed'],
     ports: defaultPorts,
@@ -133,7 +133,7 @@ joint.shapes.devs.BridgeModel = joint.shapes.devs.Model.extend({
     name: 'Bridge',
     type: 'devs.BridgeModel',
     size: widgetDimens,
-    attrs: createDefaultAttrs("Connect this call to an extension/phone"),
+    attrs: createDefaultAttrs("Bridge", "Connect this call to an extension/phone"),
   inPorts: ['In'],
   outPorts: ['Connected Call Ended', 'Caller Hung Uo'],
   ports: defaultPorts
@@ -150,7 +150,7 @@ joint.shapes.devs.ProcessInputModel = joint.shapes.devs.Model.extend({
     name: 'ProcessInput',
     type: 'devs.ProcessInputModel',
     size: widgetDimens,
-    attrs: createDefaultAttrs("Gather input on a call"),
+    attrs: createDefaultAttrs("ProcessInput", "Gather input on a call"),
   
   inPorts: ['In'],
   outPorts: ['Digits Received', 'Speech Received'],
@@ -169,7 +169,7 @@ joint.shapes.devs.RecordVoicemailModel = joint.shapes.devs.Model.extend({
     name: 'RecordVoicemail',
     type: 'devs.RecordVoicemailModel',
     size: widgetDimens,
-    attrs: createDefaultAttrs("Record voicemail"),
+    attrs: createDefaultAttrs("RecordVoicemail", "Record voicemail"),
   inPorts: ['In'],
   outPorts: ['Record Complete', 'No Audio', 'Hangup'],
   ports: defaultPorts
@@ -187,7 +187,7 @@ joint.shapes.devs.PlaybackModel = joint.shapes.devs.Model.extend({
     name: 'Playback',
     type: 'devs.PlaybackModel',
     size: widgetDimens,
-    attrs: createDefaultAttrs("Playback an MP3 or TTS"),
+    attrs: createDefaultAttrs("Playback", "Playback an MP3 or TTS"),
   inPorts: ['In'],
   outPorts: ['Finished'],
   ports: defaultPorts
