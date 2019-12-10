@@ -90,7 +90,8 @@ if (href1 || href2) {
 function createUrl(path) {
     return baseUrl + path;
 }
-
+var urlObj = URI(document.location.href);
+var query = urlObj.query( true );
 
 angular
   .module('basicUsageSidenavDemo', ['ngMaterial', 'ngRoute'])
@@ -99,8 +100,6 @@ angular
             // optional method
             'request': function(config) {
                 try {                
-                  var urlObj = URI(document.location.href);
-                 var query = urlObj.query( true );
                   var token = query.auth;
                   var workspaceId = query.workspaceId;
                   if (token) {
