@@ -709,7 +709,7 @@ angular
         var token = query.auth;
         $location.url("/edit?flowId=" + id + "&auth=" + token);
         if (!isLocal) {
-          top.window.location.href = "http://app.lineblocs.com/#/dashboard/flows/" + id;
+          top.window.location.href = "https://app.lineblocs.com/#/dashboard/flows/" + id;
         }
       });
     }
