@@ -78,9 +78,12 @@ function addCellArgs(model) {
   }
 }
 
-var href = document.location.href.includes("http://localhost");
-if (href) {
-    var baseUrl = "http://lineblocs.com/api";
+var href1 = document.location.href.includes("http://localhost");
+var href2 = document.location.href.includes("ngrok.io");
+var isLocal = false;
+if (href1 || href2) {
+    var baseUrl = "https://lineblocs.com/api";
+    isLocal = true;
 } else {
     var baseUrl = "/api";
 }
@@ -99,9 +102,14 @@ angular
                   var urlObj = URI(document.location.href);
                  var query = urlObj.query( true );
                   var token = query.auth;
+                  var workspaceId = query.workspaceId;
                   if (token) {
                       config.headers['Authorization'] = "Bearer " + token;
                   }
+                  if (workspaceId) {
+                      config.headers['X-Workspace-ID'] = workspaceId;
+                  }
+
                   console.log("request headers are ", config.headers);
                 } catch (e) {
                 }
@@ -700,7 +708,9 @@ angular
        var query = urlObj.query( true );
         var token = query.auth;
         $location.url("/edit?flowId=" + id + "&auth=" + token);
-        top.window.location.href = "http://app.lineblocs.com/#/dashboard/flows/" + id;
+        if (!isLocal) {
+          top.window.location.href = "http://app.lineblocs.com/#/dashboard/flows/" + id;
+        }
       });
     }
     $scope.useTemplate = function(template) {
@@ -734,7 +744,8 @@ angular
     ];
     $scope.callTypes = [
       'Extension',
-      'Phone Number'
+      'Phone Number',
+      'Queue'
     ];
 
     $scope.playbackTypes = [

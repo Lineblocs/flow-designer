@@ -206,7 +206,7 @@
                                 </div>
                                 <div layout="row" ng-show="cellModel.data.call_type === 'Extension'">
                                     <div flex="95">
-                                            <md-input-container ng-show="cellModel.data.call_type === 'Extension'">
+                                            <md-input-container>
                                                 <label for="testInput">Extension To Call</label>
                                                 <md-select md-on-open="updateExtensions()" ng-change="changeExtension(cellModel.data.extension)" ng-model="cellModel.data.extension">
                                                     <md-option><em>None</em></md-option>
@@ -222,6 +222,53 @@
                                         <i class="mdi mdi-information"></i>
                                         <md-tooltip class="helper-tooltip" md-direction="top">
                                           The extension to dial on your account.
+                                        </md-tooltip>
+                                    </md-icon>
+                                    </div>
+                                </div>
+                                <div layout="row" ng-show="cellModel.data.call_type === 'Queue'">
+                                    <div flex="95">
+                                            <md-input-container>
+                                                <label for="testInput">Queue Name</label>
+                                                <input type="text" ng-model="cellModel.data.timeout" md-autofocus>
+                                            </md-input-container>
+                                        </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                          A unique identifier for the queue
+                                        </md-tooltip>
+                                    </md-icon>
+                                    </div>
+                                    <div flex="95">
+                                            <label for="testInput">Extensions to ring</label>
+                                                <md-chips ng-model="cellModel.data.queue_extensions" md-autocomplete-snap
+              md-transform-chip="transformChip($chip)"
+              md-require-match="true"
+              input-aria-label="Queue Extensions">
+      <md-autocomplete
+          md-selected-item="cellModel.tempData.selectedItem"
+          md-search-text="cellModel.tempData.searchText"
+          md-items=" $shared.searchTextChange($shared.cellModel, 'test')"
+          md-item-text="item.name"
+          input-aria-describedby="autocompleteTitle"
+          placeholder="Search for a extension">
+        <span md-highlight-text="ctrl.searchText">{{extension.username}}</span>
+      </md-autocomplete>
+      <md-chip-template>
+        <span>
+          <strong>{{$chip.name}}</strong>
+          <em>({{$chip.type}})</em>
+        </span>
+      </md-chip-template>
+    </md-chips>
+                                        </div>
+                                        <div flex="5">
+                                      <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                          A unique identifier for the queue
                                         </md-tooltip>
                                     </md-icon>
                                     </div>
