@@ -303,6 +303,7 @@ angular
       return options;
     }
     factory.querySearch   = querySearch;
+    factory.queryExtensionsSearch   = queryExtensionsSearch;
     factory.selectedItemChange = selectedItemChange;
     factory.searchTextChange   = searchTextChange;
 
@@ -311,6 +312,7 @@ angular
     factory.searchLinkTextChange   = searchLinkTextChange;
 
     factory.newState = newState;
+    factory.transformChip = transformChip;
 
     function newState(state) {
       alert("Sorry! You'll need to create a Constitution for " + state + " first!");
@@ -337,6 +339,33 @@ angular
         console.log("results are ", results);
         return results;
       }
+    }
+    function queryExtensionsSearch (query) {
+      console.log("querySearch was called..");
+      console.log("extensions are ", factory.extensions);
+      return $q.resolve(factory.extensions.map(function(extension) {
+        return {
+          value: extension,
+          display: extension
+        };
+      }));
+      /*
+      return factory.extensions.map(function(extension) {
+        return extension.username;
+      });
+      */
+    }
+        /**
+     * Return the proper object when the append is called.
+     */
+    function transformChip(chip) {
+      // If it is an object, it's already a known chip
+      if (angular.isObject(chip)) {
+        return chip;
+      }
+
+      // Otherwise, create a new one
+      return { name: chip, type: 'new' };
     }
     function queryLinkSearch (query) {
       console.log("queryLinkSearch was called..");
@@ -875,7 +904,8 @@ angular
     $scope.updateExtensions =  function() {
       console.log("updateExtensions ");
       $shared.loadExtensions().then(function(extensions) {
-        $scope.extensions = extensions;
+        //$shared.extensions = extensions;
+        $shared.extensions = ['1000', '2000', '3000', '4000', '5000', '10000', 'hello'];
       });
     }
 
@@ -970,7 +1000,8 @@ angular
        var url = createUrl( "/extension/listExtensions" );
        $shared.loadExtensions().then(function(extensions) {
           console.log("extensions are ", extensions);
-          $scope.extensions = extensions;
+          //$shared.extensions = extensions;
+        $shared.extensions = ['1000', '2000', '3000', '4000', '5000', '10000', 'hello'];
           $timeout(function() {
             window['angularScope'] = angular.element(document.getElementById('scopeCtrl')).scope();
             var graph;
