@@ -5,158 +5,223 @@
                 <md-tabs class="md-primary widget-options" md-center-tabs md-dynamic-height="true">
                     <md-tab label="info">
                         <md-content class="md-padding">
-                                <md-input-container>
-                                    <label for="testInput">Widget Name</label>
-                                    <input type="text" ng-model="cellModel.name" md-autofocus>
-                                </md-input-container>
-                                <div layout="row">
-                                    <div flex="95">
-                                        <md-input-container>
-                                            <label for="testInput">
-                                                Call Type
-                                            </label>
-                                            <md-select ng-change="changeCallType(cellModel.data.call_type)" ng-model="cellModel.data.call_type">
-                                                <md-option><em>None</em></md-option>
-                                                <md-option ng-value="type" ng-repeat="type in callTypes">
+                            <md-input-container>
+                                <label for="testInput">Widget Name</label>
+                                <input type="text" ng-model="cellModel.name" md-autofocus>
+                            </md-input-container>
+                            <div layout="row">
+                                <div flex="95">
+                                    <md-input-container>
+                                        <label for="testInput">
+                                            Call Type
+                                        </label>
+                                        <md-select ng-change="changeCallType(cellModel.data.call_type)"
+                                            ng-model="cellModel.data.call_type">
+                                            <md-option><em>None</em></md-option>
+                                            <md-option ng-value="type" ng-repeat="type in callTypes">
                                                 {{type}}
-                                                </md-option>
-                                            </md-select>
-                                        </md-input-container>
-                                        </div>
-                                        <div flex="5">
-                                      <md-icon class="tooltip-icon">
+                                            </md-option>
+                                        </md-select>
+                                    </md-input-container>
+                                </div>
+                                <div flex="5">
+                                    <md-icon class="tooltip-icon">
                                         <i class="mdi mdi-information"></i>
                                         <md-tooltip class="helper-tooltip" md-direction="top">
-                                            Choose how to bridge the call. <br/>
-                                            * Number this will call out to a phone number <br/>
+                                            Choose how to bridge the call. <br />
+                                            * Number this will call out to a phone number <br />
                                             * Extension this will call an extension on your account
                                         </md-tooltip>
                                     </md-icon>
                                 </div>
-                                </div>
+                            </div>
 
-                                <div layout="row" ng-show="cellModel.data.call_type === 'Phone Number'">
+                            <div ng-show="cellModel.data.call_type === 'Phone Number'">
+                                <div layout="row">
                                     <div flex="95">
-                                            <md-input-container>
-                                                <label for="testInput">Number To Call</label>
-                                                <input type="text" ng-model="cellModel.data.number_to_call" md-autofocus>
-                                            </md-input-container>
-                                            </div>
-                                        <div flex="5">
-                                      <md-icon class="tooltip-icon">
-                                        <i class="mdi mdi-information"></i>
-                                        <md-tooltip class="helper-tooltip" md-direction="top">
-                                            The number to call. please use E164 format for number. e.g:<br/>
-                                            +12023034040
-                                        </md-tooltip>
-                                    </md-icon>
+                                        <md-input-container>
+                                            <label for="testInput">Number To Call</label>
+                                            <input type="text" ng-model="cellModel.data.number_to_call" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                    <div flex="5">
+                                        <md-icon class="tooltip-icon">
+                                            <i class="mdi mdi-information"></i>
+                                            <md-tooltip class="helper-tooltip" md-direction="top">
+                                                The number to call. please use E164 format for number. e.g:<br />
+                                                +12023034040
+                                            </md-tooltip>
+                                        </md-icon>
                                     </div>
                                 </div>
-                                <div layout="row" ng-show="cellModel.data.call_type === 'Extension'">
+                                <div layout="row">
                                     <div flex="95">
-                                            <md-input-container>
-                                                <label for="testInput">Extension To Call</label>
-                                                <md-select md-on-open="updateExtensions()" ng-change="changeExtension(cellModel.data.extension)" ng-model="cellModel.data.extension">
-                                                    <md-option><em>None</em></md-option>
-                                                    <md-option ng-value="extension" ng-repeat="extension in $shared.extensions">
+                                        <md-input-container>
+                                            <label for="testInput">Timeout</label>
+                                            <input type="text" ng-model="cellModel.data.timeout" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                    <div flex="5">
+                                        <md-icon class="tooltip-icon">
+                                            <i class="mdi mdi-information"></i>
+                                            <md-tooltip class="helper-tooltip" md-direction="top">
+                                                This lets you control how long you let the call ring until it is
+                                                cancelled.
+                                            </md-tooltip>
+                                        </md-icon>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div ng-show="cellModel.data.call_type === 'Extension'">
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Extension To Call</label>
+                                            <md-select md-on-open="updateExtensions()"
+                                                ng-change="changeExtension(cellModel.data.extension)"
+                                                ng-model="cellModel.data.extension">
+                                                <md-option><em>None</em></md-option>
+                                                <md-option ng-value="extension"
+                                                    ng-repeat="extension in $shared.extensions">
                                                     {{extension}}
-                                                    </md-option>
-                                                </md-select>
+                                                </md-option>
+                                            </md-select>
 
-                                            </md-input-container>
-                                        </div>
-                                        <div flex="5">
-                                      <md-icon class="tooltip-icon">
-                                        <i class="mdi mdi-information"></i>
-                                        <md-tooltip class="helper-tooltip" md-direction="top">
-                                          The extension to dial on your account.
-                                        </md-tooltip>
-                                    </md-icon>
+                                        </md-input-container>
                                     </div>
-                                </div>
-                                <div layout="row" ng-show="cellModel.data.call_type === 'Queue'">
-                                    <div flex="95">
-                                            <md-input-container>
-                                                <label for="testInput">Queue Name</label>
-                                                <input type="text" ng-model="cellModel.data.timeout" md-autofocus>
-                                            </md-input-container>
-                                        </div>
-                                        <div flex="5">
-                                      <md-icon class="tooltip-icon">
-                                        <i class="mdi mdi-information"></i>
-                                        <md-tooltip class="helper-tooltip" md-direction="top">
-                                          A unique identifier for the queue
-                                        </md-tooltip>
-                                    </md-icon>
-                                    </div>
-                                </div>
-                                <div layout="row" ng-show="cellModel.data.call_type === 'Queue'">
-                                    <div flex="95">
-                                              <md-input-container>
-                                                <md-select multiple ng-model="cellModel.data.queue_extensions" placeholder="Select Extensions">
-                                                <md-option ng-repeat="extension in $shared.extensions" value="{{extension}}">{{extension}}</md-option>
-                                                </md-select>
-                                                    </md-input-container>
-                                        </div>
-                                        <div flex="5">
-                                      <md-icon class="tooltip-icon">
-                                        <i class="mdi mdi-information"></i>
-                                        <md-tooltip class="helper-tooltip" md-direction="top">
-                                          A unique identifier for the queue
-                                        </md-tooltip>
-                                    </md-icon>
+                                    <div flex="5">
+                                        <md-icon class="tooltip-icon">
+                                            <i class="mdi mdi-information"></i>
+                                            <md-tooltip class="helper-tooltip" md-direction="top">
+                                                The extension to dial on your account.
+                                            </md-tooltip>
+                                        </md-icon>
                                     </div>
                                 </div>
                                 <div layout="row">
                                     <div flex="95">
-                                            <md-input-container>
-                                                <label for="testInput">Caller ID</label>
-                                                <input type="text" ng-model="cellModel.data.caller_id" md-autofocus>
-                                            </md-input-container>
-                                        </div>
-                                        <div flex="5">
-                                      <md-icon class="tooltip-icon">
-                                        <i class="mdi mdi-information"></i>
-                                        <md-tooltip class="helper-tooltip" md-direction="top">
-                                          The Caller ID to use for the call. You can specify the number or the name and number. examples:<br/>
-                                          +12023034040<br/>
-                                          John Doe &lt;+12023034040&gt;
-                                        </md-tooltip>
-                                    </md-icon>
+                                        <md-input-container>
+                                            <label for="testInput">Timeout</label>
+                                            <input type="text" ng-model="cellModel.data.timeout" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                    <div flex="5">
+                                        <md-icon class="tooltip-icon">
+                                            <i class="mdi mdi-information"></i>
+                                            <md-tooltip class="helper-tooltip" md-direction="top">
+                                                This lets you control how long you let the call ring until it is
+                                                cancelled.
+                                            </md-tooltip>
+                                        </md-icon>
                                     </div>
 
                                 </div>
+                            </div>
+                            <div ng-show="cellModel.data.call_type === 'Queue'">
                                 <div layout="row">
                                     <div flex="95">
-                                            <md-input-container>
-                                                <label for="testInput">Timeout</label>
-                                                <input type="text" ng-model="cellModel.data.timeout" md-autofocus>
-                                            </md-input-container>
-                                        </div>
-                                        <div flex="5">
-                                      <md-icon class="tooltip-icon">
+                                        <md-input-container>
+                                            <label for="testInput">Queue Name</label>
+                                            <input type="text" ng-model="cellModel.data.timeout" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                    <div flex="5">
+                                        <md-icon class="tooltip-icon">
+                                            <i class="mdi mdi-information"></i>
+                                            <md-tooltip class="helper-tooltip" md-direction="top">
+                                                A unique identifier for the queue
+                                            </md-tooltip>
+                                        </md-icon>
+                                    </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <md-select multiple ng-model="cellModel.data.queue_extensions"
+                                                placeholder="Select Extensions">
+                                                <md-option ng-repeat="extension in $shared.extensions"
+                                                    value="{{extension}}">{{extension}}</md-option>
+                                            </md-select>
+                                        </md-input-container>
+                                    </div>
+                                    <div flex="5">
+                                        <md-icon class="tooltip-icon">
+                                            <i class="mdi mdi-information"></i>
+                                            <md-tooltip class="helper-tooltip" md-direction="top">
+                                                A unique identifier for the queue
+                                            </md-tooltip>
+                                        </md-icon>
+                                    </div>
+                                </div>
+
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Max Wait Time</label>
+                                            <input type="text" ng-model="cellModel.data.max_wait_time" md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                    <div flex="5">
+                                        <md-icon class="tooltip-icon">
+                                            <i class="mdi mdi-information"></i>
+                                            <md-tooltip class="helper-tooltip" md-direction="top">
+                                                The max time to wait before leaving the queue
+                                            </md-tooltip>
+                                        </md-icon>
+                                    </div>
+                                </div>
+                                <div layout="row">
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Max Extension Timeout</label>
+                                            <input type="text" ng-model="cellModel.data.max_extension_timeout"
+                                                md-autofocus>
+                                        </md-input-container>
+                                    </div>
+                                    <div flex="5">
+                                        <md-icon class="tooltip-icon">
+                                            <i class="mdi mdi-information"></i>
+                                            <md-tooltip class="helper-tooltip" md-direction="top">
+                                                How many seconds to let each extension ring before trying to call again
+                                            </md-tooltip>
+                                        </md-icon>
+                                    </div>
+                                </div>
+                            </div>
+                            <div layout="row">
+                                <div flex="95">
+                                    <md-input-container>
+                                        <label for="testInput">Caller ID</label>
+                                        <input type="text" ng-model="cellModel.data.caller_id" md-autofocus>
+                                    </md-input-container>
+                                </div>
+                                <div flex="5">
+                                    <md-icon class="tooltip-icon">
                                         <i class="mdi mdi-information"></i>
                                         <md-tooltip class="helper-tooltip" md-direction="top">
-                                          This lets you control how long you let the call ring until it is cancelled.
+                                            The Caller ID to use for the call. You can specify the number or the
+                                            name and number. examples:<br />
+                                            +12023034040<br />
+                                            John Doe &lt;+12023034040&gt;
                                         </md-tooltip>
                                     </md-icon>
-                                    </div>
-
                                 </div>
-                                <div layout="row">
-                                    <div flex="95">
-                                            <md-checkbox id="recordInput" ng-model="cellModel.data.do_record" aria-label="Checkbox 1">
-                                                Do Record
-                                            </md-checkbox>
-                                        </div>
-                                  <div flex="5">
-                                    </div>
-                                </div>
-                        </md-content>
-                    </md-tab>
-                </md-tabs>
-            </md-content>
+                </div>
+        <div layout="row">
+            <div flex="95">
+                <md-checkbox id="recordInput" ng-model="cellModel.data.do_record" aria-label="Checkbox 1">
+                    Do Record
+                </md-checkbox>
+            </div>
+            <div flex="5">
+            </div>
         </div>
-        <div ng-include="'/templates/widget_buttons.html'"></div>
-    </form>
+        </md-content>
+        </md-tab>
+        </md-tabs>
+        </md-content>
+</div>
+<div ng-include="'/templates/widget_buttons.html'"></div>
+</form>
 </div>
