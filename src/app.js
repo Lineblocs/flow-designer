@@ -904,8 +904,7 @@ angular
     $scope.updateExtensions =  function() {
       console.log("updateExtensions ");
       $shared.loadExtensions().then(function(extensions) {
-        //$shared.extensions = extensions;
-        $shared.extensions = ['1000', '2000', '3000', '4000', '5000', '10000', 'hello'];
+        $shared.extensions = extensions;
       });
     }
 
@@ -1000,8 +999,7 @@ angular
        var url = createUrl( "/extension/listExtensions" );
        $shared.loadExtensions().then(function(extensions) {
           console.log("extensions are ", extensions);
-          //$shared.extensions = extensions;
-        $shared.extensions = ['1000', '2000', '3000', '4000', '5000', '10000', 'hello'];
+          $shared.extensions = extensions;
           $timeout(function() {
             window['angularScope'] = angular.element(document.getElementById('scopeCtrl')).scope();
             var graph;
