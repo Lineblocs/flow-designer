@@ -153,7 +153,7 @@ joint.shapes.devs.ProcessInputModel = joint.shapes.devs.Model.extend({
     attrs: createDefaultAttrs("ProcessInput", "Gather input on a call"),
   
   inPorts: ['In'],
-  outPorts: ['Digits Received', 'Speech Received'],
+  outPorts: ['Digits Received', 'Speech Received', 'No Input'],
   ports:defaultPorts,
 
   }, joint.shapes.devs.Model.prototype.defaults)
