@@ -3,6 +3,7 @@
     "version": "v0.0.1",
     "dependencies": {
         "@mdi/font": "^4.4.95",
+        "@types/node": "^13.1.4",
         "angular": "^1.7.8",
         "angular-animate": "^1.7.8",
         "angular-aria": "^1.7.8",
@@ -28,6 +29,7 @@
         "jquery": "^3.4.1",
         "karma": "^4.4.1",
         "lodash": "^4.17.11",
+        "monaco-editor": "^0.19.2",
         "redirects": "^1.1.1",
         "serve-index": "^1.6.2",
         "serve-static": "^1.9.1",

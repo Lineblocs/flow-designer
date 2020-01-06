@@ -176,7 +176,16 @@ angular
           }, reject);
         });
       }
-
+    factory.loadFunctions = function() {
+       var url = createUrl( "/function/listFunctions" );
+       return $q(function(resolve, reject) {
+        $http.get( url ).then(function(res) {
+            console.log("functions are ", res.data);
+            var functions = res.data.data;
+            resolve( functions );
+          }, reject);
+        });
+      }
     factory.deleteWidget = function(ev) {
       var confirm = $mdDialog.confirm()
             .title('Are you sure you want to remove this widget ?')
@@ -907,7 +916,12 @@ angular
         $shared.extensions = extensions;
       });
     }
-
+    $scope.updateFunctions =  function() {
+      console.log("updateFunctions ");
+      $shared.loadFunctions().then(function(functions) {
+        $shared.functions = functions;
+      });
+    }
 
 
 

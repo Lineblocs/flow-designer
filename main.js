@@ -176,7 +176,16 @@ angular
           }, reject);
         });
       }
-
+    factory.loadFunctions = function() {
+       var url = createUrl( "/function/listFunctions" );
+       return $q(function(resolve, reject) {
+        $http.get( url ).then(function(res) {
+            console.log("functions are ", res.data);
+            var functions = res.data.data;
+            resolve( functions );
+          }, reject);
+        });
+      }
     factory.deleteWidget = function(ev) {
       var confirm = $mdDialog.confirm()
             .title('Are you sure you want to remove this widget ?')
@@ -907,7 +916,12 @@ angular
         $shared.extensions = extensions;
       });
     }
-
+    $scope.updateFunctions =  function() {
+      console.log("updateFunctions ");
+      $shared.loadFunctions().then(function(functions) {
+        $shared.functions = functions;
+      });
+    }
 
 
 
@@ -1701,6 +1715,7 @@ var stencilGraph = new joint.dia.Graph,
        joint.shapes.devs.ProcessInputModel,
        joint.shapes.devs.RecordVoicemailModel,
        joint.shapes.devs.PlaybackModel,
+       joint.shapes.devs.MacroModel,
   ]);
 stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
   $('body').append('<div id="flyPaper" style="position:fixed;z-index:100;opacity:.7;pointer-event:none;"></div>');
@@ -2052,7 +2067,25 @@ joint.shapes.devs.PlaybackModel = joint.shapes.devs.Model.extend({
   }, joint.shapes.devs.Model.prototype.defaults)
 });
 
-joint.shapes.devs.ProcessInputView = joint.shapes.devs.ModelView;
+joint.shapes.devs.PlaybackView = joint.shapes.devs.ModelView;
+
+
+joint.shapes.devs.MacroModel = joint.shapes.devs.Model.extend({
+
+  markup: defaultMarkup,
+
+  defaults: joint.util.deepSupplement({
+    name: 'Macro',
+    type: 'devs.MacroModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("Macro", "add custom code to your flow"),
+  inPorts: ['In'],
+  outPorts: ['Completed', 'Error'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.MacroView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.Link.define('devs.FlowLink', {
       attrs: {

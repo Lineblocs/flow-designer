@@ -194,7 +194,25 @@ joint.shapes.devs.PlaybackModel = joint.shapes.devs.Model.extend({
   }, joint.shapes.devs.Model.prototype.defaults)
 });
 
-joint.shapes.devs.ProcessInputView = joint.shapes.devs.ModelView;
+joint.shapes.devs.PlaybackView = joint.shapes.devs.ModelView;
+
+
+joint.shapes.devs.MacroModel = joint.shapes.devs.Model.extend({
+
+  markup: defaultMarkup,
+
+  defaults: joint.util.deepSupplement({
+    name: 'Macro',
+    type: 'devs.MacroModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("Macro", "add custom code to your flow"),
+  inPorts: ['In'],
+  outPorts: ['Completed', 'Error'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.MacroView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.Link.define('devs.FlowLink', {
       attrs: {
