@@ -1713,6 +1713,8 @@ angular
         });
 
         const fact1 = `public class LineCell {
+          public eventVars: object;
+          public processVars: object;
           constructor(public channel: LineChannel, public cell: object, public model: object, public sourceLinks: Array<object>, targetLinks: Array<object>) {
               }
           declare getEventVar(name: string): any;
@@ -1733,14 +1735,16 @@ angular
         const fact3 = `public class LineFlow {
           constructor(public flow: object, public user: LineUser, public exten: string, public callerId: string, public lineChannel: LineChannel) {
       }
+          getCellByName(name: string): LineCell;
+          getWorkspace(): LineWorkspace;
       }`;
         const factFilename3 = 'myCustomNamespace4';
 
 
         this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact3, factFilename3);
 
-        const fact4 = `let module {
-      exports: null
+        const fact4 = `declare class module {
+          public static exports: any;
       }`;
         const factFilename4 = 'myCustomNamespace5';
 
@@ -1769,6 +1773,28 @@ angular
 
 
         this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact6, factFilename6);
+
+
+        const fact7 = `declare function require(name: string): any;`;
+        const factFilename7 = 'myCustomNamespace8';
+
+
+        this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact7, factFilename7);
+
+        const fact8 = `declare function require(name: string): any;`;
+        const factFilename8 = 'myCustomNamespace8';
+
+
+        this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact8, factFilename8);
+
+        const fact9 = `public class LineWorkspace {
+          public params: object;
+          constructor() {
+          }
+      }`;
+        const factFilename9 = 'myCustomNamespace9';
+
+        this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact9, factFilename9);
         if ($scope.params['code'] !== '') {
           editor.setValue($scope.params['code']);
         }
