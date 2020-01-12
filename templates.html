@@ -227,6 +227,7 @@
                                 </div>
                             </div>
                             <div ng-show="cellModel.data.call_type === 'Extension'">
+
                                 <div layout="row">
                                     <div flex="95">
                                         <md-input-container>
@@ -271,6 +272,59 @@
 
                                 </div>
                             </div>
+                            <div ng-show="cellModel.data.call_type === 'ExtensionFlow'">
+                                <div layout="row">
+
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Extension To Call</label>
+                                            <md-select md-on-open="updateExtensions()"
+                                                ng-change="changeExtension(cellModel.data.extension)"
+                                                ng-model="cellModel.data.extension">
+                                                <md-option><em>None</em></md-option>
+                                                <md-option ng-value="extension"
+                                                    ng-repeat="extension in $shared.extensions">
+                                                    {{extension}}
+                                                </md-option>
+                                            </md-select>
+
+                                        </md-input-container>
+                                    </div>
+                                    <div flex="5">
+                                        <md-icon class="tooltip-icon">
+                                            <i class="mdi mdi-information"></i>
+                                            <md-tooltip class="helper-tooltip" md-direction="top">
+                                                The extension to dial on your account.
+                                            </md-tooltip>
+                                        </md-icon>
+                                    </div>
+                                </div>
+                            </div>
+                            <div ng-show="cellModel.data.call_type === 'Follow Me'">
+                                <div layout="row">
+
+                                    <div flex="95">
+                                        <md-input-container>
+                                            <label for="testInput">Numbers To Call</label>
+                                            <textarea ng-model="cellModel.data.follow_me_numbers" rows="3" cols="50"></textarea>
+                                        </md-input-container>
+                                    </div>
+                                    <div flex="5">
+                                        <md-icon class="tooltip-icon">
+                                            <i class="mdi mdi-information"></i>
+                                            <md-tooltip class="helper-tooltip" md-direction="top">
+                                                The list of numbers to dial. separate each number by a new line. you can also use
+                                                <br/>
+                                                # as a prefix to dial out to the PSTN. examples:
+                                                <br/><br/>
+                                                1000 dials an extension<br/>
+                                                #18002023030 dials a number
+                                            </md-tooltip>
+                                        </md-icon>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div ng-show="cellModel.data.call_type === 'Queue'">
                                 <div layout="row">
                                     <div flex="95">
@@ -361,7 +415,7 @@
                                 </div>
 
                             </div>
-                            <div layout="row">
+                            <div layout="row" ng-show="cellModel.data.call_type !== 'ExtensionFlow'">
                                 <div flex="95">
                                     <md-input-container>
                                         <label for="testInput">Caller ID</label>

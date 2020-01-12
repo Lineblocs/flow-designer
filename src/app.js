@@ -1291,8 +1291,10 @@ angular
     ];
     $scope.callTypes = [
       'Extension',
+      'ExtensionFlow',
       'Phone Number',
-      'Queue'
+      'Queue',
+      'Follow Me'
     ];
 
     $scope.playbackTypes = [

@@ -401,7 +401,7 @@ function bindHotkeys() {
         var active = document.activeElement;
         console.log("active element is ", active);
         var parent = $(active).parent();
-        if ( $( active ).is("input") || ( parent && $(parent).is("md-select")) || $(active).is("md-option")) {
+        if ( $( active ).is("input") || ( parent && $(parent).is("md-select")) || $(active).is("md-option") || $(active).is("textarea")) {
           return;
         }
         if (ctrlDown && (e.keyCode == cKey)) {
