@@ -1724,8 +1724,13 @@ angular
         this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact1, factFilename1);
 
         const fact2 = `public class LineChannel {
+          public channel: any;
           constructor(public channel: object) {
               }
+
+          declare getBridge(): LineBridge;
+          declare removeFromBridge();
+          declare playTTS(text: string, gender?: string, voice?: string);
       }`;
         const factFilename2 = 'myCustomNamespace3';
 
@@ -1771,6 +1776,50 @@ angular
 
 
         this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact6, factFilename6);
+        const fact7 = `public class LineSDK {
+          declare createBridge(): LineBridge;
+          declare createCall(flow: LineFlow, call: string, callerId: string, callType: string);
+          declare addChannel(channel: LineChannel);
+          declare removeFromBridge(channel: LineChannel);
+          declare getSDK(): LineSDK;
+            return new LineSDK();
+          }
+        }`;
+        const factFilename7 = 'myCustomNamespace8';
+
+
+        this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact7, factFilename7);
+        const fact8 = `public class LineContext {
+          public lineChannel: LineChannel;
+          public lineFlow: LineFlow;
+          public lineFlow: LineFlow;
+          declare getSDK(): LineSDK;
+        }`;
+        const factFilename8 = 'myCustomNamespace9';
+
+
+        this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact8, factFilename8);
+
+        const fact9 = `public class LineCall {
+          public bridge: LineBridge;
+          public lineChannel: LineChannel;
+          declare removeFromBridge();
+          declare getBridge(): LineBridge;
+        }`;
+        const factFilename9 = 'myCustomNamespace10';
+
+
+        this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact9, factFilename9);
+
+        const fact10 = `public class LineBridge {
+          public channels: Array<LineChannel>;
+          declare addChannel(lineChannel: LineChannel);
+        }`;
+        const factFilename10 = 'myCustomNamespace111';
+
+
+        this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact10, factFilename10);
+
         if ($scope.params['code'] !== '') {
           editor.setValue($scope.params['code']);
         }
