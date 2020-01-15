@@ -1,0 +1,51 @@
+<div>
+  <form ng-submit="$shared.saveWidget()">
+    <div ng-cloak>
+      <md-content>
+        <md-tabs class="md-primary widget-options" md-center-tabs md-dynamic-height="true">
+          <md-tab label="info">
+            <md-content class="md-padding">
+              <md-input-container>
+                <label for="testInput">Widget Name</label>
+                <input type="text" ng-model="cellModel.name" md-autofocus>
+              </md-input-container>
+               <div layout="row">
+
+                <div flex="95">
+                  <label>Variables</label>
+                  <ul class="no-list-style box">
+                    <li ng-repeat="variable in cellModel.data.variables">
+                      <div class="no-margin" layout="column" layout-margin="">
+                        <md-input-container>
+                          <label for="testInput">Name</label>
+                          <input type="text" ng-model="param.name" md-autofocus>
+                        </md-input-container>
+                        <md-input-container>
+                          <label for="testInput">Value</label>
+                          <input type="text" ng-model="param.value" md-autofocus>
+                        </md-input-container>
+                        <a class="red clickable" ng-click="$shared.removeVariable($index, variable)">Remove</a>
+                        </div>
+                    </li>
+                  </ul>
+                  <md-button class="md-primary md-raised md-small no-margin" ng-click="$shared.addVariable()">
+                    Add
+                  </md-button>
+                </div>
+                <div flex="5">
+                  <md-icon class="tooltip-icon at-top">
+                    <i class="mdi mdi-information"></i>
+                    <md-tooltip class="helper-tooltip" md-direction="top">
+                      The extension to dial on your account.
+                    </md-tooltip>
+                  </md-icon>
+                </div>
+              </div>
+            </md-content>
+          </md-tab>
+        </md-tabs>
+      </md-content>
+    </div>
+    <div ng-include="'/templates/widget_buttons.html'"></div>
+  </form>
+</div>

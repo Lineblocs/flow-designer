@@ -998,7 +998,34 @@ angular
       };
 
     }
-
+    factory.addMacroParam = function () {
+      var current = factory.cellModel.data.params;
+      if ( typeof current === 'undefined' ) {
+        factory.cellModel.data.params = [];
+      } 
+      factory.cellModel.data.params.push( {
+        name: "",
+        value: ""
+      });
+    }
+    factory.removeMacroParam = function ($index, param) {
+      factory.cellModel.data.params.splice($index, 1);
+      console.log("params are now ", factory.cellModel.data.params);
+    }
+    factory.addVariable = function () {
+      var current = factory.cellModel.data.variables
+      if ( typeof current === 'undefined' ) {
+        factory.cellModel.data.variables = [];
+      } 
+      factory.cellModel.data.variables.push( {
+        name: "",
+        value: ""
+      });
+    }
+    factory.removeVariable = function ($index, param) {
+      factory.cellModel.data.variables.splice($index, 1);
+      console.log("variables are now ", factory.cellModel.data.variables);
+    }
     factory.saveWidget = function () {
       var model = factory.cellModel;
       //model.cell.attr({ text: { text:  model.name } });
@@ -1274,7 +1301,30 @@ angular
       $http.get(createUrl("/flow/listTemplates")).then(function (res) {
         $shared.isLoading = false;
         console.log("flow templates are ", res.data);
-        $scope.templates = res.data.data;
+        var templates = res.data.data;
+        $scope.templates = templates;
+        var templatesByCategory = [];
+        for ( var index in templates ) {
+          var template = templates[ index ];
+          var category = templatesByCategory[ template.category ];
+          var found = false;
+          for (var index1 in templatesByCategory ) {
+              if (templatesByCategory[index1].name === template.category) {
+                found = true;
+                templateByCategory = templatesByCategory[index1];
+              }
+          }
+          if ( !found ) {
+            templatesByCategory.push({
+              "name": template.category,
+              "templates": [template]
+            });
+            continue;
+          }
+          templateByCategory['templates'].push( template );
+        }
+        $scope.templatesByCategory = templatesByCategory;
+        console.log("template ", templatesByCategory);
       });
     }
     init();
@@ -1717,8 +1767,7 @@ angular
         const fact1 = `public class LineCell {
           constructor(public channel: LineChannel, public cell: object, public model: object, public sourceLinks: Array<object>, targetLinks: Array<object>) {
               }
-          declare getEventVar(name: string): any;
-          declare setEventVar(name: string, value: string): any;
+          declare getMacroParam(name: string): any;
       }`;
         const factFilename1 = 'myCustomNamespace2';
         this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact1, factFilename1);
@@ -1792,7 +1841,7 @@ angular
         const fact8 = `public class LineContext {
           public lineChannel: LineChannel;
           public lineFlow: LineFlow;
-          public lineFlow: LineFlow;
+          public lineCell: LineCell;
           declare getSDK(): LineSDK;
         }`;
         const factFilename8 = 'myCustomNamespace9';
@@ -2538,6 +2587,7 @@ var stencilGraph = new joint.dia.Graph,
        joint.shapes.devs.RecordVoicemailModel,
        joint.shapes.devs.PlaybackModel,
        joint.shapes.devs.MacroModel,
+       joint.shapes.devs.SetVariablesModel,
   ]);
 stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
   $('body').append('<div id="flyPaper" style="position:fixed;z-index:100;opacity:.7;pointer-event:none;"></div>');
@@ -2908,6 +2958,23 @@ joint.shapes.devs.MacroModel = joint.shapes.devs.Model.extend({
 });
 
 joint.shapes.devs.MacroView = joint.shapes.devs.ModelView;
+
+joint.shapes.devs.SetVariablesModel = joint.shapes.devs.Model.extend({
+
+  markup: defaultMarkup,
+
+  defaults: joint.util.deepSupplement({
+    name: 'SetVariables',
+    type: 'devs.SetVariablesModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("SetVariables", "set variables in the flow runtime"),
+  inPorts: ['In'],
+  outPorts: ['Completed', 'Error'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.SetVariablesView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.Link.define('devs.FlowLink', {
       attrs: {

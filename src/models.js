@@ -214,6 +214,23 @@ joint.shapes.devs.MacroModel = joint.shapes.devs.Model.extend({
 
 joint.shapes.devs.MacroView = joint.shapes.devs.ModelView;
 
+joint.shapes.devs.SetVariablesModel = joint.shapes.devs.Model.extend({
+
+  markup: defaultMarkup,
+
+  defaults: joint.util.deepSupplement({
+    name: 'SetVariables',
+    type: 'devs.SetVariablesModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("SetVariables", "set variables in the flow runtime"),
+  inPorts: ['In'],
+  outPorts: ['Completed', 'Error'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.SetVariablesView = joint.shapes.devs.ModelView;
+
 joint.shapes.devs.Link.define('devs.FlowLink', {
       attrs: {
               ".connection": {

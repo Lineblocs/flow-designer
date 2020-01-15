@@ -1,17 +1,25 @@
 <div>
-    <md-toolbar class="md-hue-1">
-        <div class="md-toolbar-tools">
-            <h2>Create Flow</h2>
-        </div>
-    </md-toolbar>
-   <md-content layout="row" layout-padding>
-        <div>
-        <md-input-container>
-            <label>Name</label>
-            <input ng-model="values.name">
-        </md-input-container>
+
+  <md-toolbar class="md-hue-1">
+    <div class="md-toolbar-tools">
+      <h2>Create Flow</h2>
+    </div>
+  </md-toolbar>
+  <md-content layout="row" layout-padding></md-content>
+  <div>
+    <md-input-container>
+
+      <label>Name</label>
+      <input ng-model="values.name">
+    </md-input-container>
+    <ul class="no-list-style">
+      <li ng-repeat="category in templatesByCategory">
         <div layout="row" class="templates-list">
-          <div flex="33" ng-repeat="template in templates">
+          <h2 class="margin-md-card">{{category.name}}</h2>
+        </div>
+        <div layout="row" class="templates-list">
+
+          <div flex="33" ng-repeat="template in category.templates">
             <md-card>
               <md-card-title>
                 <md-card-title-text>
@@ -23,14 +31,23 @@
                 </md-card-title-media>
               </md-card-title>
               <md-card-actions layout="row" layout-align="end center">
-                <md-button ng-show="!isSelected(template)" class="md-raised md-primary" ng-click="useTemplate(template)">Use Template</md-button>
-                <md-button ng-show="isSelected(template)" ng-disabled="true" class="md-raised md-primary">Use Template</md-button>
+                <md-button ng-show="!isSelected(template)" class="md-raised md-primary"
+                  ng-click="useTemplate(template)">
+                  Use Template</md-button>
+                <md-button ng-show="isSelected(template)" ng-disabled="true" class="md-raised md-primary">Use Template
+                </md-button>
               </md-card-actions>
             </md-card>
           </div>
         </div>
+        </li>
+    </ul>
 
-              <md-button ng-click="submit()" class="md-raised md-primary">Create</md-button>
-        </div>
-  </md-content>
+  </div>
+</div>
+
+<md-button ng-click="submit()" class="md-raised md-primary">Create</md-button>
+</div>
+</md-content>
+
 </div>

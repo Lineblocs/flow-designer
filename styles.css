@@ -153,6 +153,9 @@ margin-right: auto;
   right: 0px;
   margin-top: 28px;
 }
+.tooltip-icon.at-top {
+  margin-top: 0px;
+}
 .helper-tooltip {
   top: 45px;
   left: -100px;
@@ -184,4 +187,32 @@ a.md-button.md-default-theme.md-primary.md-raised, a.md-button.md-primary.md-rai
 }
 md-tabs.md-default-theme.md-primary, md-tabs.md-primary > md-tabs-wrapper {
  background: #395373;
+}
+.no-list-style {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.margin-md-card {
+  margin: 8px;
+}
+.red {
+  color: #FF0000;
+}
+.clickable {
+  cursor: pointer;
+}
+.no-margin {
+  margin: 0;
+}
+.md-button.md-small {
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  min-height: 28px;
+  vertical-align: top;
+  font-size: 12px;
+  padding: 0 0;
+  margin: 0;
 }
