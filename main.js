@@ -1582,7 +1582,11 @@ angular
       };
       $shared.isLoading = true;
       var url = createUrl("/extension/listExtensions");
-      $shared.loadExtensions().then(function (extensions) {
+      $q.all([
+        $scope.updateFunctions(),
+        $shared.loadExtensions()
+      ]).then(function (responses) {
+        var extensions = responses[1];
         console.log("extensions are ", extensions);
         $shared.extensions = extensions;
         $timeout(function () {
