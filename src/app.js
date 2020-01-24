@@ -1764,118 +1764,23 @@ angular
 
       function loadMonaco() {
         editor = monaco.editor.create(document.getElementById("editor"), {
-          value: "module.exports = function(channel: LineChannel, cell: LineCell, flow: LineFlow) {\n\treturn new Promise(async function(resolve, reject) {\n\t});\n}",
+          value: "module.exports = function(event: LineEvent, context: LineContext) {\n\treturn new Promise(async function(resolve, reject) {\n\t});\n}",
           language: "typescript"
         });
 
-        const fact1 = `public class LineCell {
-          constructor(public channel: LineChannel, public cell: object, public model: object, public sourceLinks: Array<object>, targetLinks: Array<object>) {
-              }
-          declare getMacroParam(name: string): any;
-      }`;
-        const factFilename1 = 'myCustomNamespace2';
-        this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact1, factFilename1);
-
-        const fact2 = `public class LineChannel {
-          public channel: any;
-          constructor(public channel: object) {
-              }
-
-          declare getBridge(): LineBridge;
-          declare removeFromBridge();
-          declare playTTS(text: string, gender?: string, voice?: string);
-      }`;
-        const factFilename2 = 'myCustomNamespace3';
-
-
-        this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact2, factFilename2);
-
-        const fact3 = `public class LineFlow {
-          constructor(public flow: object, public user: LineUser, public exten: string, public callerId: string, public lineChannel: LineChannel) {
-      }
-      }`;
-        const factFilename3 = 'myCustomNamespace4';
-
-
-        this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact3, factFilename3);
-
-        const fact4 = `let module {
-      exports: null
-      }`;
-        const factFilename4 = 'myCustomNamespace5';
-
-
-        this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact4, factFilename4);
-
-
-        const fact5 = `public class LineUser {
-      public info: object;
-      public id: number;
-      public workspace_name: string;
-      public domain: string;
-      constructor(public info: object)
-      {
-
-      }
-
-      }`;
-        const factFilename5 = 'myCustomNamespace6';
-
-
-        this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact5, factFilename5);
-
-        const fact6 = `declare function getCellByName(name: string): LineCell;`;
-        const factFilename6 = 'myCustomNamespace7';
-
-
-        this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact6, factFilename6);
-        const fact7 = `public class LineSDK {
-          declare createBridge(): LineBridge;
-          declare createCall(flow: LineFlow, call: string, callerId: string, callType: string);
-          declare addChannel(channel: LineChannel);
-          declare removeFromBridge(channel: LineChannel);
-          declare getSDK(): LineSDK;
-            return new LineSDK();
+        $http({
+          url: "https://lineblocs.com/typescript/defs.ts",
+          method: 'GET',
+          responseType: 'text'
+        }).then(function(response) {
+          var fact1 = response.data;
+          console.log("typescript defs are ", fact1);
+          const factFilename1 = 'myCustomNamespace2';
+          this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact1, factFilename1);
+          if ($scope.params['code'] !== '') {
+            editor.setValue($scope.params['code']);
           }
-        }`;
-        const factFilename7 = 'myCustomNamespace8';
-
-
-        this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact7, factFilename7);
-        const fact8 = `public class LineContext {
-          public lineChannel: LineChannel;
-          public lineFlow: LineFlow;
-          public lineCell: LineCell;
-          declare getSDK(): LineSDK;
-        }`;
-        const factFilename8 = 'myCustomNamespace9';
-
-
-        this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact8, factFilename8);
-
-        const fact9 = `public class LineCall {
-          public bridge: LineBridge;
-          public lineChannel: LineChannel;
-          declare removeFromBridge();
-          declare getBridge(): LineBridge;
-        }`;
-        const factFilename9 = 'myCustomNamespace10';
-
-
-        this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact9, factFilename9);
-
-        const fact10 = `public class LineBridge {
-          public channels: Array<LineChannel>;
-          declare addChannel(lineChannel: LineChannel);
-        }`;
-        const factFilename10 = 'myCustomNamespace111';
-
-
-        this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact10, factFilename10);
-
-        if ($scope.params['code'] !== '') {
-          editor.setValue($scope.params['code']);
-        }
+        });
       }
       $timeout(function () {
         loadMonaco();
