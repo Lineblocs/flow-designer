@@ -241,3 +241,28 @@ joint.shapes.devs.Link.define('devs.FlowLink', {
     // inherit joint.shapes.standard.Link.markup
 }, {
 });
+function createModelFromTemplate(template) {
+  var title = template.title;
+  var type = 'devs.'+title+'Model';
+  var view = title+'View';
+  var tag = "";
+  var inPorts = [];
+  var outPorts = [];
+  joint.shapes.devs[title] = joint.shapes.devs.Model.extend({
+
+    markup: defaultMarkup,
+
+    defaults: joint.util.deepSupplement({
+      name: title,
+      type: type,
+      size: widgetDimens,
+      attrs: createDefaultAttrs(title, tag),
+    inPorts: inPorts,
+    outPorts: outPorts,
+    ports: defaultPorts
+    }, joint.shapes.devs.Model.prototype.defaults)
+  });
+  joint.shapes.devs[view] = joint.shapes.devs.ModelView;
+  return joint.shapes.devs[title] ;
+}
+

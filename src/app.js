@@ -155,6 +155,7 @@ angular
     var factory = this;
     factory.models = [];
     factory.trash = [];
+    factory.selectorContext = 'AVAILABLE';
     factory.voices = {
       "da-DK": [{
         "lang": "da-DK",
@@ -659,6 +660,17 @@ angular
         }, reject);
       });
     }
+    factory.loadWidgetTemplates = function () {
+      var url = createUrl("/widgetTemplate/listWidgets");
+      return $q(function (resolve, reject) {
+        $http.get(url).then(function (res) {
+          console.log("widgets are ", res.data);
+          factory.widgetTemplates = res.data.data;
+          resolve(factory.widgetTemplates);
+        }, reject);
+      });
+    }
+
     factory.addFunction = function () {
       console.log("addFunction called..");
       $mdDialog.show({
@@ -700,6 +712,51 @@ angular
         doReload();
       }, function () {});
     }
+    function DialogWidgetSaveController($scope, $timeout, $q, $http, model, onSave, onCancel) {
+      $scope.params = {
+        "id": null,
+        "title": "",
+        "code": "",
+        "tags": []
+      };
+      $scope.save = function() {
+        var data = angular.copy($scope.params);
+        var url = createUrl("/widgetTemplate/saveWidget");
+        var modelJSON = model.toJSON();
+        modelJSON.links = model.links.map(function (link) {
+          return link.toJSON();
+        });
+        data['data'] = modelJSON;
+        $http.post(url, data).then(function (res) {
+          $mdDialog.hide();
+          onSuccess();
+        });
+      }
+      $scope.cancel = function() {
+        $mdDialog.hide();
+        onCancel();
+      }
+
+    }
+    factory.saveWidgetAsTemplate = function (ev, widget) {
+      console.log("saveWidgetAsTemplate called in $scope..");
+
+      $mdDialog.show({
+          controller: DialogWidgetSaveController,
+          templateUrl: '/dialogs/widget-save.html',
+          parent: angular.element(document.body),
+          targetEvent: ev,
+          clickOutsideToClose: true,
+          locals: {
+            model: widget,
+            onSave: function (value) {
+            },
+            onCancel: function (value) {
+            },
+          }
+        })
+    }
+
 
     function doDuplicate(view, model) {
       var graph = diagram['graph'];
@@ -727,6 +784,13 @@ angular
     }
     factory.canDelete = function () {
       console.log("canDelete called ", arguments, factory.cellModel);
+      if (factory.cellModel && factory.cellModel.cell && factory.cellModel.cell.attributes.type !== "devs.LaunchModel") {
+        return true;
+      }
+      return false;
+    }
+    factory.canSave = function () {
+      console.log("canSave called ", arguments, factory.cellModel);
       if (factory.cellModel && factory.cellModel.cell && factory.cellModel.cell.attributes.type !== "devs.LaunchModel") {
         return true;
       }
@@ -1480,6 +1544,7 @@ angular
         $shared.extensions = extensions;
       });
     }
+
     $scope.updateFunctions = function () {
       console.log("updateFunctions ");
       $shared.loadFunctions().then(function (functions) {
@@ -1488,7 +1553,12 @@ angular
       });
     }
 
-
+    $scope.updateWidgetTemplates = function () {
+      console.log("updateWidgetTemplatess ");
+      $shared.loadWidgetTemplates().then(function (templates) {
+        $shared.widgetTemplates = widgetTemplates;
+      });
+    }
 
 
     $scope.changeFinishRecordType = function (value) {
@@ -1584,7 +1654,8 @@ angular
       var url = createUrl("/extension/listExtensions");
       $q.all([
         $scope.updateFunctions(),
-        $shared.loadExtensions()
+        $shared.loadExtensions(),
+        $shared.loadWidgetTemplates(),
       ]).then(function (responses) {
         var extensions = responses[1];
         console.log("extensions are ", extensions);

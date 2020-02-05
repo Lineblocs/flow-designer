@@ -1,0 +1,40 @@
+<md-dialog aria-label="Mango (Fruit)">
+    <form>
+        <md-toolbar>
+            <div class="md-toolbar-tools">
+                <h2>Save Widget As Template</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="cancel()">
+                    <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content style="overflow-y: hidden; ">
+                <md-input-container>
+
+
+        <label>Title</label>
+        <input ng-model="params.title" placeholder="e.g: SupportQueue"/>
+      </md-input-container> 
+      <label>Tags</label>
+            <md-chips ng-model="params.tags" name="tags" md-removable="true" md-max-chips="5" placeholder="Enter a tag..."
+                input-aria-label="Fruit names">
+        <md-chip-template>
+          <strong>{{$chip}}</strong>
+          <!--<em>(tag)</em>-->
+        </md-chip-template>
+      </md-chips>
+
+        </md-dialog-content>
+
+        <div class="md-actions" layout="row">
+            <span flex></span>
+            <md-button ng-click="save($event)" class="md-raised md-primary">
+                Save
+            </md-button>
+            <md-button ng-click="cancel()" style="margin-right:20px;">
+                Cancel
+            </md-button>
+        </div>
+    </form>
+</md-dialog>

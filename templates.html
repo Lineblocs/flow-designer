@@ -112,6 +112,10 @@
             <md-button  ng-show="$shared.canDelete()" ng-click="$shared.deleteWidget($event)" aria-label="Go to center" class="md-icon-button delete">
             <md-icon md-svg-icon="img/icons/delete.svg"></md-icon>
             </md-button>
+            <md-button  ng-show="$shared.canSave()" ng-click="$shared.saveWidgetAsTemplate($event, $shared.cellModel)" aria-label="Go to center" class="md-icon-button folder-star">
+            <md-icon md-svg-icon="img/icons/folder_special.svg"></md-icon>
+            </md-button>
+
             <md-button  ng-show="$shared.canDuplicate()" ng-click="$shared.duplicateWidget($event)" aria-label="Duplicate cell" class="md-icon-button duplicate">
             <md-icon md-svg-icon="img/icons/duplicate.svg"></md-icon>
             </md-button>
@@ -128,12 +132,23 @@
             <md-sidenav class="md-sidenav-right" md-component-id="rightWidgets" md-whiteframe="4" md-is-locked-open="true">
 
                 <div ng-show="!$shared.hasCellModel()" class="sidebar">
-                    <md-toolbar class="md-theme-indigo">
-                        <h1 class="md-toolbar-tools">Available Widgets</h1>
-                    </md-toolbar>
-                    <div class="widget-scroller">
-                      <div ng-non-bindable id="stencil"></div>
+                    <div ng-show="$shared.selectorContext==='AVAILABLE'">
+                      <md-toolbar class="md-theme-indigo">
+                          <h1 class="md-toolbar-tools">Available Widgets</h1>
+                      </md-toolbar>
+                      <div class="widget-scroller">
+                        <div ng-non-bindable id="stencil"></div>
+                      </div>
                     </div>
+                    <div ng-show="$shared.selectorContext==='LIBRARY'">
+                      <md-toolbar class="md-theme-indigo">
+                          <h1 class="md-toolbar-tools">Widget Library</h1>
+                      </md-toolbar>
+                      <div class="widget-scroller">
+                        <div ng-non-bindable id="stencilLibrary"></div>
+                      </div>
+                    </div>
+
                 </div>
                 <div ng-show="$shared.hasCellModel()" class="sidebar">
                         <md-toolbar class="md-theme-light">
