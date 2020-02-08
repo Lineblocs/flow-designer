@@ -665,7 +665,11 @@ angular
       return $q(function (resolve, reject) {
         $http.get(url).then(function (res) {
           console.log("widgets are ", res.data);
-          factory.widgetTemplates = res.data.data;
+          factory.widgetTemplates = res.data.data.map(function(template) {
+            var obj = Object.assign({}, template);
+            obj['data'] = JSON.parse( obj['data'] );
+            return obj;
+          });
           resolve(factory.widgetTemplates);
         }, reject);
       });
@@ -712,7 +716,7 @@ angular
         doReload();
       }, function () {});
     }
-    function DialogWidgetSaveController($scope, $timeout, $q, $http, model, onSave, onCancel) {
+    function DialogWidgetSaveController($scope, $shared, $timeout, $q, $http, model, onSave, onCancel) {
       $scope.params = {
         "id": null,
         "title": "",
@@ -726,10 +730,16 @@ angular
         modelJSON.links = model.links.map(function (link) {
           return link.toJSON();
         });
-        data['data'] = modelJSON;
+        data['data'] = {};
+        //data['data']['json'] = modelJSON;
+        data['data']['attributes']= model.cell.attributes;
+        data['data']['saved']= model.data;
+        data['data']['name']= model.name;
         $http.post(url, data).then(function (res) {
           $mdDialog.hide();
-          onSuccess();
+          $shared.loadWidgetTemplates().then(function() {
+            onSave();
+          });
         });
       }
       $scope.cancel = function() {
@@ -1089,6 +1099,28 @@ angular
     factory.removeVariable = function ($index, param) {
       factory.cellModel.data.variables.splice($index, 1);
       console.log("variables are now ", factory.cellModel.data.variables);
+    }
+    factory.openLibrary = function () {
+      console.log("openLibrary");
+      var created = [];
+      for ( var index in factory.widgetTemplates ) {
+        var template = factory.widgetTemplates[ index ];
+        console.log("creating widget ", template);
+        var obj = createModelFromTemplate( template );
+        created.push( obj );
+      }
+      angular.element("#stencil").hide();
+      angular.element("#stencilLibrary").show();
+      factory.selectorContext = 'LIBRARY';
+      $timeout(function() {
+        appendStencilLibraryModels( diagram['stencilLibraryGraph'], created );
+      }, 0);
+    }
+    factory.openAvailable = function () {
+      console.log("openAvailable");
+      angular.element("#stencilLibrary").hide();
+      angular.element("#stencil").show();
+      factory.selectorContext = 'AVAILABLE';
     }
     factory.saveWidget = function () {
       var model = factory.cellModel;
@@ -1484,11 +1516,25 @@ angular
       var model = new Model(cell, name);
       changeLabel(cell, name);
       $shared.models.push(model);
+      return model;
     }
     $scope.isOpenRight = function () {
       return $mdSidenav('right').isOpen();
     };
-
+    $scope.createLibraryModel = function (cell) {
+      console.log("createLibraryModel ", arguments);
+      console.log("createLibraryModel ", $shared.widgetTemplates);
+      var find = cell.attributes.name;
+      var model = $scope.createModel(cell);
+      for (var index in $shared.widgetTemplates) {
+        var item = $shared.widgetTemplates[ index ];
+        if ( item.title === find ) {
+          model.data = item.data.saved;
+        }
+      }
+      //$shared.widgetTemplates
+      return model;
+    }
 
     $scope.loadWidget = function (cellView, openSidebar) {
       console.log("loadWidget cellView ", cellView);
@@ -1556,7 +1602,7 @@ angular
     $scope.updateWidgetTemplates = function () {
       console.log("updateWidgetTemplatess ");
       $shared.loadWidgetTemplates().then(function (templates) {
-        $shared.widgetTemplates = widgetTemplates;
+        $shared.widgetTemplates = templates;
       });
     }
 
@@ -1571,6 +1617,12 @@ angular
       $timeout(function () {
         console.log("cellModel is now ", $shared.cellModel);
         $scope.$apply();
+        if ($shared.selectorContext === 'LIBRARY') {
+          $shared.openLibrary();
+        } else if ($shared.selectorContext === 'AVAILABLE') {
+          $shared.openAvailable();
+        }
+
       }, 0);
     }
 

@@ -126,6 +126,8 @@
     </md-toolbar>
     <div ng-controller="PaperCtrl" class="papers">
         <div class="graph" ng-non-bindable>
+
+
             <div id="canvas"></div>
         </div>
         <div class="widgets">
@@ -134,7 +136,18 @@
                 <div ng-show="!$shared.hasCellModel()" class="sidebar">
                     <div ng-show="$shared.selectorContext==='AVAILABLE'">
                       <md-toolbar class="md-theme-indigo">
-                          <h1 class="md-toolbar-tools">Available Widgets</h1>
+                        <div layout="row">
+                          <div flex="65">
+
+                            <h1 class="md-toolbar-tools">Available Widgets</h1>
+                          </div>
+                          <div flex="25">
+
+                            <md-button class="md-raised md-small no-margin black-txt graph-btn" ng-click="$shared.openLibrary()">
+                              Library
+                            </md-button>
+                          </div>
+                        </div>
                       </md-toolbar>
                       <div class="widget-scroller">
                         <div ng-non-bindable id="stencil"></div>
@@ -142,7 +155,18 @@
                     </div>
                     <div ng-show="$shared.selectorContext==='LIBRARY'">
                       <md-toolbar class="md-theme-indigo">
-                          <h1 class="md-toolbar-tools">Widget Library</h1>
+                        <div layout="row">
+                          <div flex="65">
+
+                            <h1 class="md-toolbar-tools">Widget Library</h1>
+                          </div>
+                          <div flex="25">
+
+                            <md-button class="md-raised md-small no-margin black-txt graph-btn" ng-click="$shared.openAvailable()">
+                              Widgets
+                            </md-button>
+                          </div>
+                        </div>
                       </md-toolbar>
                       <div class="widget-scroller">
                         <div ng-non-bindable id="stencilLibrary"></div>

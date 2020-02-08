@@ -216,3 +216,9 @@ md-tabs.md-default-theme.md-primary, md-tabs.md-primary > md-tabs-wrapper {
   padding: 0 0;
   margin: 0;
 }
+.black-txt {
+  color: #000000 !important;
+}
+.graph-btn {
+  margin-top: 18px !important;
+}
