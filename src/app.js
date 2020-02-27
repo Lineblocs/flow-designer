@@ -1853,7 +1853,7 @@ angular
         return $q(function (resolve, reject) {
           if (!$scope.params['title']) {
             saveNewFunction().then(function () {
-              onSave();
+              onSave($scope.params);
             });
             return;
           }
@@ -1874,7 +1874,7 @@ angular
                  }
                 });
               $mdDialog.hide();
-              onSave();
+              onSave($scope.params);
             });
           }, function (err) {
             console.error(err);
@@ -1913,8 +1913,21 @@ angular
     function DialogSelectController($scope, $timeout, $q, $http, onSelected, onCancel) {
       $scope.selection=null;
       $scope.templates = [];
+      $scope.changeableParams = [];
+      $scope.step = 1;
+      $scope.paramsToAdd = [];
       $scope.useTemplate = function (template) {
         $scope.selection = template;
+        $scope.changeableParams = [];
+        console.log("selected ", $scope.selection);
+        angular.forEach($scope.selection.changeable_params, function(param) {
+            var obj = {
+              "name": param.name,
+              "value": param.placeholder,
+              "type": param.type
+            };
+            $scope.changeableParams.push( obj );
+        })
       };
       $scope.isSelected = function (template) {
         if ($scope.selection && template.id === $scope.selection.id) {
@@ -1923,7 +1936,17 @@ angular
         return false;
       }
       $scope.save = function() {
+        if ( $scope.selection ) {
+          $scope.step = 2;
+          return;
+        }
         onSelected($scope.selection);
+      }
+      $scope.save2 = function() {
+        var model = $shared.cellModel;
+        console.log("adding macro params to ", model);
+        var paramsToAdd = angular.copy($scope.changeableParams);
+        onSelected($scope.selection, paramsToAdd);
       }
       $scope.cancel = function() {
 
@@ -1968,7 +1991,7 @@ angular
         });
     }
 
-    function addFunctionStep2($event, code) {
+    function addFunctionStep2($event, code, paramsToAdd) {
       console.log("addFunction called..");
       $mdDialog.show({
           controller: DialogController,
@@ -1978,9 +2001,29 @@ angular
           clickOutsideToClose: true,
           locals: {
             macroFunction: { code: code },
-            onSave: function () {
-              console.log("saved new function");
-
+            onSave: function (macroFn) {
+              console.log("saved new function", macroFn);
+              var model = $scope.cellModel;
+              $shared.loadFunctions().then(function(functions) {
+                if (paramsToAdd) {
+                  model.data.params = model.data.params || [];
+                  angular.forEach(paramsToAdd, function(param) {
+                      model.data.params.push( {
+                        "name": param.name,
+                        "value": param.value
+                      });
+                    });
+                  }
+                  $shared.functions = functions;
+                  console.log("checking functions ", functions);
+                  angular.forEach(functions, function(item) {
+                      if ( item === macroFn.title ) {
+                        model.data.function = item;
+                      }
+                  });
+                  console.log("model data is now ", model.data);
+                  $scope.$apply();
+                });
             },
             onCancel: null
           }
@@ -2001,9 +2044,9 @@ angular
           clickOutsideToClose: true,
           locals: {
             macroFunction: null,
-            onSelected: function (value) {
+            onSelected: function (value, paramsToAdd) {
               console.log("saved new function");
-              addFunctionStep2($event, value['code']);
+              addFunctionStep2($event, value['code'], paramsToAdd);
             },
             onCancel: null
           }

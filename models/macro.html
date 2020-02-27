@@ -47,7 +47,7 @@
                   <md-input-container>
 
                     <label for="testInput">Function</label>
-                    <md-select md-on-open="updateFunctions()" ng-change="changeFunction(cellModel.data.function)"
+                    <md-select  ng-change="changeFunction(cellModel.data.function)"
                       ng-model="cellModel.data.function">
                       <md-option><em>None</em></md-option>
                       <md-option ng-value="obj" ng-repeat="obj in $shared.functions">

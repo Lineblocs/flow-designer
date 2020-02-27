@@ -1,48 +1,91 @@
 <md-dialog aria-label="Mango (Fruit)">
-    <form>
-        <md-toolbar>
-            <div class="md-toolbar-tools">
-                <h2>Select Macro Template</h2>
+    <div ng-show="step===1">
+        <form>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Select Macro Template</h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="cancel()">
+                        <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-dialog-content style="overflow-y: hidden; ">
+                <div layout="row" class="templates-list">
+                    <div flex="33" ng-repeat="template in templates">
+                        <md-card>
+                            <md-card-title>
+                                <md-card-title-text>
+                                    <span class="md-headline">{{template.title}}</span>
+                                    <span class="md-subhead"></span>
+                                </md-card-title-text>
+                                <md-card-title-media>
+                                    <div class="md-media-sm card-media"></div>
+                                </md-card-title-media>
+                            </md-card-title>
+                            <md-card-actions layout="row" layout-align="end center">
+                                <md-button ng-show="!isSelected(template)" class="md-raised md-primary"
+                                    ng-click="useTemplate(template)">Use Template</md-button>
+                                <md-button ng-show="isSelected(template)" ng-disabled="true"
+                                    class="md-raised md-primary">
+                                    Use Template</md-button>
+                            </md-card-actions>
+                        </md-card>
+                    </div>
+                </div>
+
+
+            </md-dialog-content>
+
+            <div class="md-actions" layout="row">
                 <span flex></span>
-                <md-button class="md-icon-button" ng-click="cancel()">
-                    <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+                <md-button ng-click="save($event)" class="md-raised md-primary">
+                    Save
+                </md-button>
+                <md-button ng-click="cancel()" style="margin-right:20px;">
+                    Cancel
                 </md-button>
             </div>
-        </md-toolbar>
-        <md-dialog-content style="overflow-y: hidden; ">
-            <div layout="row" class="templates-list">
-                <div flex="33" ng-repeat="template in templates">
-                    <md-card>
-                        <md-card-title>
-                            <md-card-title-text>
-                                <span class="md-headline">{{template.title}}</span>
-                                <span class="md-subhead"></span>
-                            </md-card-title-text>
-                            <md-card-title-media>
-                                <div class="md-media-sm card-media"></div>
-                            </md-card-title-media>
-                        </md-card-title>
-                        <md-card-actions layout="row" layout-align="end center">
-                            <md-button ng-show="!isSelected(template)" class="md-raised md-primary"
-                                ng-click="useTemplate(template)">Use Template</md-button>
-                            <md-button ng-show="isSelected(template)" ng-disabled="true" class="md-raised md-primary">
-                                Use Template</md-button>
-                        </md-card-actions>
-                    </md-card>
+        </form>
+    </div>
+    <div ng-show="step===2">
+        <form>
+            <md-toolbar>
+                <div class="md-toolbar-tools">
+                    <h2>Set Macro Defaults</h2>
+                    <span flex></span>
+                    <md-button class="md-icon-button" ng-click="cancel()">
+                        <md-icon md-svg-src="img/icons/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+                    </md-button>
                 </div>
+            </md-toolbar>
+            <md-dialog-content style="overflow-y: hidden; ">
+                <div layout="row" class="templates-list">
+                    <ul>
+                        <li ng-repeat="param in changeableParams">
+                            <div ng-if="param.type==='text'">
+                                <md-input-container>
+                                    <label>{{param.name}}</label>
+                                    <input ng-model="param.value" />
+                                </md-input-container>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+
+            </md-dialog-content>
+
+            <div class="md-actions" layout="row">
+                <span flex></span>
+                <md-button ng-click="save2($event)" class="md-raised md-primary">
+                    Save
+                </md-button>
+                <md-button ng-click="cancel()" style="margin-right:20px;">
+                    Cancel
+                </md-button>
             </div>
+        </form>
+    </div>
 
-
-        </md-dialog-content>
-
-        <div class="md-actions" layout="row">
-            <span flex></span>
-            <md-button ng-click="save($event)" class="md-raised md-primary">
-                Save
-            </md-button>
-            <md-button ng-click="cancel()" style="margin-right:20px;">
-                Cancel
-            </md-button>
-        </div>
-    </form>
 </md-dialog>
