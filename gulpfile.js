@@ -9,9 +9,18 @@ var $ = require('gulp-load-plugins')();
 // Require plugins
 var concat = require('gulp-concat');
 var minify = require('gulp-minify');
+var rename = require('gulp-rename');
+var uglify = require('gulp-uglify');
 var mergeTemplates = require('./merge_templates');
 var fs = require("fs");
 var path = require("path");
+var cleanCSS = require("gulp-clean-css");
+var sourcemaps  = require("gulp-sourcemaps");
+const autoprefixer = require('gulp-autoprefixer');
+const imagemin = require('imagemin');
+const imageminJpegtran = require('imagemin-jpegtran');
+const imageminPngquant = require('imagemin-pngquant');
+
 
 
 gulp.task('styles', function() {
@@ -129,4 +138,69 @@ gulp.task('compress', function() {
     .pipe(minify())
     .pipe(gulp.dest('./'))
 });
+gulp.task('scripts', function() {
+    console.log("starting scripts");
+    return gulp.src(files)
+        .pipe(concat('main.js'))
+        .pipe(gulp.dest('./app/scripts/'))
+});
+gulp.task('compress-js', ['scripts'], function() {
+  gulp.src([
+"./node_modules/jquery/dist/jquery.min.js",
+"./node_modules/angular/angular.js",
+"./src/extra.js", // important
+"./node_modules/angular-aria/angular-aria.js",
+"./node_modules/angular-route/angular-route.js",
+"./node_modules/angular-animate/angular-animate.js",
+"./node_modules/angular-sanitize/angular-sanitize.js",
+"./node_modules/angular-material/angular-material.js",
+"./node_modules/lodash/lodash.min.js",
+"./node_modules/backbone/backbone-min.js",
+"./node_modules/urijs/src/URI.js",
+"./node_modules/jointjs/dist/joint.js",
+"./src/load.js",
+"./src/models.js",
+"./src/multiple-links.js",
+"./src/joint.dia.command.js",
+"./src/app.js",
+"./src/load.js"
+/*
+"./node_modules/monaco-editor/dev/vs/loader.js",
+"./node_modules/monaco-editor/dev/vs/editor/editor.main.nls.js",
+"./node_modules/monaco-editor/dev/vs/editor/editor.main.js",
+*/
+    ])
+            .pipe(concat('concat.js'))
+        .pipe(gulp.dest('dist'))
+        .pipe(rename('main.min.js'))
+        //.pipe(uglify({ mangle: false }))
+        .pipe(gulp.dest('./'));
 
+});
+gulp.task('compress-css', ['styles'], function() {
+    console.log("cleaning CSS");
+gulp.src([
+"./node_modules/angular-material/angular-material.css",
+"./styles.css",
+"./custom/JointTooledViewPlugin/tooledViewPlugin.css",
+"./node_modules/@mdi/font/css/materialdesignicons.css",
+"./node_modules/monaco-editor/min/vs/editor/editor.main.css",
+"./joint-1.0.2.css"
+  ])
+        .pipe(concat('concat.css'))
+        .pipe(gulp.dest('dist'))
+        .pipe(rename('main.min.css'))
+    .pipe(cleanCSS(
+       {
+    }))
+      .pipe(autoprefixer({
+      browsers: ['last 2 versions'],
+      cascade: false
+  }))
+  .pipe(rename({
+      basename: 'app',
+      suffix: '.min',
+  }))
+  .pipe(gulp.dest('./'))
+
+});

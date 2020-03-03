@@ -1898,7 +1898,7 @@ angular
         }).then(function(response) {
           var fact1 = response.data;
           console.log("typescript defs are ", fact1);
-          const factFilename1 = 'myCustomNamespace2';
+          var factFilename1 = 'myCustomNamespace2';
           this.monaco.languages.typescript.typescriptDefaults.addExtraLib(fact1, factFilename1);
           if ($scope.params['code'] !== '') {
             editor.setValue($scope.params['code']);

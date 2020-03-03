@@ -70,6 +70,7 @@ var defaultPorts = {
             }
         }
     };
+
 var defaultMarkup = '<g class="rotatable"><g class="scalable"><rect rx="10" ry="10" class="body"/></g><image/><text class="label"/><text class="description"/><g class="inPorts"/><g class="outPorts"/></g>';
 
 joint.shapes.devs.LaunchModel = joint.shapes.devs.Model.extend({
