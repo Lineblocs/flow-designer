@@ -1,3 +1,32 @@
+    function loadAddedResources1() {
+        addScript("https://apis.google.com/js/platform.js");
+    }
+    function loadAddedResources1() {
+        addScript("https://js.stripe.com/v2/");
+
+    }
+    // add CSS file
+    function addCSS(filename) {
+        var head = document.getElementsByTagName('head')[0];
+
+        var style = document.createElement('link');
+        style.href = filename;
+        style.type = 'text/css';
+        style.rel = 'stylesheet';
+        head.appendChild(style);
+    }
+
+    // add script file
+    function addScript(filename) {
+        var head = document.getElementsByTagName('head')[0];
+
+        var script = document.createElement('script');
+        script.src = filename;
+        script.type = 'text/javascript';
+
+        head.insertBefore(script, document.getElementsByTagName("script")[0]);
+    }
+
 function Model(cell, name, links, data) {
   console.log("creating new model ", arguments);
   this.cell = cell;
