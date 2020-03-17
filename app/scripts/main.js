@@ -1,3 +1,4 @@
+
 function Model(cell, name, links, data) {
   console.log("creating new model ", arguments);
   this.cell = cell;
@@ -784,6 +785,47 @@ angular
       scope.createModel(newCell, name);
     }
 
+    factory.changeCell = function(item) {
+      var graph = diagram['graph'];
+      var cells = graph.getCells();
+      angular.forEach(cells, function (cell) {
+        console.log("changeCell changing ", arguments);
+        if (cell.id === item.cell.id) {
+          item.cell = cell;
+        }
+      });
+    }
+    factory.syncTrash = function() {
+      var newTrash = [];
+      angular.forEach(factory.trash, function (item) {
+        var id = item.cell.id;
+        if ($("g[model-id='" + id + "']").is(":visible")) {
+          factory.changeCell(item);
+          factory.models.push(item);
+        } else {
+          newTrash.push(item);
+        }
+      });
+      angular.forEach(factory.models, function (item) {
+        var id = item.cell.id;
+        if (!$("g[model-id='" + id + "']").is(":visible")) {
+          newTrash.push(item);
+        }
+      });
+      factory.trash = newTrash;
+
+    }
+    factory.undo = function() {
+      var commandManager = diagram['commandManager'];
+      commandManager.undo();
+      factory.syncTrash();
+    }
+    factory.redo = function () {
+      var commandManager = diagram['commandManager'];
+      commandManager.redo();
+      factory.syncTrash();
+    }
+
     factory.duplicateWidget = function (ev) {
       console.log("duplicating widget ", factory.cellView);
       var graph = diagram['graph'];
@@ -1257,37 +1299,11 @@ angular
         }
       });
     }
-
-    function syncTrash() {
-      var newTrash = [];
-      angular.forEach($shared.trash, function (item) {
-        var id = item.cell.id;
-        if ($("g[model-id='" + id + "']").is(":visible")) {
-          changeCell(item);
-          $shared.models.push(item);
-        } else {
-          newTrash.push(item);
-        }
-      });
-      angular.forEach($shared.models, function (item) {
-        var id = item.cell.id;
-        if (!$("g[model-id='" + id + "']").is(":visible")) {
-          newTrash.push(item);
-        }
-      });
-      $shared.trash = newTrash;
-
-    }
-
     $scope.undo = function () {
-      var commandManager = diagram['commandManager'];
-      commandManager.undo();
-      syncTrash();
+      $shared.undo();
     }
     $scope.redo = function () {
-      var commandManager = diagram['commandManager'];
-      commandManager.redo();
-      syncTrash();
+      $shared.redo();
     }
     $scope.zoomOut = function () {
       zoomOut();
@@ -2898,7 +2914,9 @@ function bindHotkeys() {
         ctrlKey = 17,
         cmdKey = 91,
         vKey = 86,
-        cKey = 67;
+        cKey = 67,
+        undoKey=90,
+        redoKey=89;
     var copiedModel;
     var copiedView;
 
@@ -2933,6 +2951,17 @@ function bindHotkeys() {
             copiedView = null;
           }
         }
+        if (ctrlDown && (e.keyCode == undoKey)) {
+          console.log("Document catch Ctrl+Z");
+          var scope = getAngularScope();
+          scope.$shared.undo();
+        }
+        if (ctrlDown && (e.keyCode == redoKey)) {
+          console.log("Document catch Ctrl+Y");
+          var scope = getAngularScope();
+          scope.$shared.redo();
+        }
+
         if (e.keyCode === 8) {
           console.log("backspace detected");
           if (scope.$shared.cellModel) {

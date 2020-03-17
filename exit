@@ -1,0 +1,450 @@
+[33mcommit 01fdd6c33c6ed3d31924a71478cb738865a64db4[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Mar 2 22:25:47 2020 -0700
+
+    dev updates
+
+[33mcommit cacb5e221a4295461a5ebb6156ac12dae1e48ab2[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Mar 2 22:10:12 2020 -0700
+
+    some changes
+
+[33mcommit 98c31ab015b345fe0c3b182ff72a3955b8acbfbb[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Mar 2 22:08:28 2020 -0700
+
+    dev updates
+
+[33mcommit 91dd41f035cc470495eed9f6507dd6e30f3d3ce9[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Mar 2 21:44:07 2020 -0700
+
+    local changes
+
+[33mcommit 90e6c67d3d6e65c60bcb7fa58eb0bdf25e4ca710[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Wed Feb 26 20:37:29 2020 -0700
+
+    dev changes
+
+[33mcommit 027f729750d4dc2682e9e19b87fda255a0726ce4[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Fri Feb 7 21:44:13 2020 -0700
+
+    add widget templates to nav
+
+[33mcommit 31e725c5604a90a2b8dc7d43f0b00cdab61f9db8[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Tue Feb 4 22:13:43 2020 -0700
+
+    start work on widget editing
+
+[33mcommit 8bf6d32aec797ee5239ac48ecd5ad39317a01926[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Thu Jan 23 21:13:41 2020 -0700
+
+    updates to typescript integration
+
+[33mcommit 1f672a90a6d8d66b27298ee2e2843b6bfb138b6d[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Tue Jan 21 20:16:05 2020 -0700
+
+    fetch functions on load() call
+
+[33mcommit b665e450e97b57a01e446eb27101fcd00c2801fc[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Tue Jan 14 22:03:38 2020 -0700
+
+    add set variables cell
+
+[33mcommit daaa752460ba84d3a8e7f1c3165936472b4eca82[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Sun Jan 12 23:16:40 2020 -0700
+
+    dev updates
+
+[33mcommit 373f7e22bc1a4d26530ac03dfbc7ca3a6c3350fa[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Sun Jan 12 15:38:57 2020 -0700
+
+    dev updates
+
+[33mcommit e18f1fab5537035f3e9937ca69a9ace4f75a4cec[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Wed Jan 8 14:37:52 2020 -0700
+
+    add updates to macro integration
+
+[33mcommit 89e0ebb7f4a2bf6e95d9d14525abdbaf8547fa9a[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Jan 6 17:09:59 2020 -0700
+
+    add macros and functions
+
+[33mcommit 7bcafd09a59ff9b806b777372dc5e4a580adda02[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Jan 6 13:43:34 2020 -0700
+
+    add example of manoco editor
+
+[33mcommit eec074384b6b74658925c43e57095041a2ae7467[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Dec 23 16:02:01 2019 -0700
+
+    compile templates
+
+[33mcommit 4c06565fc3d175c6eb8d53a32a34693ab9bc8355[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Dec 23 22:52:49 2019 +0000
+
+    add "Music On Hold URL" to bridge widget.
+
+[33mcommit ea6a6a39a33b159c1b5d812c8afe6987d504d647[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Sat Dec 14 00:07:11 2019 -0700
+
+    add bundled main.js
+
+[33mcommit f8d0515b45972a755c7e8d8f063bc66ca7afaece[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Sat Dec 14 00:05:08 2019 -0700
+
+    add No Input port to process input cell
+
+[33mcommit 9dd6b56f69185ea919ab7826f0d354f752e967f8[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Tue Dec 10 21:00:43 2019 -0700
+
+    add extensions to dropdown
+
+[33mcommit e3f3b7ed46a657d76f5c385dda1f69d6589142ce[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Dec 9 21:30:37 2019 -0700
+
+    dev updates
+
+[33mcommit 57cfc8ce9b9c4c2334a4b67f47efe9a3643f1f7b[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Dec 9 21:03:36 2019 -0700
+
+    add queue for bridges
+
+[33mcommit c3fe7766214edda430da2cc5eef4d850835307fb[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Dec 9 20:21:59 2019 -0700
+
+    fix query bug
+
+[33mcommit c5108b4711dca2552ef14e941894bd7c746cb4ab[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Dec 9 20:20:30 2019 -0700
+
+    quick fix on query
+
+[33mcommit c904be67a25195f4bafb89876abbe28364dbcb88[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Dec 9 20:16:56 2019 -0700
+
+    compile changes
+
+[33mcommit 72fe8c395cec2046f5eac2d3ddfd5ec97ccc6db1[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Dec 9 20:13:46 2019 -0700
+
+    comment redirect for edit mode
+
+[33mcommit 64617d253c5eafa39dad93f78e23d28b923761ed[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Dec 9 20:10:35 2019 -0700
+
+    change http to https
+
+[33mcommit 368045d71ebed958d3b3bb83b5e6712576d3c400[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Dec 9 19:56:52 2019 -0700
+
+    dev updates
+
+[33mcommit 6cdd43c0702d66b97a1530fe5286c7af7a531b47[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Sun Dec 8 04:25:50 2019 +0000
+
+    use HTTPS
+
+[33mcommit 127a0aa26702585722d668079c62ec5711d69925[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Sat Nov 23 18:58:28 2019 -0700
+
+    make changes
+
+[33mcommit c9136309f2c94bbac1dc4a00f8384c0291fa70f3[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Sat Nov 23 18:55:14 2019 -0700
+
+    make changes
+
+[33mcommit a917e5cd69649ab8c09f06500125416389490f79[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Wed Nov 20 21:54:09 2019 -0700
+
+    dev updates
+
+[33mcommit 79bdae9838e3762e3fef1f405ccc53fe8e4fcd7f[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Wed Nov 20 21:34:19 2019 -0700
+
+    add compiled JS
+
+[33mcommit b131303f9b4a3d2fbbdd5b84da65635f5e8a2c28[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Wed Nov 20 21:30:17 2019 -0700
+
+    minor fix
+
+[33mcommit 3b9b726fc4779cf36f8bafc6b11fd1bb349bf281[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Wed Nov 20 21:27:18 2019 -0700
+
+    small changes
+
+[33mcommit b4cbed98196ba83c93e26b02e11e6f9b4e3964f9[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Nov 18 20:07:26 2019 -0700
+
+    dev updates
+
+[33mcommit 57d20880636b8c9c20047213972ac1c81e5fb091[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Tue Nov 12 19:15:19 2019 -0700
+
+    fix link bug
+
+[33mcommit 660c9f0476aa95e3239d82b8e46a2d9ac2a16f41[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Nov 11 16:24:52 2019 -0700
+
+    add max digiis
+
+[33mcommit 50ef45527414715d6a6f5084be1bb3ec85251b19[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Nov 11 14:45:35 2019 -0700
+
+    dev changes
+
+[33mcommit b4ba3a411e140b050fe829425895a5ab433c65c2[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Sat Nov 2 18:13:38 2019 -0600
+
+    dev updates
+
+[33mcommit dcc0b1a5ae28384851fe32e8d7095de9f4d0b0dd[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Sat Nov 2 23:34:37 2019 +0000
+
+    add template
+
+[33mcommit 33627813577e78b87ea41c80a72478dcdc813838[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Sat Nov 2 23:20:42 2019 +0000
+
+    live updates
+
+[33mcommit 394d6bc7bcc098271c45e1320fa179491daba5f1[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Tue Oct 29 01:48:10 2019 +0000
+
+    tooltip fixes
+
+[33mcommit c485e842369eedaccd18569c22e3a930b3656759[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Oct 28 19:25:34 2019 -0600
+
+    add tooltips
+
+[33mcommit 4f5bf0cb18185fcd7b42c93029c95ba2cd008387[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Tue Oct 29 01:08:20 2019 +0000
+
+    live updates
+
+[33mcommit 3a37003e837fd039c10c561239a5e134ba4fa477[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Thu Sep 26 21:34:27 2019 -0600
+
+    dev updates
+
+[33mcommit 1a5492868e45d11ef60e52f9a1368c27c61070fa[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Fri Sep 27 03:33:59 2019 +0000
+
+    live updates
+
+[33mcommit 2fd90c18e7192b4f10b80b94cdaad1488335c697[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Tue Sep 24 20:42:05 2019 -0600
+
+    dev updates
+
+[33mcommit d69db1abc085ee927bc839d5eb1824deddb3306f[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Wed Sep 25 01:36:21 2019 +0000
+
+    live updates
+
+[33mcommit 37323a62ef4ba7df3fc5b021c05cab8ef3c1cf7e[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Thu Sep 19 01:18:37 2019 +0000
+
+    live update. commit rev 1
+
+[33mcommit 495c73024f6acf070e099efee757737dd16097f6[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Sat Sep 14 00:31:53 2019 +0000
+
+    live changes
+
+[33mcommit 4da68fc4d3c2f78bd773b066c56cc0bdef40bf84[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Sun Sep 8 23:18:11 2019 +0000
+
+    live updates and remove swap files
+
+[33mcommit c18c1ba39d0ff3cfd8cca8a1f6f1906fb7b20466[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Fri Aug 30 03:40:48 2019 +0000
+
+    live updates
+
+[33mcommit 71c1580c85f90b4bbbf13ecfe0dd204ef2d8c2e5[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Sun Aug 25 05:21:14 2019 +0000
+
+    updates to editor
+
+[33mcommit e88a02fb72bc953ffa4c87d4dcc7051551156c2e[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Fri Aug 23 03:49:09 2019 +0000
+
+    updates to flow editor
+
+[33mcommit 1416e93fac2ad67b951e5682179e2af0fa4bfd13[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Wed Aug 21 02:31:45 2019 +0000
+
+    live changes to editor
+
+[33mcommit 5f780acde30308147ca79298e338093b3ab5b4f2[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Fri Aug 16 01:23:56 2019 +0000
+
+    live updates
+
+[33mcommit 30b4a4b6f83292f0e5b22df8bd4e0d6ef01a7c23[m
+Merge: fa4aaa54 72616bc1
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Thu Aug 15 21:58:14 2019 +0000
+
+    Merge branch 'master' of https://bitbucket.org/infinitet3ch/oneline-pbx-cloud
+
+[33mcommit fa4aaa548cb1cac9e35d6d2ec1dc9828ff16566d[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Thu Aug 15 21:57:54 2019 +0000
+
+    add live changes
+
+[33mcommit 72616bc13028c89185d6984428823ec144a57c7f[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Thu Aug 15 15:57:09 2019 -0600
+
+    add local changes
+
+[33mcommit 3e900779d9018a0904bc0a2c41070da59f0465f8[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Tue Aug 13 20:07:19 2019 -0600
+
+    replace URI library
+
+[33mcommit 2f8b3099d795e69896e8806e3dcb345f36e669b7[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Tue Aug 13 20:00:37 2019 -0600
+
+    add URI library
+
+[33mcommit 9900bb109cdfde8fb0a6fb273d3f9691e006a74c[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Sat Aug 10 13:59:59 2019 -0600
+
+    add updates
+
+[33mcommit 57c5e0a2b0913ddade14f28701ac90d3e677952c[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Aug 5 14:47:59 2019 -0600
+
+    add updates to UI
+
+[33mcommit b65aa24e8db57a6a34ae3f0a9fb00658f11f0620[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Wed Jul 31 09:43:16 2019 -0600
+
+    enhance UI
+
+[33mcommit aba06b3808e6e05748b99a756cfb5efe046f9890[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Mon Jul 29 15:19:08 2019 -0600
+
+    enhance UI
+
+[33mcommit 10fbc3263793b64f1d0ff24549c37edc3d0f593d[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Fri Jul 26 17:25:58 2019 -0600
+
+    further work UI
+
+[33mcommit 5726d919a260bd4bdf33412c0535f58375e603ed[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Thu Jul 25 20:11:04 2019 -0600
+
+    fix zoom in on cell dragging problem
+
+[33mcommit 8424959a8b3d754b4bcc9dc85118bb2223ecadfb[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Thu Jul 25 11:42:57 2019 -0600
+
+    add changes to git
+
+[33mcommit 599b0e8cee9f4cb4818ae68f7b85c4a6c4a210a5[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Wed Jul 24 22:28:38 2019 -0600
+
+    remove unused JS files
+
+[33mcommit 7d7d182389106ebe43f99d7a4f22380a6961282f[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Wed Jul 24 22:28:05 2019 -0600
+
+    add updates. not tested
+
+[33mcommit 439786a4dc1b1667667e6f4e9b22ca2bbc41bb51[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Tue Jul 23 16:59:12 2019 -0600
+
+    add widget info tabs and add to javascript
+
+[33mcommit 8852e619eb3c7b10da3ac29d9a7a2b28d7cc11b0[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Tue Jul 23 16:58:54 2019 -0600
+
+    add widget info tabs
+
+[33mcommit 2a945a433543655a1e6fd1f7b6e3908fdc4f22e0[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Fri Jul 19 20:20:31 2019 -0600
+
+    make more edits
+
+[33mcommit f04ce695eb953584ac96611b229be54ae561848b[m
+Author: Nadir Hamid <matrix.nad@gmail.com>
+Date:   Thu Jul 18 13:55:16 2019 -0600
+
+    add files to bitbucket

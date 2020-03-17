@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+     <link href="./app.min.css" rel="stylesheet">
+</head>
+<body ng-cloak>
+    <style>
+.dont-show {
+  display: none;
+}
+    </style>
+    <base href="/"></base>
+    <div ng-controller="RootCtrl">
+      <div class="loading dont-show" ng-show="$shared.isLoading">
+        <center>
+            <img src="https://app.lineblocs.com/spinner.gif" width="64"/>
+            <p>Please wait..</p>
+        </center>
+      </div>
+      <div class="isnt-loading dont-show" ng-show="!$shared.isLoading">
+        <div ng-show="$shared.isCreateLoading">
+          <div class="load-mask">
+            <div class="container">
+              <div class="mask">
+                <div class="block"></div>
+              </div>
+              <div class="spinner">
+                <center>
+                  <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+                  <small>Please wait..</small>
+                </center>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div id="scopeCtrl" ng-view></div>
+      </div>
+    </div>
+    <!-- dependencies -->
+    <script src="./main.min.js"></script>
+    <script src="node_modules/monaco-editor/min/vs/loader.js"></script>
+    <script src="node_modules/monaco-editor/min/vs/editor/editor.main.nls.js"></script>
+    <script src="node_modules/monaco-editor/min/vs/editor/editor.main.js"></script>
+</body>
+</html>

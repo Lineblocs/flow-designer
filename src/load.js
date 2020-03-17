@@ -520,7 +520,9 @@ function bindHotkeys() {
         ctrlKey = 17,
         cmdKey = 91,
         vKey = 86,
-        cKey = 67;
+        cKey = 67,
+        undoKey=90,
+        redoKey=89;
     var copiedModel;
     var copiedView;
 
@@ -555,6 +557,17 @@ function bindHotkeys() {
             copiedView = null;
           }
         }
+        if (ctrlDown && (e.keyCode == undoKey)) {
+          console.log("Document catch Ctrl+Z");
+          var scope = getAngularScope();
+          scope.$shared.undo();
+        }
+        if (ctrlDown && (e.keyCode == redoKey)) {
+          console.log("Document catch Ctrl+Y");
+          var scope = getAngularScope();
+          scope.$shared.redo();
+        }
+
         if (e.keyCode === 8) {
           console.log("backspace detected");
           if (scope.$shared.cellModel) {
