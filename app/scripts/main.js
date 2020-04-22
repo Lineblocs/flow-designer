@@ -2070,6 +2070,7 @@ angular
     }
 
   });
+
 angular.lowercase = angular.$$lowercase;  
 /*! JointJS+ - Set of JointJS compatible plugins
 

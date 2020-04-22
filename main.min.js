@@ -99686,7 +99686,7 @@ angular
       if ($scope.selectedTemplate) {
         data['template_id'] = $scope.selectedTemplate.id;
       }
-      $http.post(createUrl("/flow/updateFlow/" + $shared.flow.id), data).then(function (res) {
+      $http.post(createUrl("/flow/updateFlow/" + $shared.flow.public_id), data).then(function (res) {
         $shared.flow.started = true;
         load();
       });
