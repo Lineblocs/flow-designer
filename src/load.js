@@ -328,6 +328,7 @@ var stencilLibraryGraph = new joint.dia.Graph,
        joint.shapes.devs.PlaybackModel,
        joint.shapes.devs.MacroModel,
        joint.shapes.devs.SetVariablesModel,
+       joint.shapes.devs.ConferenceModel,
   ]);
   stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
     $('body').append('<div id="flyPaper" style="position:fixed;z-index:100;opacity:.7;pointer-event:none;"></div>');

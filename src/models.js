@@ -232,6 +232,24 @@ joint.shapes.devs.SetVariablesModel = joint.shapes.devs.Model.extend({
 
 joint.shapes.devs.SetVariablesView = joint.shapes.devs.ModelView;
 
+
+joint.shapes.devs.ConferenceModel = joint.shapes.devs.Model.extend({
+
+  markup: defaultMarkup,
+
+  defaults: joint.util.deepSupplement({
+    name: 'Conference',
+    type: 'devs.ConferenceModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("Conference", "set variables in the flow runtime"),
+  inPorts: ['In'],
+  outPorts: ['Conference Completed', 'Error'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.ConferenceView = joint.shapes.devs.ModelView;
+
 joint.shapes.devs.Link.define('devs.FlowLink', {
       attrs: {
               ".connection": {

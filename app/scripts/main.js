@@ -1667,7 +1667,7 @@ angular
       if ($scope.selectedTemplate) {
         data['template_id'] = $scope.selectedTemplate.id;
       }
-      $http.post(createUrl("/flow/updateFlow/" + $shared.flow.public_id), data).then(function (res) {
+      $http.post(createUrl("/flow/updateFlow/" + $shared.flow.id), data).then(function (res) {
         $shared.flow.started = true;
         load();
       });
@@ -2722,6 +2722,7 @@ var stencilLibraryGraph = new joint.dia.Graph,
        joint.shapes.devs.PlaybackModel,
        joint.shapes.devs.MacroModel,
        joint.shapes.devs.SetVariablesModel,
+       joint.shapes.devs.ConferenceModel,
   ]);
   stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
     $('body').append('<div id="flyPaper" style="position:fixed;z-index:100;opacity:.7;pointer-event:none;"></div>');
@@ -3215,6 +3216,24 @@ joint.shapes.devs.SetVariablesModel = joint.shapes.devs.Model.extend({
 });
 
 joint.shapes.devs.SetVariablesView = joint.shapes.devs.ModelView;
+
+
+joint.shapes.devs.ConferenceModel = joint.shapes.devs.Model.extend({
+
+  markup: defaultMarkup,
+
+  defaults: joint.util.deepSupplement({
+    name: 'Conference',
+    type: 'devs.ConferenceModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("Conference", "set variables in the flow runtime"),
+  inPorts: ['In'],
+  outPorts: ['Conference Completed', 'Error'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.ConferenceView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.Link.define('devs.FlowLink', {
       attrs: {

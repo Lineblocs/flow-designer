@@ -1,0 +1,104 @@
+<div>
+    <form ng-submit="$shared.saveWidget()">
+        <div ng-cloak>
+            <md-content>
+                <md-tabs class="md-primary widget-options" md-center-tabs md-dynamic-height="true">
+                    <md-tab label="info">
+                        <md-content class="md-padding">
+                            <md-input-container>
+                                <label for="testInput">Widget Name</label>
+                                <input type="text" ng-model="cellModel.name" md-autofocus>
+                            </md-input-container>
+                            <div layout="row">
+                                <div flex="95">
+                                    <md-input-container>
+                                        <label for="testInput">Max Participants</label>
+                                        <input type="number" ng-model="cellModel.data.max_participants" md-autofocus>
+                                    </md-input-container>
+                                </div>
+                                <div flex="5">
+                                    <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            maximum participants that can join conference
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                            </div>
+                            <div layout="row">
+                                <div flex="95">
+                                    <md-input-container>
+                                        <label for="testInput">Music On Hold URL</label>
+                                        <input type="text" ng-model="cellModel.data.music_on_hold_url" md-autofocus>
+                                    </md-input-container>
+                                </div>
+                                <div flex="5">
+                                    <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="top">
+                                            Music on hold URL
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                            </div>
+                            <div layout="row">
+                                <div flex="95">
+                                    <md-checkbox id="recordInput" ng-model="cellModel.data.muted_on_join"
+                                        aria-label="Checkbox 1">
+                                        Mute Callers When They Join
+                                    </md-checkbox>
+                                </div>
+                                <div flex="5">
+                                </div>
+                            </div>
+                            <div layout="row">
+                                <div flex="95">
+                                    <md-checkbox id="recordInput" ng-model="cellModel.data.play_beep_on_entry"
+                                        aria-label="Checkbox 1">
+                                        Play beep when participant joins
+                                    </md-checkbox>
+                                </div>
+                                <div flex="5">
+                                </div>
+                            </div>
+                            <div layout="row">
+                                <div flex="95">
+                                    <md-checkbox id="recordInput" ng-model="cellModel.data.play_beep_on_leave"
+                                        aria-label="Checkbox 1">
+                                        Play beep when participant leaves
+                                    </md-checkbox>
+                                </div>
+                                <div flex="5">
+                                </div>
+                            </div>
+                            <div layout="row">
+                                <div flex="95">
+                                    <md-checkbox id="recordInput" ng-model="cellModel.data.talk_detection"
+                                        aria-label="Checkbox 1">
+                                        Enable talk detection
+                                    </md-checkbox>
+                                </div>
+                                <div flex="5">
+                                </div>
+                            </div>
+
+
+
+                            <div layout="row">
+                                <div flex="95">
+                                    <md-checkbox id="recordInput" ng-model="cellModel.data.do_record"
+                                        aria-label="Checkbox 1">
+                                        Do Record
+                                    </md-checkbox>
+                                </div>
+                                <div flex="5">
+                                </div>
+                            </div>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+        <div ng-include="'/templates/widget_buttons.html'"></div>
+    </form>
+</div>
