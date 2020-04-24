@@ -691,15 +691,7 @@ angular
           $scope.status = 'You cancelled the dialog.';
         });
     }
-    factory.deleteWidget = function (ev) {
-      var confirm = $mdDialog.confirm()
-        .title('Are you sure you want to remove this widget ?')
-        .content('removing this widget will permantely remove its data and all its links')
-        .ariaLabel('Remove Widget')
-        .targetEvent(ev)
-        .ok('Yes')
-        .cancel('No');
-      $mdDialog.show(confirm).then(function () {
+    function confirmDelete() {
         var models = [];
         for (var index in factory.models) {
           var model = factory.models[index];
@@ -715,7 +707,47 @@ angular
         factory.cellModel = null;
         factory.cellView = null;
         doReload();
+      }
+    factory.deleteWidget1 = function (ev) {
+      var confirm = $mdDialog.confirm()
+        .title('Are you sure you want to remove this widget ?')
+        .content('removing this widget will permantely remove its data and all its links')
+        .ariaLabel('Remove Widget')
+        .targetEvent(ev)
+        .ok('Yes')
+        .cancel('No');
+      $mdDialog.show(confirm).then(function () {
+        confirmDelete();
       }, function () {});
+    }
+    factory.deleteWidget = function(ev) {
+        function DialogController($scope, $mdDialog, onConfirm, onCancel) {
+          $scope.cancel = function() {
+            $mdDialog.cancel();
+            onCancel();
+          };
+
+          $scope.confirm = function(answer) {
+            $mdDialog.hide(answer);
+            onConfirm();
+          };
+  }
+        $mdDialog.show({
+          controller: DialogController,
+          templateUrl: '/dialogs/confirm-delete.html',
+          parent: angular.element(document.body),
+          targetEvent: ev,
+          clickOutsideToClose:true,
+          locals: {
+            onConfirm: function() {
+              confirmDelete();
+            },
+            onCancel: function() {
+
+            }
+          },
+          fullscreen: false // Only for -xs, -sm breakpoints.
+        })
     }
     function DialogWidgetSaveController($scope, $shared, $timeout, $q, $http, model, onSave, onCancel) {
       $scope.params = {
@@ -1213,7 +1245,7 @@ angular
       factory.cellModel = null;
       $timeout(function () {
         console.log("cellModel is now ", factory.cellModel);
-        $scope.$apply();
+        //$scope.$apply();
         if (factory.selectorContext === 'LIBRARY') {
           factory.openLibrary();
         } else if (factory.selectorContext === 'AVAILABLE') {

@@ -183,6 +183,7 @@ drawGrid: true,
   //defaultLink: DEFAULT_LINK, 
 validateMagnet: function(cellView, magnet) {
     // Prevent links from ports that already have a link
+    console.log('validateMagnet' , arguments);
     var port = magnet.getAttribute('port');
     var links = graph.getConnectedLinks(cellView.model, { outbound: true });
     var portLinks = _.filter(links, function(o) {
@@ -258,8 +259,12 @@ $("#canvas")
             _.each(links, function (link) {
                 var source = link.get('source');
                 var target = link.get('target');
+                console.log("batch stop info ", link);
                 if (source.id === undefined || target.id === undefined) {
                     link.remove();
+                }
+                if (source.id === target.id) {
+                  link.remove();
                 }
             });
         });
@@ -525,7 +530,8 @@ function bindHotkeys() {
         vKey = 86,
         cKey = 67,
         undoKey=90,
-        redoKey=89;
+        redoKey=89,
+        enterKey=89;
     var copiedModel;
     var copiedView;
 
@@ -541,6 +547,11 @@ function bindHotkeys() {
         var active = document.activeElement;
         console.log("active element is ", active);
         var parent = $(active).parent();
+        if ( e.keyCode === enterKey ) {
+          e.stopPropagation();
+          e.preventDefault();
+          return;
+        }
         if ( $( active ).is("input") || ( parent && $(parent).is("md-select")) || $(active).is("md-option") || $(active).is("textarea")) {
           return;
         }
@@ -573,7 +584,8 @@ function bindHotkeys() {
 
         if (e.keyCode === 8) {
           console.log("backspace detected");
-          if (scope.$shared.cellModel) {
+          var check = angular.element("#confirmDelete"); //make sure we dont do the popup twice
+          if (scope.$shared.cellModel && !check.is(":visible")) {
             scope.$shared.deleteWidget();
           }
         }

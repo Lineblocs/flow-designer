@@ -230,7 +230,7 @@ md-tabs.md-default-theme.md-primary, md-tabs.md-primary > md-tabs-wrapper {
   left: -100px;
   /*width: 128px;*/
   white-space: inherit;
-    max-width: 500px; // Or whatever you need.
+    max-width: 500px;
 }
 .widget-tmp-save {
   margin: 10px;

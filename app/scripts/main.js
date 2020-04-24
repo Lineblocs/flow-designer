@@ -691,15 +691,7 @@ angular
           $scope.status = 'You cancelled the dialog.';
         });
     }
-    factory.deleteWidget = function (ev) {
-      var confirm = $mdDialog.confirm()
-        .title('Are you sure you want to remove this widget ?')
-        .content('removing this widget will permantely remove its data and all its links')
-        .ariaLabel('Remove Widget')
-        .targetEvent(ev)
-        .ok('Yes')
-        .cancel('No');
-      $mdDialog.show(confirm).then(function () {
+    function confirmDelete() {
         var models = [];
         for (var index in factory.models) {
           var model = factory.models[index];
@@ -715,7 +707,47 @@ angular
         factory.cellModel = null;
         factory.cellView = null;
         doReload();
+      }
+    factory.deleteWidget1 = function (ev) {
+      var confirm = $mdDialog.confirm()
+        .title('Are you sure you want to remove this widget ?')
+        .content('removing this widget will permantely remove its data and all its links')
+        .ariaLabel('Remove Widget')
+        .targetEvent(ev)
+        .ok('Yes')
+        .cancel('No');
+      $mdDialog.show(confirm).then(function () {
+        confirmDelete();
       }, function () {});
+    }
+    factory.deleteWidget = function(ev) {
+        function DialogController($scope, $mdDialog, onConfirm, onCancel) {
+          $scope.cancel = function() {
+            $mdDialog.cancel();
+            onCancel();
+          };
+
+          $scope.confirm = function(answer) {
+            $mdDialog.hide(answer);
+            onConfirm();
+          };
+  }
+        $mdDialog.show({
+          controller: DialogController,
+          templateUrl: '/dialogs/confirm-delete.html',
+          parent: angular.element(document.body),
+          targetEvent: ev,
+          clickOutsideToClose:true,
+          locals: {
+            onConfirm: function() {
+              confirmDelete();
+            },
+            onCancel: function() {
+
+            }
+          },
+          fullscreen: false // Only for -xs, -sm breakpoints.
+        })
     }
     function DialogWidgetSaveController($scope, $shared, $timeout, $q, $http, model, onSave, onCancel) {
       $scope.params = {
@@ -1213,7 +1245,7 @@ angular
       factory.cellModel = null;
       $timeout(function () {
         console.log("cellModel is now ", factory.cellModel);
-        $scope.$apply();
+        //$scope.$apply();
         if (factory.selectorContext === 'LIBRARY') {
           factory.openLibrary();
         } else if (factory.selectorContext === 'AVAILABLE') {
@@ -2594,6 +2626,7 @@ drawGrid: true,
   //defaultLink: DEFAULT_LINK, 
 validateMagnet: function(cellView, magnet) {
     // Prevent links from ports that already have a link
+    console.log('validateMagnet' , arguments);
     var port = magnet.getAttribute('port');
     var links = graph.getConnectedLinks(cellView.model, { outbound: true });
     var portLinks = _.filter(links, function(o) {
@@ -2669,8 +2702,12 @@ $("#canvas")
             _.each(links, function (link) {
                 var source = link.get('source');
                 var target = link.get('target');
+                console.log("batch stop info ", link);
                 if (source.id === undefined || target.id === undefined) {
                     link.remove();
+                }
+                if (source.id === target.id) {
+                  link.remove();
                 }
             });
         });
@@ -2936,7 +2973,8 @@ function bindHotkeys() {
         vKey = 86,
         cKey = 67,
         undoKey=90,
-        redoKey=89;
+        redoKey=89,
+        enterKey=89;
     var copiedModel;
     var copiedView;
 
@@ -2952,6 +2990,11 @@ function bindHotkeys() {
         var active = document.activeElement;
         console.log("active element is ", active);
         var parent = $(active).parent();
+        if ( e.keyCode === enterKey ) {
+          e.stopPropagation();
+          e.preventDefault();
+          return;
+        }
         if ( $( active ).is("input") || ( parent && $(parent).is("md-select")) || $(active).is("md-option") || $(active).is("textarea")) {
           return;
         }
@@ -2984,7 +3027,8 @@ function bindHotkeys() {
 
         if (e.keyCode === 8) {
           console.log("backspace detected");
-          if (scope.$shared.cellModel) {
+          var check = angular.element("#confirmDelete"); //make sure we dont do the popup twice
+          if (scope.$shared.cellModel && !check.is(":visible")) {
             scope.$shared.deleteWidget();
           }
         }
