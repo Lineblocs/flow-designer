@@ -648,7 +648,7 @@ window.addEventListener("keyup", function() {
 window.addEventListener("dragstart", function() {
   stateActions.lastAction = Date.now();
 });
-window.addEventListener('message', event => {
+window.addEventListener('message', function(event) {
     // IMPORTANT: check the origin of the data! 
     console.log("received window emssage ", arguments);
     if (event.origin.startsWith('https://app.lineblocs.com')) { 
