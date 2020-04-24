@@ -39,29 +39,62 @@
 
             <h2>{{$shared.flow.name}}</h2>
             <md-button ng-click="undo()" aria-label="Undo" class="md-icon-button undo">
-            <md-icon md-svg-icon="img/icons/undo.svg"></md-icon>
+            <md-icon md-svg-icon="img/icons/undo.svg">
+                        <md-tooltip class="helper-tooltip" md-direction="bottom">
+                        Undo Action
+                    </md-tooltip>
+            </md-icon>
             </md-button>
+
             <md-button  ng-click="redo()" aria-label="Redo" class="md-icon-button redo">
-            <md-icon md-svg-icon="img/icons/redo.svg"></md-icon>
+            <md-icon md-svg-icon="img/icons/redo.svg">
+                                    <md-tooltip class="helper-tooltip" md-direction="bottom">
+                        Redo Action
+                    </md-tooltip>
+            </md-icon>
             </md-button>
             <md-button ng-click="zoomIn()" aria-label="Zoom In" class="md-icon-button zoom_in">
-            <md-icon md-svg-icon="img/icons/zoom_in.svg"></md-icon>
+            <md-icon md-svg-icon="img/icons/zoom_in.svg">
+                                                <md-tooltip class="helper-tooltip" md-direction="bottom">
+                        Zoom In
+                    </md-tooltip>
+            </md-icon>
             </md-button>
             <md-button  ng-click="zoomOut()" aria-label="Zoom Out" class="md-icon-button zoom_out">
-            <md-icon md-svg-icon="img/icons/zoom_out.svg"></md-icon>
+            <md-icon md-svg-icon="img/icons/zoom_out.svg">
+              <md-tooltip class="helper-tooltip" md-direction="bottom">
+                        Zoom Out
+                    </md-tooltip>
+            </md-icon>
             </md-button>
             <md-button  ng-click="centerFocus()" aria-label="Go to center" class="md-icon-button center_focus">
-            <md-icon md-svg-icon="img/icons/center_focus.svg"></md-icon>
+            <md-icon md-svg-icon="img/icons/center_focus.svg">
+                          <md-tooltip class="helper-tooltip" md-direction="bottom">
+                        Center Focus
+                    </md-tooltip>
+            </md-icon>
             </md-button>
             <md-button  ng-show="$shared.canDelete()" ng-click="$shared.deleteWidget($event)" aria-label="Go to center" class="md-icon-button delete">
-            <md-icon md-svg-icon="img/icons/delete.svg"></md-icon>
+            <md-icon md-svg-icon="img/icons/delete.svg">
+                                      <md-tooltip class="helper-tooltip" md-direction="bottom">
+                        Delete Widget
+                    </md-tooltip>
+            </md-icon>
             </md-button>
             <md-button  ng-show="$shared.canSave()" ng-click="$shared.saveWidgetAsTemplate($event, $shared.cellModel)" aria-label="Go to center" class="md-icon-button folder-star">
-            <md-icon md-svg-icon="img/icons/folder_special.svg"></md-icon>
+            <md-icon md-svg-icon="img/icons/folder_special.svg">
+                                             <md-tooltip class="helper-tooltip" md-direction="bottom">
+                        Save Widget As Template
+                    </md-tooltip>
+            </md-icon>
             </md-button>
 
             <md-button  ng-show="$shared.canDuplicate()" ng-click="$shared.duplicateWidget($event)" aria-label="Duplicate cell" class="md-icon-button duplicate">
-            <md-icon md-svg-icon="img/icons/duplicate.svg"></md-icon>
+            <md-icon md-svg-icon="img/icons/duplicate.svg">
+                                                         <md-tooltip class="helper-tooltip" md-direction="bottom">
+                        Duplicate
+                    </md-tooltip>
+            </md-icon>
             </md-button>
             <md-button  ng-click="saveChanges($event)" aria-label="Save" class="md-raised md-primary">
                 Save
@@ -119,9 +152,29 @@
 
                 </div>
                 <div ng-show="$shared.hasCellModel()" class="sidebar">
+                  <!--
                         <md-toolbar class="md-theme-light">
                             <h1 class="md-toolbar-tools">Widget Options</h1>
                         </md-toolbar>
+                      -->
+                      <md-toolbar class="md-theme-indigo">
+                        <div layout="row" layout-margin>
+                          <div flex="10">
+                            <md-button class="md-raised md-small no-margin black-txt graph-btn min-width-auto" ng-click="unsetCellModel()">
+                        <md-icon md-svg-icon="img/icons/widgets.svg">
+                                                <md-tooltip class="helper-tooltip" md-direction="bottom">
+                                                Back to widgets
+                                            </md-tooltip>
+                                    </md-icon>
+
+                            </md-button>
+                          </div>
+                          <div flex="90">
+
+                            <h1 class="md-toolbar-tools">Options</h1>
+                          </div>
+                        </div>
+                      </md-toolbar>
                         <div ng-show="$shared.cellModel.cell.attributes.type === 'devs.LaunchModel'" ng-include="'models/launch.html'"></div>
                         <div ng-show="$shared.cellModel.cell.attributes.type === 'devs.SwitchModel'" ng-include="'models/switch.html'"></div>
                         <div ng-show="$shared.cellModel.cell.attributes.type  === 'devs.DialModel'" ng-include="'models/dial.html'"></div>

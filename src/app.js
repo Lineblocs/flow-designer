@@ -152,7 +152,7 @@ angular
     factory.FLOW_REMOTE_URL = factory.SERVER_REMOTE_URL + "/api/flow";
     return factory;
   })
-  .factory("$shared", function ($mdDialog, $mdSidenav, $log, $const, $http, $timeout, $q) {
+  .factory("$shared", function ($mdDialog, $mdSidenav, $log, $const, $http, $timeout, $q, $mdToast) {
     var factory = this;
     factory.models = [];
     factory.trash = [];
@@ -1198,7 +1198,32 @@ angular
           changeDescription(model.cell, "Use media file as playback");
         }
       } else if (model.cell.attributes.type === 'devs.SwitchModel') {}
+      factory.unsetCellModel();
+      factory.showToast("Widget changes saved")
     }
+    factory.showToast = function(message) {
+          $mdToast.show(
+      $mdToast.simple()
+        .content(message)
+        .position('top right')
+        .hideDelay(3000)
+    );
+    }
+    factory.unsetCellModel = function () {
+      factory.cellModel = null;
+      $timeout(function () {
+        console.log("cellModel is now ", factory.cellModel);
+        $scope.$apply();
+        if (factory.selectorContext === 'LIBRARY') {
+          factory.openLibrary();
+        } else if (factory.selectorContext === 'AVAILABLE') {
+          factory.openAvailable();
+        }
+
+      }, 0);
+    }
+
+
     factory.getCellById = function (id) {
       var found = null;
       var graph = diagram['graph'];
@@ -1259,7 +1284,7 @@ angular
         .parent(angular.element(document.querySelector('body')))
         .clickOutsideToClose(true)
         .title('Changes Saved')
-        .content('Your flow has been saved and published. thanks')
+        .content('Your flow has been saved and published.')
         .ariaLabel('Saved Changes')
         .ok('ok')
         .targetEvent(ev)
@@ -1348,6 +1373,7 @@ angular
         $http.post(createUrl("/flow/updateFlow/" + flowId), serverData).then(function () {
           $shared.isCreateLoading = false;
           showSaved(ev);
+          stateActions.lastSave = Date.now();
         }, function (err) {
           alert("An error occured");
         });
@@ -1379,7 +1405,7 @@ angular
       data['flow_json'] = null;
       data['template_id'] = null;
       data['started'] = true;
-      if ($scope.selectedTemplate) {
+      if ($scope.selectedTemplate.name !== 'Blank') {
         data['template_id'] = $scope.selectedTemplate.id;
       }
       $shared.isCreateLoading = true;
@@ -1629,17 +1655,7 @@ angular
     }
 
     $scope.unsetCellModel = function () {
-      $shared.cellModel = null;
-      $timeout(function () {
-        console.log("cellModel is now ", $shared.cellModel);
-        $scope.$apply();
-        if ($shared.selectorContext === 'LIBRARY') {
-          $shared.openLibrary();
-        } else if ($shared.selectorContext === 'AVAILABLE') {
-          $shared.openAvailable();
-        }
-
-      }, 0);
+      $shared.unsetCellModel();
     }
 
     $scope.flowWasStarted = function () {

@@ -222,3 +222,19 @@ md-tabs.md-default-theme.md-primary, md-tabs.md-primary > md-tabs-wrapper {
 .graph-btn {
   margin-top: 18px !important;
 }
+.compact-input {
+  width: 400px;
+}
+.helper-tooltip {
+  top: 45px;
+  left: -100px;
+  /*width: 128px;*/
+  white-space: inherit;
+    max-width: 500px; // Or whatever you need.
+}
+.widget-tmp-save {
+  margin: 10px;
+}
+.min-width-auto {
+  min-width: auto;
+}

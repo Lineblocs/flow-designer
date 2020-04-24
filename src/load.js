@@ -1,5 +1,7 @@
 
-var offsetLeft, offsetTop, beforeInfo, launchCell, diagram;
+var offsetLeft, offsetTop, beforeInfo, launchCell, diagram, stateActions = {
+  lastSave: null, 
+  lastAction: null };
 diagram = {};
 var GRAPH_CONNECTOR = {
   name: 'rounded'
@@ -226,7 +228,7 @@ setGrid(paper, 15, '#E3E3E3');
         dragStartPosition = { x: x, y: y};
         var scope = getAngularScope();
         if (scope.cellModel) {
-          scope.unsetCellModel();
+          //scope.unsetCellModel();
         }
     }
 );
@@ -580,6 +582,7 @@ function bindHotkeys() {
 }
 
 //initializeDiagram();
+/*
 $.get("./templates.html", function(data) {
      console.log("data is ", data);
           $(data).appendTo('body');
@@ -587,4 +590,49 @@ $.get("./templates.html", function(data) {
 
       bindHotkeys();
 
+});
+*/
+window.addEventListener("load", function() {
+          angular.bootstrap(document, ['basicUsageSidenavDemo']);
+      bindHotkeys();
+}, false);
+
+function checkChangesSaved() {
+    var lastSave = stateActions.lastSave;
+    var lastAction= stateActions.lastAction;
+    if ( ( ( lastAction !== null && lastSave !== null ) && lastAction >= lastSave ) 
+    || (lastAction !== null && lastSave === null) ) {
+      return false;
+    }
+    return true;
+}
+window.onbeforeunload = function (e) {
+    e = e || window.event;
+
+    var text = "Are you sure all your unsaved changes will be lost";
+    if ( !checkChangesSaved() ) {
+      // For IE and Firefox prior to version 4
+      if (e) {
+          e.returnValue = text;
+      }
+
+      // For Safari
+      return text;
+    }
+};
+window.addEventListener("click", function() {
+  //stateActions.lastAction = Date.now();
+});
+window.addEventListener("keyup", function() {
+  var element = document.activeElement;
+  if ( !element ) {
+    return;
+  }
+  var type = $(element).prop('nodeName');
+  if ( type === 'INPUT' || type === 'TEXTAREA' ) {
+    stateActions.lastAction = Date.now();
+  }
+});
+window.addEventListener("dragstart", function() {
+  stateActions.lastAction = Date.now();
 });

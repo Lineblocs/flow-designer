@@ -7,7 +7,7 @@
   </md-toolbar>
   <md-content layout="row" layout-padding></md-content>
   <div>
-    <md-input-container>
+    <md-input-container class="compact-input">
 
       <label>Name</label>
       <input ng-model="values.name">
@@ -46,7 +46,7 @@
   </div>
 </div>
 
-<md-button ng-click="submit()" class="md-raised md-primary">Create</md-button>
+  <md-button ng-disabled="!selectedTemplate" ng-click="submit()" class="md-raised md-primary">Create</md-button>
 </div>
 </md-content>
 

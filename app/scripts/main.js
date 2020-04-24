@@ -152,7 +152,7 @@ angular
     factory.FLOW_REMOTE_URL = factory.SERVER_REMOTE_URL + "/api/flow";
     return factory;
   })
-  .factory("$shared", function ($mdDialog, $mdSidenav, $log, $const, $http, $timeout, $q) {
+  .factory("$shared", function ($mdDialog, $mdSidenav, $log, $const, $http, $timeout, $q, $mdToast) {
     var factory = this;
     factory.models = [];
     factory.trash = [];
@@ -1198,7 +1198,32 @@ angular
           changeDescription(model.cell, "Use media file as playback");
         }
       } else if (model.cell.attributes.type === 'devs.SwitchModel') {}
+      factory.unsetCellModel();
+      factory.showToast("Widget changes saved")
     }
+    factory.showToast = function(message) {
+          $mdToast.show(
+      $mdToast.simple()
+        .content(message)
+        .position('top right')
+        .hideDelay(3000)
+    );
+    }
+    factory.unsetCellModel = function () {
+      factory.cellModel = null;
+      $timeout(function () {
+        console.log("cellModel is now ", factory.cellModel);
+        $scope.$apply();
+        if (factory.selectorContext === 'LIBRARY') {
+          factory.openLibrary();
+        } else if (factory.selectorContext === 'AVAILABLE') {
+          factory.openAvailable();
+        }
+
+      }, 0);
+    }
+
+
     factory.getCellById = function (id) {
       var found = null;
       var graph = diagram['graph'];
@@ -1259,7 +1284,7 @@ angular
         .parent(angular.element(document.querySelector('body')))
         .clickOutsideToClose(true)
         .title('Changes Saved')
-        .content('Your flow has been saved and published. thanks')
+        .content('Your flow has been saved and published.')
         .ariaLabel('Saved Changes')
         .ok('ok')
         .targetEvent(ev)
@@ -1348,6 +1373,7 @@ angular
         $http.post(createUrl("/flow/updateFlow/" + flowId), serverData).then(function () {
           $shared.isCreateLoading = false;
           showSaved(ev);
+          stateActions.lastSave = Date.now();
         }, function (err) {
           alert("An error occured");
         });
@@ -1379,7 +1405,7 @@ angular
       data['flow_json'] = null;
       data['template_id'] = null;
       data['started'] = true;
-      if ($scope.selectedTemplate) {
+      if ($scope.selectedTemplate.name !== 'Blank') {
         data['template_id'] = $scope.selectedTemplate.id;
       }
       $shared.isCreateLoading = true;
@@ -1629,17 +1655,7 @@ angular
     }
 
     $scope.unsetCellModel = function () {
-      $shared.cellModel = null;
-      $timeout(function () {
-        console.log("cellModel is now ", $shared.cellModel);
-        $scope.$apply();
-        if ($shared.selectorContext === 'LIBRARY') {
-          $shared.openLibrary();
-        } else if ($shared.selectorContext === 'AVAILABLE') {
-          $shared.openAvailable();
-        }
-
-      }, 0);
+      $shared.unsetCellModel();
     }
 
     $scope.flowWasStarted = function () {
@@ -1667,7 +1683,7 @@ angular
       if ($scope.selectedTemplate) {
         data['template_id'] = $scope.selectedTemplate.id;
       }
-      $http.post(createUrl("/flow/updateFlow/" + $shared.flow.id), data).then(function (res) {
+      $http.post(createUrl("/flow/updateFlow/" + $shared.flow.public_id), data).then(function (res) {
         $shared.flow.started = true;
         load();
       });
@@ -2394,7 +2410,9 @@ joint.dia.CommandManager = Backbone.Model.extend({
 });
 
 
-var offsetLeft, offsetTop, beforeInfo, launchCell, diagram;
+var offsetLeft, offsetTop, beforeInfo, launchCell, diagram, stateActions = {
+  lastSave: null, 
+  lastAction: null };
 diagram = {};
 var GRAPH_CONNECTOR = {
   name: 'rounded'
@@ -2621,7 +2639,7 @@ setGrid(paper, 15, '#E3E3E3');
         dragStartPosition = { x: x, y: y};
         var scope = getAngularScope();
         if (scope.cellModel) {
-          scope.unsetCellModel();
+          //scope.unsetCellModel();
         }
     }
 );
@@ -2975,6 +2993,7 @@ function bindHotkeys() {
 }
 
 //initializeDiagram();
+/*
 $.get("./templates.html", function(data) {
      console.log("data is ", data);
           $(data).appendTo('body');
@@ -2983,7 +3002,51 @@ $.get("./templates.html", function(data) {
       bindHotkeys();
 
 });
+*/
+window.addEventListener("load", function() {
+          angular.bootstrap(document, ['basicUsageSidenavDemo']);
+      bindHotkeys();
+}, false);
 
+function checkChangesSaved() {
+    var lastSave = stateActions.lastSave;
+    var lastAction= stateActions.lastAction;
+    if ( ( ( lastAction !== null && lastSave !== null ) && lastAction >= lastSave ) 
+    || (lastAction !== null && lastSave === null) ) {
+      return false;
+    }
+    return true;
+}
+window.onbeforeunload = function (e) {
+    e = e || window.event;
+
+    var text = "Are you sure all your unsaved changes will be lost";
+    if ( !checkChangesSaved() ) {
+      // For IE and Firefox prior to version 4
+      if (e) {
+          e.returnValue = text;
+      }
+
+      // For Safari
+      return text;
+    }
+};
+window.addEventListener("click", function() {
+  //stateActions.lastAction = Date.now();
+});
+window.addEventListener("keyup", function() {
+  var element = document.activeElement;
+  if ( !element ) {
+    return;
+  }
+  var type = $(element).prop('nodeName');
+  if ( type === 'INPUT' || type === 'TEXTAREA' ) {
+    stateActions.lastAction = Date.now();
+  }
+});
+window.addEventListener("dragstart", function() {
+  stateActions.lastAction = Date.now();
+});
 var widgetDimens = {
   width: 226,
   height:108 
@@ -3134,7 +3197,7 @@ joint.shapes.devs.ProcessInputModel = joint.shapes.devs.Model.extend({
   markup: defaultMarkup,
 
   defaults: joint.util.deepSupplement({
-    name: 'ProcessInput',
+    name: 'Process Input',
     type: 'devs.ProcessInputModel',
     size: widgetDimens,
     attrs: createDefaultAttrs("ProcessInput", "Gather input on a call"),
@@ -3153,7 +3216,7 @@ joint.shapes.devs.RecordVoicemailModel = joint.shapes.devs.Model.extend({
   markup: defaultMarkup,
 
   defaults: joint.util.deepSupplement({
-    name: 'RecordVoicemail',
+    name: 'Record Voicemail',
     type: 'devs.RecordVoicemailModel',
     size: widgetDimens,
     attrs: createDefaultAttrs("RecordVoicemail", "Record voicemail"),
@@ -3206,7 +3269,7 @@ joint.shapes.devs.SetVariablesModel = joint.shapes.devs.Model.extend({
   markup: defaultMarkup,
 
   defaults: joint.util.deepSupplement({
-    name: 'SetVariables',
+    name: 'Set Variables',
     type: 'devs.SetVariablesModel',
     size: widgetDimens,
     attrs: createDefaultAttrs("SetVariables", "set variables in the flow runtime"),

@@ -108,9 +108,13 @@ gulp.watch([
     'src/custom/JointTooledViewPlugin/*.js'
     ]).on('change', function() {
             gulp.start('scripts');
+            gulp.start('styles');
+            gulp.start('compress-css');
+            /*
             mergeTemplates().then(function(output) {
                 fs.writeFileSync("./templates.html", output);
             });
+            */
             $.livereload.changed.apply(null, arguments);
     });
 });

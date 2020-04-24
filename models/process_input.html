@@ -34,7 +34,7 @@
                                     </md-icon>
                                 </div>
                                 </div>
-                                <div ng-show="cellModel.data.playback_type==='Say'">
+                                <div ng-if="cellModel.data.playback_type==='Say'">
                                 <div layout="row">
                                     <div flex="95">
                                         <md-input-container>
@@ -130,12 +130,12 @@
                                 </div>
                             </div>
                                 </div>
-                                <div ng-show="cellModel.data.playback_type==='Play'">
+                                <div ng-if="cellModel.data.playback_type==='Play'">
                                 <div layout="row">
                                     <div flex="95">
                                         <md-input-container>
                                             <label for="testInput">URL of audio file</label>
-                                            <input type="text" ng-model="cellModel.data.url_audio" md-autofocus>
+                                            <input type="text" ng-model="cellModel.data.url_audio" md-autofocus required="">
                                         </md-input-container>
                                     </div>
                                         <div flex="5">

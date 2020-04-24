@@ -148,7 +148,7 @@ joint.shapes.devs.ProcessInputModel = joint.shapes.devs.Model.extend({
   markup: defaultMarkup,
 
   defaults: joint.util.deepSupplement({
-    name: 'ProcessInput',
+    name: 'Process Input',
     type: 'devs.ProcessInputModel',
     size: widgetDimens,
     attrs: createDefaultAttrs("ProcessInput", "Gather input on a call"),
@@ -167,7 +167,7 @@ joint.shapes.devs.RecordVoicemailModel = joint.shapes.devs.Model.extend({
   markup: defaultMarkup,
 
   defaults: joint.util.deepSupplement({
-    name: 'RecordVoicemail',
+    name: 'Record Voicemail',
     type: 'devs.RecordVoicemailModel',
     size: widgetDimens,
     attrs: createDefaultAttrs("RecordVoicemail", "Record voicemail"),
@@ -220,7 +220,7 @@ joint.shapes.devs.SetVariablesModel = joint.shapes.devs.Model.extend({
   markup: defaultMarkup,
 
   defaults: joint.util.deepSupplement({
-    name: 'SetVariables',
+    name: 'Set Variables',
     type: 'devs.SetVariablesModel',
     size: widgetDimens,
     attrs: createDefaultAttrs("SetVariables", "set variables in the flow runtime"),
