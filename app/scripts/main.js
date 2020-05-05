@@ -3091,6 +3091,25 @@ window.addEventListener("keyup", function() {
 window.addEventListener("dragstart", function() {
   stateActions.lastAction = Date.now();
 });
+window.addEventListener('message', function(event) {
+    // IMPORTANT: check the origin of the data! 
+    console.log("received window emssage ", arguments);
+    if (event.origin.startsWith('https://app.lineblocs.com')) { 
+      if ( event.data === 'check' ) {
+        var result = checkChangesSaved();
+        if ( result ) {
+          parent.postMessage('saved', '*');
+        } else {
+          parent.postMessage('not-saved', '*');
+        }
+      }
+    } else {
+        // The data was NOT sent from your site! 
+        // Be careful! Do not use it. This else branch is
+        // here just for clarity, you usually shouldn't need it.
+        return; 
+    } 
+}); 
 var widgetDimens = {
   width: 226,
   height:108 
