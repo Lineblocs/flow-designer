@@ -1455,7 +1455,11 @@ angular
         var urlObj = URI(document.location.href);
         var query = urlObj.query(true);
         var token = query.auth;
-        $location.url("/edit?flowId=" + id + "&auth=" + token + "&workspaceId=" + query.workspaceId);
+        var url = "/edit?flowId=" + id + "&auth=" + token + "&workspaceId=" + query.workspaceId;
+        if ( query.admin ) {
+          url += "&admin=" + query.admin;
+        }
+        $location.url(url);
         if (!isLocal) {
           //top.window.location.href = "https://app.lineblocs.com/#/dashboard/flows/" + id;
         }
