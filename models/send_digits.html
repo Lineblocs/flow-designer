@@ -1,0 +1,39 @@
+<div>
+    <form ng-submit="$shared.saveWidget()">
+        <div ng-cloak>
+            <md-content>
+                <md-tabs class="md-primary widget-options" md-center-tabs md-dynamic-height="true">
+                    <md-tab label="info">
+                        <md-content class="md-padding">
+                            <md-input-container>
+                                <label for="testInput">Widget Name</label>
+                                <input type="text" ng-model="cellModel.name" md-autofocus>
+                            </md-input-container>
+                            <div layout="row">
+                                <div flex="95">
+                                    <md-input-container>
+                                        <label for="testInput">Digits</label>
+                                        <input type="text" ng-model="cellModel.data.digits" md-autofocus>
+                                    </md-input-container>
+                                </div>
+                                <div flex="5">
+                                    <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="left">
+                                            Enter digits to send to the channel. To enter more than one digit please use a space.
+
+                                            Examples:
+                                            Send one digit: 1
+                                            Send two digit: 1 9
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                            </div>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+        <div ng-include="'/templates/widget_buttons.html'"></div>
+    </form>
+</div>

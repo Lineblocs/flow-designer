@@ -250,6 +250,24 @@ joint.shapes.devs.ConferenceModel = joint.shapes.devs.Model.extend({
 
 joint.shapes.devs.ConferenceView = joint.shapes.devs.ModelView;
 
+
+joint.shapes.devs.SendDigitsModel = joint.shapes.devs.Model.extend({
+
+  markup: defaultMarkup,
+
+  defaults: joint.util.deepSupplement({
+    name: 'SendDigits',
+    type: 'devs.SendDigitsModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("SendDigits", "send digits to the channel"),
+  inPorts: ['In'],
+  outPorts: ['Completed', 'Error'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.ConferenceView = joint.shapes.devs.ModelView;
+
 joint.shapes.devs.Link.define('devs.FlowLink', {
       attrs: {
               ".connection": {
