@@ -114,6 +114,11 @@ angular
           if (workspaceId) {
             config.headers['X-Workspace-ID'] = workspaceId;
           }
+          var admin = query.admin;
+          if (admin) {
+            config.headers['X-Admin-Token'] = admin;
+          }
+
 
           console.log("request headers are ", config.headers);
         } catch (e) {}
