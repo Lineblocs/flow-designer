@@ -3388,7 +3388,25 @@ joint.shapes.devs.SendDigitsModel = joint.shapes.devs.Model.extend({
   }, joint.shapes.devs.Model.prototype.defaults)
 });
 
-joint.shapes.devs.ConferenceView = joint.shapes.devs.ModelView;
+joint.shapes.devs.SendDigitsView = joint.shapes.devs.ModelView;
+
+
+joint.shapes.devs.WaitModel = joint.shapes.devs.Model.extend({
+
+  markup: defaultMarkup,
+
+  defaults: joint.util.deepSupplement({
+    name: 'Wait',
+    type: 'devs.WaitModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("Wait", "pause execution on channel"),
+  inPorts: ['In'],
+  outPorts: ['Completed'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.WaitView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.Link.define('devs.FlowLink', {
       attrs: {
