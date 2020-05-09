@@ -2788,6 +2788,7 @@ var stencilLibraryGraph = new joint.dia.Graph,
        joint.shapes.devs.MacroModel,
        joint.shapes.devs.SetVariablesModel,
        joint.shapes.devs.ConferenceModel,
+       joint.shapes.devs.SendDigitsModel,
   ]);
   stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
     $('body').append('<div id="flyPaper" style="position:fixed;z-index:100;opacity:.7;pointer-event:none;"></div>');
@@ -3365,6 +3366,24 @@ joint.shapes.devs.ConferenceModel = joint.shapes.devs.Model.extend({
     attrs: createDefaultAttrs("Conference", "set variables in the flow runtime"),
   inPorts: ['In'],
   outPorts: ['Conference Completed', 'Error'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.ConferenceView = joint.shapes.devs.ModelView;
+
+
+joint.shapes.devs.SendDigitsModel = joint.shapes.devs.Model.extend({
+
+  markup: defaultMarkup,
+
+  defaults: joint.util.deepSupplement({
+    name: 'SendDigits',
+    type: 'devs.SendDigitsModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("SendDigits", "send digits to the channel"),
+  inPorts: ['In'],
+  outPorts: ['Completed', 'Error'],
   ports: defaultPorts
   }, joint.shapes.devs.Model.prototype.defaults)
 });
