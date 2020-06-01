@@ -5,11 +5,11 @@
                 <md-tabs class="md-primary widget-options" md-center-tabs md-dynamic-height="true">
                     <md-tab label="info">
                         <md-content class="md-padding">
-                                <md-input-container>
-                                    <label for="testInput">Widget Name</label>
-                                    <input type="text" ng-model="cellModel.name" md-autofocus>
-                                </md-input-container>
-                                <!--
+                            <md-input-container>
+                                <label for="testInput">Widget Name</label>
+                                <input type="text" ng-model="cellModel.name" md-autofocus>
+                            </md-input-container>
+                            <!--
                                 <md-input-container>
                                     <label for="testInput">Finish Record Type</label>
                                     <md-select ng-change="changeFinishRecordType(cellModel.data.finish_record_type)" ng-model="cellModel.data.finish_record_type">
@@ -20,55 +20,65 @@
                                     </md-select>
                                 </md-input-container>
                                 -->
-                                <div layout="row">
-                                    <div flex="95">
-                                        <md-input-container>
-                                            <label for="testInput">Max Recording Length</label>
-                                            <input type="text" ng-model="cellModel.data.max_recording_length" md-autofocus>
-                                        </md-input-container>
-                                    </div>
-                                        <div flex="5">
-                                      <md-icon class="tooltip-icon">
+                            <div layout="row">
+                                <div flex="95">
+                                    <md-input-container>
+                                        <label for="testInput">Max Recording Length</label>
+                                        <input type="text" ng-model="cellModel.data.max_recording_length" md-autofocus>
+                                    </md-input-container>
+                                </div>
+                                <div flex="5">
+                                    <md-icon class="tooltip-icon">
                                         <i class="mdi mdi-information"></i>
                                         <md-tooltip class="helper-tooltip" md-direction="left">
                                             The time to wait in seconds to record.
                                         </md-tooltip>
                                     </md-icon>
                                 </div>
+                            </div>
+                            <div layout="row">
+                                <div flex="95">
+                                    <md-input-container>
+                                        <label for="testInput">Finish Key</label>
+                                        <input type="text" ng-model="cellModel.data.finish_key" md-autofocus>
+                                    </md-input-container>
                                 </div>
-                                <div layout="row">
-                                    <div flex="95">
-                                        <md-input-container>
-                                            <label for="testInput">Finish Key</label>
-                                            <input type="text" ng-model="cellModel.data.finish_key" md-autofocus>
-                                        </md-input-container>
-                                    </div>
-                                        <div flex="5">
-                                      <md-icon class="tooltip-icon">
+                                <div flex="5">
+                                    <md-icon class="tooltip-icon">
                                         <i class="mdi mdi-information"></i>
                                         <md-tooltip class="helper-tooltip" md-direction="left">
-                                            The terminating digit for the recording.<br/>
+                                            The terminating digit for the recording.<br />
                                             * note: the terminating digit will have the same effect as a hangup would.
                                         </md-tooltip>
                                     </md-icon>
                                 </div>
+                            </div>
+                            <div layout="row">
+                                <div flex="95">
+                                    <md-input-container>
+                                        <label for="testInput">Seconds Of Silence</label>
+                                        <input type="text" ng-model="cellModel.data.seconds_of_silence" md-autofocus>
+                                    </md-input-container>
                                 </div>
-                                <div layout="row">
-                                    <div flex="95">
-                                        <md-input-container>
-                                            <label for="testInput">Seconds Of Silence</label>
-                                            <input type="text" ng-model="cellModel.data.seconds_of_silence" md-autofocus>
-                                        </md-input-container>
-                                    </div>
-                                        <div flex="5">
-                                      <md-icon class="tooltip-icon">
+                                <div flex="5">
+                                    <md-icon class="tooltip-icon">
                                         <i class="mdi mdi-information"></i>
                                         <md-tooltip class="helper-tooltip" md-direction="left">
-                                            This lets you control how many seconds of silence you want to wait before ending the recording
+                                            This lets you control how many seconds of silence you want to wait before
+                                            ending the recording
                                         </md-tooltip>
                                     </md-icon>
                                 </div>
-                                </div>
+                            </div>
+        <div layout="row">
+            <div flex="95">
+                <md-checkbox id="recordInput" ng-model="cellModel.data.transcribe" aria-label="Checkbox 1">
+                    Transcribe
+                </md-checkbox>
+            </div>
+            <div flex="5">
+            </div>
+        </div>
                         </md-content>
                     </md-tab>
                 </md-tabs>
