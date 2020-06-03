@@ -185,6 +185,11 @@ validateMagnet: function(cellView, magnet) {
     // Prevent links from ports that already have a link
     console.log('validateMagnet' , arguments);
     var port = magnet.getAttribute('port');
+    console.log("get models ", cellView.model);
+    // let Launch have multiple links
+    if ( cellView.model.attributes.type === 'devs.LaunchModel') {
+        return true;
+    }
     var links = graph.getConnectedLinks(cellView.model, { outbound: true });
     var portLinks = _.filter(links, function(o) {
         return o.get('source').port == port;
