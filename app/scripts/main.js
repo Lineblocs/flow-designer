@@ -2800,6 +2800,7 @@ var stencilLibraryGraph = new joint.dia.Graph,
        joint.shapes.devs.ConferenceModel,
        joint.shapes.devs.SendDigitsModel,
        joint.shapes.devs.WaitModel,
+       joint.shapes.devs.HangupModel,
   ]);
   stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
     $('body').append('<div id="flyPaper" style="position:fixed;z-index:100;opacity:.7;pointer-event:none;"></div>');
@@ -3418,6 +3419,23 @@ joint.shapes.devs.WaitModel = joint.shapes.devs.Model.extend({
 });
 
 joint.shapes.devs.WaitView = joint.shapes.devs.ModelView;
+
+joint.shapes.devs.HangupModel = joint.shapes.devs.Model.extend({
+
+  markup: defaultMarkup,
+
+  defaults: joint.util.deepSupplement({
+    name: 'Hangup',
+    type: 'devs.HangupModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("Hangup", "hangup a channel"),
+  inPorts: ['In'],
+  outPorts: ['Completed'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.HangupView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.Link.define('devs.FlowLink', {
       attrs: {

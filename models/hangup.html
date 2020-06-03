@@ -1,0 +1,36 @@
+<div>
+    <form ng-submit="$shared.saveWidget()">
+        <div ng-cloak>
+            <md-content>
+                <md-tabs class="md-primary widget-options" md-center-tabs md-dynamic-height="true">
+                    <md-tab label="info">
+                        <md-content class="md-padding">
+                            <md-input-container>
+                                <label for="testInput">Widget Name</label>
+                                <input type="text" ng-model="cellModel.name" md-autofocus>
+                            </md-input-container>
+                            <div layout="row">
+                                <div flex="95">
+                                    <md-input-container>
+                                        <label for="testInput">Channel</label>
+                                        <input type="text" ng-model="cellModel.data.channel" md-autofocus>
+                                    </md-input-container>
+                                </div>
+                                <div flex="5">
+                                    <md-icon class="tooltip-icon">
+                                        <i class="mdi mdi-information"></i>
+                                        <md-tooltip class="helper-tooltip" md-direction="left">
+                                            channel to hangup. if empty it will hangup the channel that initiated the flow.<br/><br/>
+                                            to hangup multiple channels use a comma separated string. E.g: channel-1,channel-2
+                                        </md-tooltip>
+                                    </md-icon>
+                                </div>
+                            </div>
+                        </md-content>
+                    </md-tab>
+                </md-tabs>
+            </md-content>
+        </div>
+        <div ng-include="'/templates/widget_buttons.html'"></div>
+    </form>
+</div>
