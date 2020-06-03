@@ -1525,6 +1525,11 @@ angular
       'Queue',
       'Follow Me'
     ];
+    $scope.dialCallTypes = [
+      'Extension',
+      'ExtensionFlow',
+      'Phone Number'
+    ];
 
     $scope.playbackTypes = [
       'Say',
