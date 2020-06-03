@@ -2995,7 +2995,7 @@ function bindHotkeys() {
         cKey = 67,
         undoKey=90,
         redoKey=89,
-        enterKey=89;
+        enterKey=13;
     var copiedModel;
     var copiedView;
 
@@ -3011,7 +3011,7 @@ function bindHotkeys() {
         var active = document.activeElement;
         console.log("active element is ", active);
         var parent = $(active).parent();
-        if ( e.keyCode === enterKey ) {
+        if ( e.keyCode === enterKey && ( $( active ).is("input") || ( parent && $(parent).is("md-select"))  )) {
           e.stopPropagation();
           e.preventDefault();
           return;

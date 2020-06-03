@@ -186,6 +186,7 @@ gulp.task('compress-css', ['styles'], function() {
 gulp.src([
 "./node_modules/angular-material/angular-material.css",
 "./styles.css",
+"./md-custom.css",
 "./custom/JointTooledViewPlugin/tooledViewPlugin.css",
 "./node_modules/@mdi/font/css/materialdesignicons.css",
 "./node_modules/monaco-editor/min/vs/editor/editor.main.css",
