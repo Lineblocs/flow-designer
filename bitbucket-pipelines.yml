@@ -15,7 +15,7 @@ pipelines:
           # build the Docker image (this will use the Dockerfile in the root of the repo)
           - docker build --memory=3072M -t lineblocs-editor .
           - docker tag lineblocs-editor:latest 754569496111.dkr.ecr.ca-central-1.amazonaws.com/lineblocs-editor:latest
-          - docker push 754569496111.dkr.ecr.ca-central-1.amazonaws.com/lineblocs:latest
+          - docker push 754569496111.dkr.ecr.ca-central-1.amazonaws.com/lineblocs-editor:latest
         services:
           - docker
     - step:
