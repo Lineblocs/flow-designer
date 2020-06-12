@@ -15,7 +15,7 @@ pipelines:
           - echo $aws | docker login --username AWS --password-stdin 754569496111.dkr.ecr.ca-central-1.amazonaws.com
           - echo "aws=$aws" > ENVIRONMENT_VARIABLES.txt
           - docker build --memory=3072M -t lineblocs-editor .
-          - docker tag lineblocs-editor:latest 754569496111.dkr.ecr.ca-central-1.amazonaws.com/lineblocs-editorlatest
+          - docker tag lineblocs-editor:latest 754569496111.dkr.ecr.ca-central-1.amazonaws.com/lineblocs-editor:latest
           - docker push 754569496111.dkr.ecr.ca-central-1.amazonaws.com/lineblocs-editor:latest
         artifacts: # define the artifacts to be passed to each future step
           - ENVIRONMENT_VARIABLES.txt
