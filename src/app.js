@@ -1348,7 +1348,8 @@ angular
     $scope.centerFocus = function () {
       copyPosition = null;
       var paper = diagram['paper'];
-      paper.translate(0, 0);
+      //paper.translate(0, 0);
+      panAndZoom.resetPan();
     }
 
     function changeCell(item) {
@@ -1434,6 +1435,10 @@ angular
   .controller('CreateCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http) {
     $scope.values = {
       name: ""
+    };
+    $scope.blankTemplate = {
+      "title": "Blank Template",
+      "id": null
     };
     $scope.templates = [];
     $scope.$shared = $shared;
@@ -1865,8 +1870,7 @@ angular
                   console.log("launch size is ", size);
                   launch.position(
                     $("#canvas").width() / 2 - (size.width / 2),
-                    //($("#canvas").height()/2 - (size.height / 2)) - subtractPaddingTop
-                    120
+                    ($("#canvas").height()/2 - (size.height / 2)) - subtractPaddingTop
                   );
 
                   graph.addCell(launch);

@@ -123,23 +123,16 @@ function appendStencilLibraryModels(graph, list)
       var paper = diagram['paper'];
       paper.scale(sx, sy);
   };
-
+  var scaleDragPosition = function() {
+  var scale = V(paper.viewport).scale();
+dragStartPosition = { x: x * scale.sx, y: y * scale.sy};
+  }
   var zoomOut = function() {
-      if (numberOfZoom === -5) {
-        return;
-      }
-      graphScale -= 0.1;
-      numberOfZoom -= 1;
-      paperScale(graphScale, graphScale);
+    panAndZoom.zoomOut();
   };
 
   var zoomIn = function() {
-      if (numberOfZoom === 5) {
-        return;
-      }
-      graphScale += 0.1;
-      numberOfZoom += 1;
-      paperScale(graphScale, graphScale);
+    panAndZoom.zoomIn();
   };
 
   var resetZoom = function() {
@@ -170,6 +163,7 @@ function initializeDiagram() {
   var PAPER_HEIGHT = 768;
   var PAPER_WIDTH = "100%";
   diagram['graph'] = graph;
+  var targetElement= $('#canvas')[0];
   var paper = new joint.dia.Paper({
 el: $('#canvas'),
 gridSize: 15,
@@ -200,6 +194,25 @@ validateMagnet: function(cellView, magnet) {
     return magnet.getAttribute('magnet') !== 'passive';
 }
 }); 
+var gridsize = 1;
+var currentScale = 1;
+        panAndZoom = svgPanZoom( document.getElementById('canvas').childNodes[2] ,
+{
+    viewportSelector: document.getElementById('canvas').childNodes[2].childNodes[1],
+    center: false,
+        fit: false,
+        minZoom: 0.5,
+       maxZoom: 3,
+    zoomScaleSensitivity: 0.4,
+    panEnabled: false,
+    onZoom: function(scale){
+        currentScale = scale;
+        //setGrid(paper, gridsize*15*currentScale, '#808080');
+    },
+    beforePan: function(oldpan, newpan){
+        //setGrid(paper, gridsize*15*currentScale, '#808080', newpan);
+    }
+});
 // Example usage:
 setGrid(paper, 15, '#E3E3E3');
   diagram['paper'] = paper;
@@ -231,7 +244,8 @@ setGrid(paper, 15, '#E3E3E3');
   paper.on('blank:pointerdown',
     function(event, x, y) {
       console.log("blank pointer down called");
-        dragStartPosition = { x: x, y: y};
+              panAndZoom.enablePan();
+        //dragStartPosition = { x: x, y: y};
         var scope = getAngularScope();
         if (scope.cellModel) {
           //scope.unsetCellModel();
@@ -240,10 +254,12 @@ setGrid(paper, 15, '#E3E3E3');
 );
 
 paper.on('cell:pointerup blank:pointerup', function(cellView, x, y) {
-    dragStartPosition = null;
+    //delete dragStartPosition;
+    panAndZoom.disablePan();
 });
 $("#canvas")
     .mousemove(function(event) {
+      /*
         if (dragStartPosition) {
             copyPosition = {};
             copyPosition.x = event.offsetX - dragStartPosition.x;
@@ -256,6 +272,14 @@ $("#canvas")
             paper.translate(
                 copyPosition.x,
                 copyPosition.y);
+            }
+            */
+                   if (dragStartPosition) {
+                     /*
+            paper.translate(
+                event.offsetX - dragStartPosition.x, 
+                event.offsetY - dragStartPosition.y);
+                */
             }
 
     });

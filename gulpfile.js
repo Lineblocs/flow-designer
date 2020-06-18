@@ -162,6 +162,7 @@ gulp.task('compress-js', ['scripts'], function() {
 "./node_modules/backbone/backbone-min.js",
 "./node_modules/urijs/src/URI.js",
 "./node_modules/jointjs/dist/joint.js",
+"./src/svg-pan-zoom.min.js",
 "./src/load.js",
 "./src/models.js",
 "./src/multiple-links.js",

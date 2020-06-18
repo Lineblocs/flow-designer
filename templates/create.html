@@ -18,6 +18,26 @@
           <h2 class="margin-md-card">{{category.name}}</h2>
         </div>
         <div layout="row" class="templates-list">
+          <div flex="33">
+            <md-card>
+              <md-card-title>
+                <md-card-title-text>
+                  <span class="md-headline">Blank</span>
+                  <span class="md-subhead"></span>
+                </md-card-title-text>
+                <md-card-title-media>
+                  <div class="md-media-sm card-media"></div>
+                </md-card-title-media>
+              </md-card-title>
+              <md-card-actions layout="row" layout-align="end center">
+                <md-button ng-show="!isSelected(blankTemplate)" class="md-raised md-primary"
+                  ng-click="useTemplate(blankTemplate)">
+                  Use Template</md-button>
+                <md-button ng-show="isSelected(blankTemplate)" ng-disabled="true" class="md-raised md-primary">Use Template
+                </md-button>
+              </md-card-actions>
+            </md-card>
+          </div>
 
           <div flex="33" ng-repeat="template in category.templates">
             <md-card>
