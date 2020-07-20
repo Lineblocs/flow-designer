@@ -1896,7 +1896,10 @@ angular
         "title": "",
         "code": ""
       };
+      //$scope.errors = false;
+      $scope.errors = false;
       editor = null;
+
 
       if (macroFunction['code'] && !macroFunction['id']) {
         $scope.params['code'] = macroFunction['code'];
@@ -1944,6 +1947,12 @@ angular
           var url = createUrl("/function/updateFunction/" + $scope.params['public_id']);
           console.log("update function data ", data);
           $http.post(url, data).then(function (res) {
+            var reply = res.data;
+            if ( !reply.success ) {
+                $scope.errors = {
+                  "logs": reply.info.logs
+                };
+            }
             var previous = angular.copy($shared.cellModel);
             console.log("previous cellModel is ", previous);
             $shared.loadFunctions().then(function(functions) {
@@ -1960,6 +1969,7 @@ angular
             });
           }, function (err) {
             console.error(err);
+            alert("Internal Error occured..");
           });
         });
       }
@@ -1974,7 +1984,7 @@ angular
         });
 
         $http({
-          url: "https://lineblocs.com/typescript/defs.ts",
+          url: "https://tsc.lineblocs.com/defs.ts",
           method: 'GET',
           responseType: 'text'
         }).then(function(response) {

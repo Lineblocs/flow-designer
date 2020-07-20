@@ -10,6 +10,14 @@
             </div>
         </md-toolbar>
         <md-dialog-content style="overflow-y: hidden; ">
+            <div class="tsc-errors" ng-show="errors">
+                <h5 class="red">Error(s) occured</h5>
+                <ul>
+                    <li ng-repeat="error in errors">
+                        ({{error.line}},{{error.character}}) - {{error.debug}}
+                    </li>
+                </ul>
+            </div>
             <div ng-non-bindable>
                 <div id="editor" style="width: 1024px; height:768px;"></div>
             </div>
