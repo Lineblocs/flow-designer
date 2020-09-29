@@ -132,6 +132,14 @@ angular
       templateUrl: "templates/create.html",
       controller: "CreateCtrl"
     });
+    $routeProvider.when("/adjust", {
+      templateUrl: "templates/adjust.html",
+      controller: "AdjustCtrl",
+      search: {
+        flowId: null,
+        templateId: null
+      }
+    });
     $routeProvider.when("/edit", {
       templateUrl: "templates/edit.html",
       controller: "AppCtrl",
@@ -1460,14 +1468,30 @@ angular
         var urlObj = URI(document.location.href);
         var query = urlObj.query(true);
         var token = query.auth;
-        var url = "/edit?flowId=" + id + "&auth=" + token + "&workspaceId=" + query.workspaceId;
-        if ( query.admin ) {
-          url += "&admin=" + query.admin;
-        }
-        $location.url(url);
-        if (!isLocal) {
-          //top.window.location.href = "https://app.lineblocs.com/#/dashboard/flows/" + id;
-        }
+
+        $http.get(createUrl("/getFlowPresets?templateId=" + data['template_id'])).then(function (res) {
+          if ( !res.data.has_presets ) {
+            var url = "/edit?flowId=" + id + "&auth=" + token + "&workspaceId=" + query.workspaceId;
+            if ( query.admin ) {
+              url += "&admin=" + query.admin;
+            }
+            $location.url(url);
+            if (!islocal) {
+              //top.window.location.href = "https://app.lineblocs.com/#/dashboard/flows/" + id;
+            }
+            return;
+          } 
+           var url = "/adjust?flowId=" + id + "&templateId=" + data['template_id'] + "&auth=" + token + "&workspaceId=" + query.workspaceId;
+            if ( query.admin ) {
+              url += "&admin=" + query.admin;
+            }
+            $location.url(url);
+            if (!isLocal) {
+              //top.window.location.href = "https://app.lineblocs.com/#/dashboard/flows/" + id;
+            }
+            return;
+          });
+
       });
     }
     $scope.useTemplate = function (template) {
@@ -1886,6 +1910,99 @@ angular
     $scope.load = load;
     load();
     //$mdSidenav('rightWidgets').open();
+  }).controller('AdjustCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $timeout, $q, $mdDialog) {
+    $scope.$shared = $shared;
+    $scope.$const = $const;
+    var search = $location.search();
+    var url = createUrl("/getFlowPresets?templateId=" + search.templateId);
+    $scope.inputs = {};
+
+    $scope.changeValues = function(inputs, presets, preset) {
+      console.log("values change ", arguments);
+    }
+    $http.get(url).then(function (res) {
+      console.log("presets are ", res.data);
+      $scope.presets = res.data.presets;
+      angular.forEach($scope.presets, function(preset) {
+        preset.value = preset.default;
+      });
+    });
+
+    $scope.canShowPreset = function(preset) {
+      var show = false;
+      var presets = $scope.presets;
+      if (preset.depends_on_field !== '') {
+        for ( var index in presets ) {
+          var obj = presets[ index ];
+          if ( preset.depends_on_field === obj.var_name ) {
+            if (obj.value === preset.depends_on_value ) {
+              show = true;
+            }
+          }
+        }
+      } else {
+        show = true;
+      }
+      return show;
+    }
+    function save() {
+      return $q(function( resolve, reject ) {
+        var url = createUrl("/saveUpdatedPresets?templateId=" + search.templateId + "&flowId=" + search.flowId);
+        var presets = angular.copy( $scope.presets );
+
+        var data = presets.map(function(preset) {
+          return {
+            widget: preset.widget,
+            widget_key: preset.widget_key,
+            value: preset.value
+          };
+        });
+        $shared.isLoading = true;
+        $http.post(url, data).then(function (res) {
+          console.log("updated presets..");
+            var urlObj = URI(document.location.href);
+            var query = urlObj.query(true);
+            var token = query.auth;
+        $shared.isLoading = false;
+            resolve();
+        }, reject);
+      });
+    }
+
+    $scope.saveContinue = function() {
+      save().then(function() {
+              console.log("updated presets..");
+          var urlObj = URI(document.location.href);
+          var query = urlObj.query(true);
+          var token = query.auth;
+      $shared.isLoading = false;
+            var url = "/edit?flowId=" + search.flowId + "&auth=" + token + "&workspaceId=" + query.workspaceId;
+            if ( query.admin ) {
+              url += "&admin=" + query.admin;
+            }
+            $location.url(url);
+            if (!islocal) {
+              //top.window.location.href = "https://app.lineblocs.com/#/dashboard/flows/" + id;
+            }
+            return;
+          });
+    }
+    $scope.saveExit = function($event) {
+      save().then(function() {
+              console.log("updated presets..");
+      $mdDialog.show(
+        $mdDialog.alert()
+        .parent(angular.element(document.querySelector('body')))
+        .clickOutsideToClose(true)
+        .title('Changes Saved')
+        .content('Your flow has been saved and published.')
+        .ariaLabel('Saved Changes')
+        .ok('ok')
+        .targetEvent($event)
+      );
+      });
+    }
+
   }).controller('PaperCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $mdDialog) {
     $scope.$shared = $shared;
 

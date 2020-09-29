@@ -265,3 +265,13 @@ md-tabs.md-default-theme.md-primary, md-tabs.md-primary > md-tabs-wrapper {
   margin-bottom: 3px;
   padding: 10px;
 }
+
+ul#presets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.margin-content {
+  margin: 8px;
+}
