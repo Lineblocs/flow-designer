@@ -48,22 +48,26 @@ function checkExpires(expiresIn) {
   return false;
 }
 
+// NODE - Label pole
 function changeLabel(cell, text, refY) {
   refY = refY || labelRefY;
   cell.attr('.label', {
     text: text,
-    fill: '#FFFFFF',
+    // fill: '#FFFFFF', // def value
+    fill: '#385374',
     'font-size': '18',
     'ref-y': refY
   });
 }
 
+// NODe- Description pole
 function changeDescription(cell, text, refY) {
   refY = refY || descriptionRefY;
   refX = .5;
   cell.attr('.description', {
     text: text,
-    fill: '#FFFFFF',
+    // fill: '#FFFFFF', // def value
+    fill: '#385374',
     'font-size': '12px',
     'ref-y': refY,
     'ref-x': refX
@@ -1666,6 +1670,7 @@ angular
         }
       }
       console.log("changed cellModel to ", $shared.cellModel);
+      console.log("changed cellView to ", $shared.cellView);
       if (openSidebar) {
         //$scope.toggleRight();
       }

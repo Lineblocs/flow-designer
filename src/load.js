@@ -289,6 +289,10 @@ $("#canvas")
                 var source = link.get('source');
                 var target = link.get('target');
                 console.log("batch stop info ", link);
+                if ( !link.isBack ) {
+                  link.toBack();
+                  link.isBack = true;
+                }
                 if (source.id === undefined || target.id === undefined) {
                     link.remove();
                 }
@@ -321,6 +325,7 @@ $("#canvas")
   paper.on('cell:pointerdown',
     function(cellView, evt, x, y) { 
         evt.stopPropagation();
+        console.log("load widget called..", arguments);
         getAngularScope().loadWidget(cellView, false);
     }
 );
@@ -355,20 +360,20 @@ var stencilLibraryGraph = new joint.dia.Graph,
   diagram['stencilLibraryGraph'] = stencilLibraryGraph;
   diagram['stencilLibraryPaper'] = stencilLibraryPaper;
 
+  console.log("APPENDING pickers..");
   appendStencilModels(stencilGraph, [
-       joint.shapes.devs.SwitchModel,
-       joint.shapes.devs.DialModel,
-       joint.shapes.devs.BridgeModel,
-       joint.shapes.devs.ProcessInputModel,
-       joint.shapes.devs.RecordVoicemailModel,
-       joint.shapes.devs.PlaybackModel,
-       joint.shapes.devs.MacroModel,
-       joint.shapes.devs.SetVariablesModel,
-       joint.shapes.devs.ConferenceModel,
-       joint.shapes.devs.SendDigitsModel,
-       joint.shapes.devs.WaitModel,
-       joint.shapes.devs.HangupModel,
-  ]);
+       joint.shapes.devs.SwitchPicker,
+       joint.shapes.devs.DialPicker,
+       joint.shapes.devs.BridgePicker,
+       joint.shapes.devs.ProcessInputPicker,
+       joint.shapes.devs.RecordVoicemailPicker,
+       joint.shapes.devs.PlaybackPicker,
+       joint.shapes.devs.MacroPicker,
+       joint.shapes.devs.SetVariablesPicker,
+       joint.shapes.devs.ConferencePicker,
+       joint.shapes.devs.SendDigitsPicker,
+       joint.shapes.devs.WaitPicker
+  ])
   stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
     $('body').append('<div id="flyPaper" style="position:fixed;z-index:100;opacity:.7;pointer-event:none;"></div>');
     console.log("cell pointer down ", arguments);
@@ -383,98 +388,12 @@ var stencilLibraryGraph = new joint.dia.Graph,
       var info1, info2;
       var sizeShape = cellView.model.clone();
       var size = sizeShape.attributes.size;
-    var flyGraph = new joint.dia.Graph,
-      flyPaper = new joint.dia.Paper({
-        el: $('#flyPaper'),
-        model: flyGraph,
-        width: size.width,
-        height: size.height,
-        interactive: false
-      }),
-      createShape = cellView.model.clone(),
-      flyShape = cellView.model.clone(),
-      pos = cellView.model.position(),
-      offset = {
-        x: x - pos.x,
-        y: y - pos.y
-      };
-      removePorts(flyShape);
-    flyShape.position(0, 0);
-    flyGraph.addCell(flyShape);
-      console.log("infos are ", info1, info2);
-    $("#flyPaper").offset({
-      left: e.pageX - offset.x,
-      top: e.pageY - offset.y
-    });
-    $('body').on('mousemove.fly', function(e) {
-      $("#flyPaper").offset({
-        left: e.pageX - offset.x,
-        top: e.pageY - offset.y
-      });
-    });
-    $('body').on('mouseup.fly', function(e) {
-      var x = e.pageX,
-        y = e.pageY,
-        target = paper.$el.offset();
-        console.log("paper el is", paper.$el);
-      // Dropped over paper ?
-      if (x > target.left && x < target.left + paper.$el.width() && y > target.top && y < target.top + paper.$el.height()) {
-        var s = flyShape.clone();
-        s.size( widgetDimens.width, widgetDimens.height );
-        changeLabel(s, s.attributes.name);
-        console.log("graph scale is ", graphScale);
-        var finalX = (x - target.left - offset.x);
-        var finalY = (y - target.top - offset.y);
-        var stuff1 = finalX - (finalX * graphScale);
-        var stuff2 = finalY - (finalY * graphScale);
-        console.log("stuff is ", stuff1, stuff2);
-        var myOffsetLeft, myOffsetTop, beforeInfo, afterInfo;
-        console.log("final x,y before any changes ", finalX, finalY);
-        s.translate(finalX, finalY);
-        if (copyPosition) {
-          console.log("changing final x and y based on copyPosition");
-          //var finalX = (x - target.left - offset.x) + copyPosition.x;
-          //var finalY = (y - target.top - offset.y) + copyPosition.y;
-          //paper.translate(0, 0);
-          graph.addCell(s);
-          console.log("adding new cell ", s);
-          s.translate(-(copyPosition.x), -(copyPosition.y));
-          var scope = getAngularScope();
-          scope.createModel( s );
-          //paper.translate(copyPosition.x, copyPosition.y);
-        } else {
-          console.log("not changing final x,y because no copyPosition");
-          graph.addCell(s);
-          var scope = getAngularScope();
-          scope.createModel( s );
-        }
-        var test = paper.clientToLocalPoint(x, y);
-        var size = s.size();
-        console.log("tranlated point is ", test);
-        s.position(test.x - (size.width / 2), test.y - (size.height / 2));
-        //s.translate(-(66*numberOfZoom), -(36*numberOfZoom));
-      }
-      var cell = graph.getCells()[0];
 
-      $('body').off('mousemove.fly').off('mouseup.fly');
-      flyShape.remove();
-      $('#flyPaper').remove();
-    });
-  });
-  stencilLibraryPaper.on('cell:pointerdown', function(cellView, e, x, y) {
-    $('body').append('<div id="flyPaper" style="position:fixed;z-index:100;opacity:.7;pointer-event:none;"></div>');
-    console.log("cell pointer down ", arguments);
-      console.log("cellView is ", cellView);
-      if (copyPosition) {
-        console.log("copyPosition is ", copyPosition);
-        console.log("initial x and y are ", x, y)
-        //x = x - copyPosition.x;
-        //y = y - copyPosition.y;
-        console.log("drag modified x and y are ", x, y);
-      }
-      var info1, info2;
-      var sizeShape = cellView.model.clone();
-      var size = sizeShape.attributes.size;
+      console.log(cellView.model);
+      console.log("creating new ", cellView.model.attributes.creates);
+      var flyShape = cellView.model.clone();
+      var createShape = new joint.shapes.devs[cellView.model.attributes.creates]();
+
     var flyGraph = new joint.dia.Graph,
       flyPaper = new joint.dia.Paper({
         el: $('#flyPaper'),
@@ -483,8 +402,8 @@ var stencilLibraryGraph = new joint.dia.Graph,
         height: size.height,
         interactive: false
       }),
-      createShape = cellView.model.clone(),
-      flyShape = cellView.model.clone(),
+      //createShape = cellView.model.clone(),
+      //flyShape = cellView.model.clone(),
       pos = cellView.model.position(),
       offset = {
         x: x - pos.x,
@@ -511,7 +430,9 @@ var stencilLibraryGraph = new joint.dia.Graph,
         console.log("paper el is", paper.$el);
       // Dropped over paper ?
       if (x > target.left && x < target.left + paper.$el.width() && y > target.top && y < target.top + paper.$el.height()) {
-        var s = flyShape.clone();
+        console.log("dropped ", flyShape);
+        var s = new joint.shapes.devs[cellView.model.attributes.creates]();
+
         s.size( widgetDimens.width, widgetDimens.height );
         changeLabel(s, s.attributes.name);
         console.log("graph scale is ", graphScale);
@@ -531,14 +452,15 @@ var stencilLibraryGraph = new joint.dia.Graph,
           graph.addCell(s);
           console.log("adding new cell ", s);
           s.translate(-(copyPosition.x), -(copyPosition.y));
-          var scope = getAngularScope();
-          scope.createLibraryModel( s );
+
+                    var scope = getAngularScope();
+          scope.createModel( s );
           //paper.translate(copyPosition.x, copyPosition.y);
         } else {
           console.log("not changing final x,y because no copyPosition");
           graph.addCell(s);
-          var scope = getAngularScope();
-          scope.createLibraryModel( s );
+                    var scope = getAngularScope();
+          scope.createModel( s );
         }
         var test = paper.clientToLocalPoint(x, y);
         var size = s.size();

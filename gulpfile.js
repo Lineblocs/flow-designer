@@ -165,6 +165,7 @@ gulp.task('compress-js', ['scripts'], function() {
 "./src/svg-pan-zoom.min.js",
 "./src/load.js",
 "./src/models.js",
+"./src/model-pickers.js",
 "./src/multiple-links.js",
 "./src/joint.dia.command.js",
 "./src/app.js",
