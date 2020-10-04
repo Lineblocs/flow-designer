@@ -149,7 +149,7 @@ gulp.task('scripts', function() {
         .pipe(gulp.dest('./app/scripts/'))
 });
 gulp.task('compress-js', ['scripts'], function() {
-  gulp.src([
+    var files = [
 "./node_modules/jquery/dist/jquery.min.js",
 "./node_modules/angular/angular.js",
 "./src/extra.js", // important
@@ -166,16 +166,13 @@ gulp.task('compress-js', ['scripts'], function() {
 "./src/load.js",
 "./src/models.js",
 "./src/model-pickers.js",
+"./src/models-pickers.js",
 "./src/multiple-links.js",
 "./src/joint.dia.command.js",
 "./src/app.js",
 "./src/load.js"
-/*
-"./node_modules/monaco-editor/dev/vs/loader.js",
-"./node_modules/monaco-editor/dev/vs/editor/editor.main.nls.js",
-"./node_modules/monaco-editor/dev/vs/editor/editor.main.js",
-*/
-    ])
+    ];
+  gulp.src(files)
             .pipe(concat('concat.js'))
         .pipe(gulp.dest('dist'))
         .pipe(rename('main.min.js'))
