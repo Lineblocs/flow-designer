@@ -50,6 +50,7 @@ function checkExpires(expiresIn) {
 
 // NODE - Label pole
 function changeLabel(cell, text, refY) {
+  console.log("change label called ", arguments);
   refY = refY || labelRefY;
   cell.attr('.label', {
     text: text,
@@ -1611,8 +1612,38 @@ angular
       cellModel.links.push(link);
     }
 
-    $scope.createModel = function (cell, name) {
+    $scope.nextName = function(cell, custom) {
+      custom = custom || false;
+       var name = cell.attributes.name;
+       var type = cell.attributes.type;
+       var customType = cell.attributes.customType;
+        var graph = diagram['graph'];
+        var cells = graph.getCells();
+        var count = 0;
+        for (var index in cells) {
+          var target = cells[index];
+          if ( custom ) {
+            if (target.attributes.customType === customType && target !== cell) {
+              count += 1;
+            }
+          } else {
+            if (target.attributes.type === type && target !== cell) {
+              count += 1;
+            }
+
+
+          }
+        }
+        if (count > 0) {
+          name += " (" + count + ")";
+        }
+        return name;
+      }
+
+    $scope.createModel = function (cell, name, links, data) {
       console.log("creating model for cell ", cell);
+      links = links || [];
+
       /*
       if (cell.attributes.type === 'devs.SwitchModel') {
         $scope.addLink("No Condition Matches", $const.LINK_NO_CONDITION_MATCHES, model);
@@ -1620,21 +1651,9 @@ angular
       */
 
       if (typeof name === 'undefined') {
-        var name = cell.attributes.name;
-        var graph = diagram['graph'];
-        var cells = graph.getCells();
-        var count = 0;
-        for (var index in cells) {
-          var target = cells[index];
-          if (target.attributes.type === cell.attributes.type && target !== cell) {
-            count += 1;
-          }
-        }
-        if (count > 0) {
-          name += " (" + count + ")";
-        }
+        var name = $scope.nextName( cell );
       }
-      var model = new Model(cell, name);
+      var model = new Model(cell, name, links, data);
       changeLabel(cell, name);
       $shared.models.push(model);
       return model;
@@ -1642,17 +1661,24 @@ angular
     $scope.isOpenRight = function () {
       return $mdSidenav('right').isOpen();
     };
-    $scope.createLibraryModel = function (cell) {
+    $scope.createLibraryModel = function (cell, pickerCell) {
       console.log("createLibraryModel ", arguments);
       console.log("createLibraryModel ", $shared.widgetTemplates);
-      var find = cell.attributes.name;
       var model = $scope.createModel(cell);
+      var name = $scope.nextName( pickerCell, true /* custom */ );
+      console.log("library name is ", name);
+      model.name = name;
+      changeLabel(cell, name);
+      /*
       for (var index in $shared.widgetTemplates) {
         var item = $shared.widgetTemplates[ index ];
         if ( item.title === find ) {
           model.data = item.data.saved;
         }
       }
+      */
+     model.data = pickerCell.attributes.data;
+     model.data = pickerCell.attributes.data;
       //$shared.widgetTemplates
       return model;
     }
@@ -3068,6 +3094,104 @@ var stencilLibraryGraph = new joint.dia.Graph,
       $('#flyPaper').remove();
     });
   });
+  stencilLibraryPaper.on('cell:pointerdown', function(cellView, e, x, y) {
+    $('body').append('<div id="flyPaper" style="position:fixed;z-index:100;opacity:.7;pointer-event:none;"></div>');
+    console.log("cell pointer down ", arguments);
+      console.log("cellView is ", cellView);
+      if (copyPosition) {
+        console.log("copyPosition is ", copyPosition);
+        console.log("initial x and y are ", x, y)
+        //x = x - copyPosition.x;
+        //y = y - copyPosition.y;
+        console.log("drag modified x and y are ", x, y);
+      }
+      var info1, info2;
+      var sizeShape = cellView.model.clone();
+      var size = sizeShape.attributes.size;
+var flyShape = cellView.model.clone();
+      var createShape = new joint.shapes.devs[cellView.model.attributes.creates]();
+
+
+    var flyGraph = new joint.dia.Graph,
+      flyPaper = new joint.dia.Paper({
+        el: $('#flyPaper'),
+        model: flyGraph,
+        width: size.width,
+        height: size.height,
+        interactive: false
+      }),
+      pos = cellView.model.position(),
+      offset = {
+        x: x - pos.x,
+        y: y - pos.y
+      };
+      removePorts(flyShape);
+    flyShape.position(0, 0);
+    flyGraph.addCell(flyShape);
+      console.log("infos are ", info1, info2);
+    $("#flyPaper").offset({
+      left: e.pageX - offset.x,
+      top: e.pageY - offset.y
+    });
+    $('body').on('mousemove.fly', function(e) {
+      $("#flyPaper").offset({
+        left: e.pageX - offset.x,
+        top: e.pageY - offset.y
+      });
+    });
+    $('body').on('mouseup.fly', function(e) {
+      var x = e.pageX,
+        y = e.pageY,
+        target = paper.$el.offset();
+        console.log("paper el is", paper.$el);
+      // Dropped over paper ?
+      if (x > target.left && x < target.left + paper.$el.width() && y > target.top && y < target.top + paper.$el.height()) {
+        var s = new joint.shapes.devs[cellView.model.attributes.creates]();
+        // set the custom type
+        s.attributes.customType = cellView.model.attributes.customType;
+        s.size( widgetDimens.width, widgetDimens.height );
+        changeLabel(s, cellView.model.attributes.name);
+        console.log("graph scale is ", graphScale);
+        var finalX = (x - target.left - offset.x);
+        var finalY = (y - target.top - offset.y);
+        var stuff1 = finalX - (finalX * graphScale);
+        var stuff2 = finalY - (finalY * graphScale);
+        console.log("stuff is ", stuff1, stuff2);
+        var myOffsetLeft, myOffsetTop, beforeInfo, afterInfo;
+        console.log("final x,y before any changes ", finalX, finalY);
+        s.translate(finalX, finalY);
+        if (copyPosition) {
+          console.log("changing final x and y based on copyPosition");
+          //var finalX = (x - target.left - offset.x) + copyPosition.x;
+          //var finalY = (y - target.top - offset.y) + copyPosition.y;
+          //paper.translate(0, 0);
+          var scope = getAngularScope();
+          scope.createLibraryModel( s, cellView.model );
+
+          graph.addCell(s);
+          console.log("adding new cell ", s);
+          s.translate(-(copyPosition.x), -(copyPosition.y));
+          //paper.translate(copyPosition.x, copyPosition.y);
+        } else {
+          console.log("not changing final x,y because no copyPosition");
+          var scope = getAngularScope();
+          scope.createLibraryModel( s, cellView.model );
+          graph.addCell(s);
+        }
+        var test = paper.clientToLocalPoint(x, y);
+        var size = s.size();
+        console.log("tranlated point is ", test);
+        s.position(test.x - (size.width / 2), test.y - (size.height / 2));
+        //s.translate(-(66*numberOfZoom), -(36*numberOfZoom));
+      }
+      var cell = graph.getCells()[0];
+
+      $('body').off('mousemove.fly').off('mouseup.fly');
+      flyShape.remove();
+      $('#flyPaper').remove();
+    });
+  });
+
 }
 
 function bindHotkeys() {
@@ -4205,25 +4329,33 @@ joint.shapes.devs.Link.define('devs.FlowLink', {
 function createModelFromTemplate(template) {
   var title = template.title;
 
+  console.log("create ", template);
   //var type = 'devs.'+title+'Model';
   var originalType = template.data.attributes.type;
   var splitted = originalType.split(".");
   var type = joint.shapes.devs[splitted[1]];
-  var model = title+'Model';
-  var view = title+'View';
+  var model = title+'Picker';
+  var view = title+'PickerView';
   var tag = template.data.attributes.attrs['.description']['text'];
   var inPorts = template.data.attributes.inPorts;
   var outPorts = template.data.attributes.outPorts;
+  console.log("from template model is: " + model);
+  console.log("from template type is: " + splitted[1]);
+  var creates = splitted[1];
 
   joint.shapes.devs[model] = type.extend({
 
-    markup: defaultMarkup,
+    markup: createPickerMarkup(),
+
 
     defaults: joint.util.deepSupplement({
       name: title,
       type: originalType,
       size: widgetDimens,
       attrs: createDefaultAttrs(title, tag),
+      customType: model,
+      creates: creates,
+      data: template.data.saved,
     inPorts: inPorts,
     outPorts: outPorts,
     ports: defaultPorts

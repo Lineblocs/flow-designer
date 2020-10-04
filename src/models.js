@@ -675,25 +675,33 @@ joint.shapes.devs.Link.define('devs.FlowLink', {
 function createModelFromTemplate(template) {
   var title = template.title;
 
+  console.log("create ", template);
   //var type = 'devs.'+title+'Model';
   var originalType = template.data.attributes.type;
   var splitted = originalType.split(".");
   var type = joint.shapes.devs[splitted[1]];
-  var model = title+'Model';
-  var view = title+'View';
+  var model = title+'Picker';
+  var view = title+'PickerView';
   var tag = template.data.attributes.attrs['.description']['text'];
   var inPorts = template.data.attributes.inPorts;
   var outPorts = template.data.attributes.outPorts;
+  console.log("from template model is: " + model);
+  console.log("from template type is: " + splitted[1]);
+  var creates = splitted[1];
 
   joint.shapes.devs[model] = type.extend({
 
-    markup: defaultMarkup,
+    markup: createPickerMarkup(),
+
 
     defaults: joint.util.deepSupplement({
       name: title,
       type: originalType,
       size: widgetDimens,
       attrs: createDefaultAttrs(title, tag),
+      customType: model,
+      creates: creates,
+      data: template.data.saved,
     inPorts: inPorts,
     outPorts: outPorts,
     ports: defaultPorts

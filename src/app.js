@@ -50,6 +50,7 @@ function checkExpires(expiresIn) {
 
 // NODE - Label pole
 function changeLabel(cell, text, refY) {
+  console.log("change label called ", arguments);
   refY = refY || labelRefY;
   cell.attr('.label', {
     text: text,
@@ -1611,8 +1612,38 @@ angular
       cellModel.links.push(link);
     }
 
-    $scope.createModel = function (cell, name) {
+    $scope.nextName = function(cell, custom) {
+      custom = custom || false;
+       var name = cell.attributes.name;
+       var type = cell.attributes.type;
+       var customType = cell.attributes.customType;
+        var graph = diagram['graph'];
+        var cells = graph.getCells();
+        var count = 0;
+        for (var index in cells) {
+          var target = cells[index];
+          if ( custom ) {
+            if (target.attributes.customType === customType && target !== cell) {
+              count += 1;
+            }
+          } else {
+            if (target.attributes.type === type && target !== cell) {
+              count += 1;
+            }
+
+
+          }
+        }
+        if (count > 0) {
+          name += " (" + count + ")";
+        }
+        return name;
+      }
+
+    $scope.createModel = function (cell, name, links, data) {
       console.log("creating model for cell ", cell);
+      links = links || [];
+
       /*
       if (cell.attributes.type === 'devs.SwitchModel') {
         $scope.addLink("No Condition Matches", $const.LINK_NO_CONDITION_MATCHES, model);
@@ -1620,21 +1651,9 @@ angular
       */
 
       if (typeof name === 'undefined') {
-        var name = cell.attributes.name;
-        var graph = diagram['graph'];
-        var cells = graph.getCells();
-        var count = 0;
-        for (var index in cells) {
-          var target = cells[index];
-          if (target.attributes.type === cell.attributes.type && target !== cell) {
-            count += 1;
-          }
-        }
-        if (count > 0) {
-          name += " (" + count + ")";
-        }
+        var name = $scope.nextName( cell );
       }
-      var model = new Model(cell, name);
+      var model = new Model(cell, name, links, data);
       changeLabel(cell, name);
       $shared.models.push(model);
       return model;
@@ -1642,17 +1661,24 @@ angular
     $scope.isOpenRight = function () {
       return $mdSidenav('right').isOpen();
     };
-    $scope.createLibraryModel = function (cell) {
+    $scope.createLibraryModel = function (cell, pickerCell) {
       console.log("createLibraryModel ", arguments);
       console.log("createLibraryModel ", $shared.widgetTemplates);
-      var find = cell.attributes.name;
       var model = $scope.createModel(cell);
+      var name = $scope.nextName( pickerCell, true /* custom */ );
+      console.log("library name is ", name);
+      model.name = name;
+      changeLabel(cell, name);
+      /*
       for (var index in $shared.widgetTemplates) {
         var item = $shared.widgetTemplates[ index ];
         if ( item.title === find ) {
           model.data = item.data.saved;
         }
       }
+      */
+     model.data = pickerCell.attributes.data;
+     model.data = pickerCell.attributes.data;
       //$shared.widgetTemplates
       return model;
     }
