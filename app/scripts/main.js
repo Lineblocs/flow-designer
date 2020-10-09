@@ -1104,7 +1104,7 @@ angular
         },
         attrs: {
           ".connection": {
-            "stroke-width": 1
+            "stroke-width": 2
           }
         },
         connector: GRAPH_CONNECTOR,
@@ -1608,7 +1608,8 @@ angular
         attrs: {
           text: {
             text: label
-          }
+          },
+
         },
       };
       console.log("adding port ", port);
