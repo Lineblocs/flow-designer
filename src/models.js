@@ -14,6 +14,175 @@ var widgetDimens = {
 var labelRefY = 20;
 var descriptionRefY = 60;
 
+var launchMarkup = `<defs>
+	
+		<style type="text/css">
+			.shadow{filter:url(#call-shadow);}
+			.st0{fill:#FFFFFF;}
+			.st1{fill:#36D576;}
+			.st2{fill:#385374;}
+			.st3{font-family:'Roboto-Regular', Arial, Helvetica, sans-serif;}
+			.st4{font-size:38.3335px;}
+			.st5{font-size:14px;}
+			.st6{fill:none;stroke:#385374;stroke-miterlimit:10;}
+		</style>
+
+		<filter  filterUnits="objectBoundingBox" id="call-shadow">
+			<feGaussianBlur  in="SourceAlpha" stdDeviation="2"></feGaussianBlur>
+			<feOffset  dx="2" dy="2"></feOffset>
+			<feComponentTransfer>
+				<feFuncA type="linear" slope="0.3"/>
+			</feComponentTransfer>
+			<feMerge>
+				<feMergeNode  in="offsetBlurredAlpha"></feMergeNode>
+				<feMergeNode  in="SourceGraphic"></feMergeNode>
+			</feMerge>
+		</filter>
+
+	</defs>
+
+	<g class="rotatable">
+
+		<path 
+			class="st0 shadow" 
+			d="M319.5,3.5v94c0,1.7-1.3,3-3,3H3.5c-1.7,0-3-1.3-3-3v-94c0-1.7,1.3-3,3-3h313C318.2,0.5,319.5,1.8,319.5,3.5z"
+			/>
+
+		<g>
+			<path 
+				class="st1" 
+				d="M86.8,25.2c-0.1-0.6-0.6-1.3-1.1-1.5c-3.3-1.2-6-1.5-8.7-1.8c-11-1.3-18.3,3.8-24.2,11.1l-11.1-1.4
+				c-1.7-0.2-3.9,0.8-4.9,2.3l-6.6,10c-0.2,0.3-0.3,0.7-0.4,1.1c-0.2,1.4,0.8,2.7,2.2,2.9l11.1,1.3l-2.7,2.1
+				c-1.4,1.1-1.8,3.3-0.6,4.9l4.8,6.1c1,1.4,3.3,1.8,4.8,0.6l2.7-2.1l-1.4,11.2c-0.2,1.4,0.8,2.7,2.2,2.9c0.4,0,0.8,0,1.2-0.1l11.2-4
+				c1.7-0.6,3.2-2.5,3.4-4.3L70,55.3c8.3-4.1,15.1-10,16.4-21.1C86.8,31.4,87.1,28.7,86.8,25.2z M71.9,39.6c-2.4-0.3-4-2.5-3.7-4.8
+				c0.3-2.4,2.4-4.1,4.8-3.8c2.4,0.3,4,2.4,3.7,4.8C76.4,38.2,74.3,39.9,71.9,39.6z"/>
+			<path 
+				class="st1" 
+				d="M37.2,72.1c3.6-2.8,4.2-8.1,1.4-11.7c-2.8-3.6-8-4.2-11.5-1.4S14.8,79.3,14.8,79.3S33.7,74.9,37.2,72.1z"/>
+		</g>
+
+		<g id="call-user_71_">
+			<text 
+				transform="matrix(1 0 0 1 97.5311 52.6903)" 
+				class="st2 st3 st4 label">
+					Launch
+			</text>
+		</g>
+		<g id="dial_55_">
+			<text 
+				transform="matrix(1 0 0 1 100.1079 76.2095)" 
+				class="st2 st3 st5 description">
+					The flow entrypoint
+			</text>
+		</g>
+
+		<path 
+			class="st1" 
+			d="M319.5,57.2v40.3c0,1.7-1.3,3-3,3h-92.1c12.5-27.5,40.3-46.6,72.5-46.6C304.7,53.9,312.3,55,319.5,57.2z"/>
+		<path 
+			class="st6" 
+			d="M319.5,3.5v94c0,1.7-1.3,3-3,3H3.5c-1.7,0-3-1.3-3-3v-94c0-1.7,1.3-3,3-3h313C318.2,0.5,319.5,1.8,319.5,3.5z"
+			/>
+	</g>`;
+
+
+
+
+
+function createMarkup(icon) {
+  console.log("creating markup ", icon);
+  var icon = icon || ICON_PHONE;
+  var defaultMarkup = `<g class="rotatable">
+
+      <filter  filterUnits="objectBoundingBox" id="call-shadow">
+        <feGaussianBlur  in="SourceAlpha" stdDeviation="2"></feGaussianBlur>
+        <feOffset  dx="2" dy="2"></feOffset>
+        <feComponentTransfer>
+          <feFuncA type="linear" slope="0.3"/>
+        </feComponentTransfer>
+        <feMerge>
+          <feMergeNode  in="offsetBlurredAlpha"></feMergeNode>
+          <feMergeNode  in="SourceGraphic"></feMergeNode>
+        </feMerge>
+      </filter>
+
+      <g  class="scalable" filter="url(#call-shadow)">
+        <path class="body"
+              fill="#FFFFFF"
+              stroke="#385374"
+              stroke-miterlimit="10" 
+              d="M316.5,100.5H3.5c-1.7,0-3-1.3-3-3v-94c0-1.7,1.3-3,3-3h313c1.7,0,3,1.3,3,3v94
+          C319.5,99.2,318.1,100.5,316.5,100.5z"/>
+      </g>
+
+      <line id="separatу-line_11_" 
+            fill="none"
+            stroke="#ECE5F0"
+            stroke-miterlimit="10"
+            x1="10.5" y1="50.5" 
+            x2="309.5" y2="50.5"/>
+
+            ` + icon + `
+
+      <text transform="matrix(1 0 0 1 142.7391 33.6326)" 
+            class="label" 
+            font-family="'Roboto-Regular', Arial, Helvetica, sans-serif"
+            fill="#385374" font-size="16px">
+            "Call_user"
+      </text>
+
+      <text transform="matrix(1 0 0 1 107.1563 76.2765)" 
+            class="description" 
+            font-family="'Roboto-Regular', Arial, Helvetica, sans-serif"
+            fill="#385374" font-size="14px">
+            "Dial 1232424124"
+      </text>
+
+      <script>
+      {/* Autoposition FIX for label text pole and Icon position for center Node */}
+      {/* GET all .label's in page */}
+      document.addEventListener("DOMContentLoaded", ()=> {
+      
+          console.log("onLoad align")
+          alignUpdate() 
+      })
+  
+      function alignUpdate() {
+  
+        const allLabels = document.querySelectorAll("svg .label")
+        const allIcons = document.querySelectorAll("svg .node_icon")
+  
+        let newStartTextPoint, labelTextWidth;
+        let newStartIconPoint;
+  
+        // console.log("allLabels"); 
+        // console.log(allLabels); 
+        for (const label of allLabels) {
+          labelTextWidth = label.textLength.baseVal.value;
+          // console.dir(labelTextWidth);
+          // node width = 320;  40 = icon width + margin right
+          newStartTextPoint = 320/2 - labelTextWidth / 2 + 20;
+          console.dir(newStartTextPoint);
+  
+          label.transform.baseVal[0].matrix.e = newStartTextPoint
+        }
+  
+        console.log(allIcons);
+        for (const icon of allIcons) {
+          // node width = 320;  40 = icon width + margin right
+          newStartIconPoint = newStartTextPoint - 40;
+          console.dir(newStartIconPoint);
+  
+          icon.transform.baseVal[0].matrix.e = newStartIconPoint
+        }
+  
+      }
+      </script>
+
+    </g>`;
+    return defaultMarkup;
+}
+
 
 // NODE Label and Description CSS rules - see in file helpers.js
 // in this block - CSS rules for Node block
@@ -66,7 +235,23 @@ function createDefaultAttrs(name, text) {
   return defaultAttrs;
 }
 
+// NODE Label and Description CSS rules - see in file helpers.js
+// in this block - CSS rules for Node block
+function createLaunchAttrs(name, text) {
+  var defaultAttrs = {
+		'.shadow': {filter:"url(#call-shadow)"},
+		'.st0': {fill:"#FFFFFF"},
+		'.st1': {fill:"#36D576"},
+		'.st2': {fill:"#385374"},
+		".st3": {"font-family":"'Roboto-Regular', Arial, Helvetica, sans-serif"},
+		".st4": {"font-size":"38.3335px"},
+		".st5": {"font-size":"14px;"},
+		".st6": {fill:"none",stroke:"#385374",strokeMiterlimit:"10"},
+    // '.user-info'  :      {minWidth:'50px', display:'flex', justifyContent:'space-between'},
+  };
 
+  return defaultAttrs;
+}
 
 // In & OUT port
 var defaultPorts = {
@@ -365,8 +550,7 @@ var a = new joint.shapes.devs.Model({
 
 
   
-  var defaultMarkup = 
-    `<g class="rotatable">
+  var defaultMarkup = `<g class="rotatable">
 
       <filter  filterUnits="objectBoundingBox" id="call-shadow">
         <feGaussianBlur  in="SourceAlpha" stdDeviation="2"></feGaussianBlur>
@@ -398,9 +582,10 @@ var a = new joint.shapes.devs.Model({
 
       <path 
         id="icon-phone" 
+        class="node_icon" 
         fill="none" stroke="#36D576"  stroke-miterlimit="10"
-        d="M130.6,39.7l3.6-3.6l-4.8-4.8l-2.2,2.2l-8.3-8.3l2.2-2.2l-4.8-4.8l-3.6,3.6
-        C114.9,30.4,121.9,37.4,130.6,39.7z"/>
+        transform="matrix(1 0 0 1 160 43)"
+				d="M18.4-3.5L22-7.1l-4.8-4.8L15-9.7L6.7-18l2.2-2.2L4.1-25l-3.6,3.6C2.7-12.8,9.7-5.8,18.4-3.5z"/>
 
       <text transform="matrix(1 0 0 1 142.7391 33.6326)" 
             class="label" 
@@ -416,19 +601,61 @@ var a = new joint.shapes.devs.Model({
             "Dial 1232424124"
       </text>
 
+      <script>
+      {/* Autoposition FIX for label text pole and Icon position for center Node */}
+      {/* GET all .label's in page */}
+      document.addEventListener("DOMContentLoaded", ()=> {
+      
+          console.log("onLoad align")
+          alignUpdate() 
+      })
+  
+      function alignUpdate() {
+  
+        const allLabels = document.querySelectorAll("svg .label")
+        const allIcons = document.querySelectorAll("svg .node_icon")
+  
+        let newStartTextPoint, labelTextWidth;
+        let newStartIconPoint;
+  
+        // console.log("allLabels"); 
+        // console.log(allLabels); 
+        for (const label of allLabels) {
+          labelTextWidth = label.textLength.baseVal.value;
+          // console.dir(labelTextWidth);
+          // node width = 320;  40 = icon width + margin right
+          newStartTextPoint = 320/2 - labelTextWidth / 2 + 20;
+          console.dir(newStartTextPoint);
+  
+          label.transform.baseVal[0].matrix.e = newStartTextPoint
+        }
+  
+        console.log(allIcons);
+        for (const icon of allIcons) {
+          // node width = 320;  40 = icon width + margin right
+          newStartIconPoint = newStartTextPoint - 40;
+          console.dir(newStartIconPoint);
+  
+          icon.transform.baseVal[0].matrix.e = newStartIconPoint
+        }
+  
+      }
+      </script>
+
     </g>`;
+
   
 
 // Launch NODE  
 joint.shapes.devs.LaunchModel = joint.shapes.devs.Model.extend({
 
-  markup: defaultMarkup,
+  markup: launchMarkup,
 
   defaults: joint.util.deepSupplement({
     name: "Launch",
     type: 'devs.LaunchModel',
     size: widgetDimens,
-    attrs: createDefaultAttrs("Launch", "the flow entrypoint"),
+    attrs: createLaunchAttrs(),
     inPorts: [],
     outPorts: ['Incoming Call'],
     ports: defaultPorts
@@ -442,7 +669,7 @@ joint.shapes.devs.LaunchView = joint.shapes.devs.ModelView;
 // Switch NODE
 joint.shapes.devs.SwitchModel = joint.shapes.devs.Model.extend({
 
-  markup: defaultMarkup,
+  markup: createMarkup(ICON_SWITCH),
 
   defaults: joint.util.deepSupplement({
     name: 'Switch',
@@ -461,8 +688,7 @@ joint.shapes.devs.SwitchView = joint.shapes.devs.ModelView;
 // Dial NODE
 joint.shapes.devs.DialModel = joint.shapes.devs.Model.extend({
 
-  markup: defaultMarkup,
-
+  markup: createMarkup(ICON_DIAL),
   defaults: joint.util.deepSupplement({
     name: 'Dial',
     type: 'devs.DialModel',
@@ -479,8 +705,7 @@ joint.shapes.devs.DialView = joint.shapes.devs.ModelView;
 // Bridge NODE
 joint.shapes.devs.BridgeModel = joint.shapes.devs.Model.extend({
 
-  markup: defaultMarkup,
-
+  markup: createMarkup(ICON_BRIDGE),
   defaults: joint.util.deepSupplement({
     name: 'Bridge',
     type: 'devs.BridgeModel',
@@ -497,8 +722,7 @@ joint.shapes.devs.BridgeView = joint.shapes.devs.ModelView;
 // Process NODE
 joint.shapes.devs.ProcessInputModel = joint.shapes.devs.Model.extend({
 
-  markup: defaultMarkup,
-
+  markup: createMarkup(ICON_INPUT),
   defaults: joint.util.deepSupplement({
     name: 'Process Input',
     type: 'devs.ProcessInputModel',
@@ -517,8 +741,7 @@ joint.shapes.devs.ProcessInputView = joint.shapes.devs.ModelView;
 // Record Voice NODE
 joint.shapes.devs.RecordVoicemailModel = joint.shapes.devs.Model.extend({
 
-  markup: defaultMarkup,
-
+  markup: createMarkup(ICON_RECORD),
   defaults: joint.util.deepSupplement({
     name: 'Record Voicemail',
     type: 'devs.RecordVoicemailModel',
@@ -535,8 +758,7 @@ joint.shapes.devs.ProcessInputView = joint.shapes.devs.ModelView;
 // Playback NODE
 joint.shapes.devs.PlaybackModel = joint.shapes.devs.Model.extend({
 
-  markup: defaultMarkup,
-
+  markup: createMarkup(ICON_PLAYBACK),
   defaults: joint.util.deepSupplement({
     name: 'Playback',
     type: 'devs.PlaybackModel',
@@ -553,8 +775,7 @@ joint.shapes.devs.PlaybackView = joint.shapes.devs.ModelView;
 // Macro NODE
 joint.shapes.devs.MacroModel = joint.shapes.devs.Model.extend({
 
-  markup: defaultMarkup,
-
+  markup: createMarkup(ICON_MACRO),
   defaults: joint.util.deepSupplement({
     name: 'Macro',
     type: 'devs.MacroModel',
@@ -571,8 +792,7 @@ joint.shapes.devs.MacroView = joint.shapes.devs.ModelView;
 // SetVariable NODE
 joint.shapes.devs.SetVariablesModel = joint.shapes.devs.Model.extend({
 
-  markup: defaultMarkup,
-
+  markup: createMarkup(ICON_SET),
   defaults: joint.util.deepSupplement({
     name: 'Set Variables',
     type: 'devs.SetVariablesModel',
@@ -589,8 +809,7 @@ joint.shapes.devs.SetVariablesView = joint.shapes.devs.ModelView;
 // Conference NODE
 joint.shapes.devs.ConferenceModel = joint.shapes.devs.Model.extend({
 
-  markup: defaultMarkup,
-
+  markup: createMarkup(ICON_CONF),
   defaults: joint.util.deepSupplement({
     name: 'Conference',
     type: 'devs.ConferenceModel',
@@ -607,8 +826,7 @@ joint.shapes.devs.ConferenceView = joint.shapes.devs.ModelView;
 // Send Digits NODE
 joint.shapes.devs.SendDigitsModel = joint.shapes.devs.Model.extend({
 
-  markup: defaultMarkup,
-
+  markup: createMarkup(ICON_SEND),
   defaults: joint.util.deepSupplement({
     name: 'SendDigits',
     type: 'devs.SendDigitsModel',
@@ -625,8 +843,7 @@ joint.shapes.devs.SendDigitsView = joint.shapes.devs.ModelView;
 // Wait NODE
 joint.shapes.devs.WaitModel = joint.shapes.devs.Model.extend({
 
-  markup: defaultMarkup,
-
+  markup: createMarkup(ICON_WAIT),
   defaults: joint.util.deepSupplement({
     name: 'Wait',
     type: 'devs.WaitModel',
@@ -643,8 +860,7 @@ joint.shapes.devs.WaitView = joint.shapes.devs.ModelView;
 // Hang up NODE
 joint.shapes.devs.HangupModel = joint.shapes.devs.Model.extend({
 
-  markup: defaultMarkup,
-
+  markup: createMarkup(),
   defaults: joint.util.deepSupplement({
     name: 'Hangup',
     type: 'devs.HangupModel',

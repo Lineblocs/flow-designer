@@ -79,6 +79,7 @@ function appendStencilModels(graph, list)
         yPos += widget.attributes.size.height;
   });
   $("#stencil").height(yPos);
+  labelAlign("#stencil #v-8");
 }
 function appendStencilLibraryModels(graph, list)
 {
@@ -112,6 +113,7 @@ function appendStencilLibraryModels(graph, list)
         yPos += widget.attributes.size.height;
   });
   $("#stencilLibrary").height(yPos);
+  labelAlign("#stencil #v-8");
 }
 
   var graphScale = 1;
@@ -300,6 +302,7 @@ $("#canvas")
                   link.remove();
                 }
             });
+            labelAlign();
         });
 
   graph.on('change:source change:target', function(link) {
@@ -645,6 +648,54 @@ function bindHotkeys() {
     });
 }
 
+      function labelAlign(selector) { 
+        selector =  selector || "#canvas #v-2";
+        let targetVal = document.querySelectorAll(selector);
+        let textStartPosX, iconNewStartPosX
+        let iconShift = 40
+
+        //console.log("█===>  in SVG targetVal");
+        //console.log(targetVal);   // NodeList
+        
+        targetVal.forEach( el => {
+          //console.log(el);  // full Grid SVG
+          let cellNodes = el.querySelectorAll(".joint-cells-layer .joint-cell") // get All Nodes in Grid 
+          let iconLabels = el.querySelectorAll(".joint-cells-layer .joint-cell  .label ")   //.node_icon   .label
+          
+          //console.log("// All Nodes in Grid");  // label Text data
+          //console.log(cellNodes);  // label Text data
+
+          cellNodes.forEach( el => {
+          //console.log("// current Node");  // current Node
+          //console.log(el);  // current Node
+          
+          const textLabel = el.querySelector(".label")
+          if (!textLabel) {
+            return;
+          }
+          console.dir(textLabel);  // current Label
+          
+          let textLabelWidth= textLabel.textLength.baseVal.value;  // get Label width
+          console.log("█ textLabelWidth : ", textLabelWidth);  
+          
+          textStartPosX = textLabel.transform.baseVal[0].matrix.e  // get Label startPosX 
+          // el.setAttribute("fill", "red")  // for test
+          
+          const iconNode = el.querySelector(".node_icon")
+          if ( iconNode ) {
+            console.dir(iconNode);  // current Icon
+            
+            let sub = textStartPosX - textLabelWidth/2 - iconShift
+            iconNewStartPosX = iconNode.transform.baseVal[0].matrix.e = sub
+
+            console.log(" textStartPosX : ", textStartPosX, "    iconNewStartPosX : ", iconNewStartPosX );  // current Node
+          }
+            
+          })
+        })
+      }
+
+
 //initializeDiagram();
 /*
 $.get("./templates.html", function(data) {
@@ -659,6 +710,7 @@ $.get("./templates.html", function(data) {
 window.addEventListener("load", function() {
           angular.bootstrap(document, ['basicUsageSidenavDemo']);
       bindHotkeys();
+      labelAlign("#stencil #v-8");
 }, false);
 
 function checkChangesSaved() {

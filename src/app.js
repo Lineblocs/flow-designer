@@ -59,6 +59,7 @@ function changeLabel(cell, text, refY) {
     'font-size': '18',
     'ref-y': refY
   });
+  labelAlign();
 }
 
 // NODe- Description pole
@@ -1206,6 +1207,7 @@ angular
       factory.selectorContext = 'LIBRARY';
       $timeout(function() {
         appendStencilLibraryModels( diagram['stencilLibraryGraph'], created );
+        labelAlign("#stencil #v-8");
       }, 0);
     }
     factory.openAvailable = function () {
@@ -1213,6 +1215,10 @@ angular
       angular.element("#stencilLibrary").hide();
       angular.element("#stencil").show();
       factory.selectorContext = 'AVAILABLE';
+      $timeout(function() {
+        labelAlign("#stencil #v-8");
+      }, 0);
+
     }
     factory.saveWidget = function () {
       var model = factory.cellModel;

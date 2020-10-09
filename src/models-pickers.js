@@ -1,5 +1,5 @@
 function createPickerMarkup(icon) {
- var icon = `<path 
+ var icon = icon || `<path 
           class="icon-stroke"
 					transform="matrix(1 0 0 1 0 0)"
           d="M57.1,39.7l3.6-3.6L56,31.3l-2.2,2.2l-8.3-8.3
@@ -107,7 +107,7 @@ function createPickerDefaultAttrs(name, text) {
 
 joint.shapes.devs.SwitchPicker = joint.shapes.devs.Model.extend({
 
-  markup: createPickerMarkup(),
+  markup: createPickerMarkup(ICON_SWITCH),
 
   defaults: joint.util.deepSupplement({
     name: 'Switch',
@@ -126,7 +126,7 @@ joint.shapes.devs.SwitchPickerView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.DialPicker = joint.shapes.devs.Model.extend({
 
-  markup: createPickerMarkup(),
+  markup: createPickerMarkup(ICON_DIAL),
 
   defaults: joint.util.deepSupplement({
     name: 'Dial',
@@ -145,7 +145,7 @@ joint.shapes.devs.DialPickerView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.BridgePicker = joint.shapes.devs.Model.extend({
 
-  markup: createPickerMarkup(),
+  markup: createPickerMarkup(ICON_BRIDGE),
 
   defaults: joint.util.deepSupplement({
     name: 'Bridge',
@@ -164,7 +164,7 @@ joint.shapes.devs.BridgePickerView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.ProcessInputPicker = joint.shapes.devs.Model.extend({
 
-  markup: createPickerMarkup(),
+  markup: createPickerMarkup(ICON_INPUT),
 
   defaults: joint.util.deepSupplement({
     name: 'ProcessInput',
@@ -183,7 +183,7 @@ joint.shapes.devs.ProcessInputPickerView = joint.shapes.devs.ModelView;
 joint.shapes.devs.RecordVoicemailPicker = joint.shapes.devs.Model.extend({
 
 
-  markup: createPickerMarkup(),
+  markup: createPickerMarkup(ICON_RECORD),
 
   defaults: joint.util.deepSupplement({
     name: 'RecordVoicemail',
@@ -201,7 +201,7 @@ joint.shapes.devs.RecordVoicemailPickerView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.PlaybackPicker = joint.shapes.devs.Model.extend({
 
-  markup: createPickerMarkup(),
+  markup: createPickerMarkup(ICON_PLAYBACK),
 
   defaults: joint.util.deepSupplement({
     name: 'Playback',
@@ -220,7 +220,7 @@ joint.shapes.devs.PlaybackPickerView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.MacroPicker = joint.shapes.devs.Model.extend({
 
-  markup: createPickerMarkup(),
+  markup: createPickerMarkup(ICON_MACRO),
 
   defaults: joint.util.deepSupplement({
     name: 'Macro',
@@ -238,10 +238,10 @@ joint.shapes.devs.MacroPickerView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.SetVariablesPicker = joint.shapes.devs.Model.extend({
 
-  markup: createPickerMarkup(),
+  markup: createPickerMarkup(ICON_SET),
 
   defaults: joint.util.deepSupplement({
-    name: 'Macro',
+    name: 'SetVariables',
     type: 'devs.SetVariablesPicker',
     creates: 'SetVariablesModel',
     size: widgetDimens,
@@ -259,7 +259,7 @@ joint.shapes.devs.SetVariablesPickerView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.ConferencePicker = joint.shapes.devs.Model.extend({
 
-  markup: createPickerMarkup(),
+  markup: createPickerMarkup(ICON_CONF),
 
   defaults: joint.util.deepSupplement({
     name: 'Conference',
@@ -278,7 +278,7 @@ joint.shapes.devs.ConferencePickerView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.SendDigitsPicker = joint.shapes.devs.Model.extend({
 
-  markup: createPickerMarkup(),
+  markup: createPickerMarkup(ICON_SEND),
 
   defaults: joint.util.deepSupplement({
     name: 'SendDigits',
@@ -297,7 +297,7 @@ joint.shapes.devs.SendDigitsPickerView = joint.shapes.devs.ModelView;
 
 joint.shapes.devs.WaitPicker = joint.shapes.devs.Model.extend({
 
-  markup: createPickerMarkup(),
+  markup: createPickerMarkup(ICON_WAIT),
 
   defaults: joint.util.deepSupplement({
     name: 'Wait',
