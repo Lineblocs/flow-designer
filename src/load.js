@@ -710,6 +710,7 @@ $.get("./templates.html", function(data) {
 window.addEventListener("load", function() {
           angular.bootstrap(document, ['basicUsageSidenavDemo']);
       bindHotkeys();
+      labelAlign();
       labelAlign("#stencil #v-8");
 }, false);
 

@@ -239,6 +239,9 @@ function createDefaultAttrs(name, text) {
 // in this block - CSS rules for Node block
 function createLaunchAttrs(name, text) {
   var defaultAttrs = {
+    '.label': {
+          text: "Launch"
+    },
 		'.shadow': {filter:"url(#call-shadow)"},
 		'.st0': {fill:"#FFFFFF"},
 		'.st1': {fill:"#36D576"},

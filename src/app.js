@@ -1939,6 +1939,9 @@ angular
                   $scope.createModel(launch, "Launch");
                   $shared.isLoading = false;
                 }
+
+                labelAlign();
+
               }, 0);
             });
           }
