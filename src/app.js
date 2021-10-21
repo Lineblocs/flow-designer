@@ -1563,7 +1563,8 @@ angular
       'ExtensionFlow',
       'Phone Number',
       'Queue',
-      'Follow Me'
+      'Follow Me',
+      'Merge Calls'
     ];
     $scope.dialCallTypes = [
       'Extension',
