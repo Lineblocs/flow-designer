@@ -94,7 +94,8 @@ if (href1 || href2) {
   var baseUrl = "https://lineblocs.com/api";
   isLocal = true;
 } else {
-  var baseUrl = "/api";
+  //var baseUrl = "/api";
+  var baseUrl = "https://lineblocs.com/api";
 }
 
 function createUrl(path) {
