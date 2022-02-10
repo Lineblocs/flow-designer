@@ -69,16 +69,29 @@
                                         </md-tooltip>
                                     </md-icon>
                                 </div>
+
                             </div>
-        <div layout="row">
-            <div flex="95">
-                <md-checkbox id="recordInput" ng-model="cellModel.data.transcribe" aria-label="Checkbox 1">
-                    Transcribe
-                </md-checkbox>
-            </div>
-            <div flex="5">
-            </div>
-        </div>
+
+                            <div layout="row">
+                                <div flex="95">
+                                    <md-checkbox id="recordInput" ng-model="cellModel.data.transcribe"
+                                        aria-label="Checkbox 1">
+                                        Transcribe
+                                    </md-checkbox>
+                                </div>
+                                <div flex="5">
+                                </div>
+                            </div>
+                            <div layout="row">
+                                <div flex="95">
+                                    <md-checkbox id="recordInput" ng-model="cellModel.data.trim_silence"
+                                        aria-label="Checkbox 1">
+                                        Trim Silence
+                                    </md-checkbox>
+                                </div>
+                                <div flex="5">
+                                </div>
+                            </div>
                         </md-content>
                     </md-tab>
                 </md-tabs>
