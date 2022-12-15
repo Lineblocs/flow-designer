@@ -13,7 +13,7 @@
     <div ng-controller="RootCtrl">
       <div class="loading dont-show" ng-show="$shared.isLoading">
         <center>
-            <img src="https://app.lineblocs.com/spinner.gif" width="64"/>
+            <img src="{{$shared.getAppResource('spinner.gif'))}}" width="64"/>
             <p>Please wait..</p>
         </center>
       </div>
@@ -37,6 +37,10 @@
         <div id="scopeCtrl" ng-view></div>
       </div>
     </div>
+      <script>
+      // some global settings used throughout the app
+      var DEPLOYMENT_DOMAIN = 'CONFIGURED_DEPLOYMENT_DOMAIN';
+  </script>
     <!-- dependencies -->
     <script src="./main.min.js"></script>
     <script src="node_modules/monaco-editor/min/vs/loader.js"></script>

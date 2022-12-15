@@ -656,6 +656,9 @@ angular
         scope.$apply();
       }, 0)
     }
+    factory.getAppResource = function(path) {
+
+    }
     factory.loadExtensions = function () {
       var url = createUrl("/extension/listExtensions");
       return $q(function (resolve, reject) {
