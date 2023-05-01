@@ -1526,7 +1526,10 @@ angular
         console.log("flow templates are ", res.data);
         var templates = res.data.data;
         $scope.templates = templates;
-        var templatesByCategory = [];
+        var templatesByCategory = [{
+          "name": "Simple Flows", 
+          "templates": []
+        }];
         for ( var index in templates ) {
           var template = templates[ index ];
           var category = templatesByCategory[ template.category ];
