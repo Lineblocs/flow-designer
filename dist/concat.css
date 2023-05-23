@@ -9566,7 +9566,7 @@ margin-right: auto;
   left: -100px;
   /*width: 128px;*/
   white-space: inherit;
-    max-width: 500px; // Or whatever you need.
+    max-width: 500px; /* Or whatever you need.*/
   width: 500px;
 }
 

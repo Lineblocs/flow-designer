@@ -1,6 +1,10 @@
 {
     "name": "oneline-pbx-cloud",
     "version": "v0.0.1",
+    "scripts": {
+        "test": "gulp test",
+        "start": "gulp compress-css && gulp scripts && gulp compress-js && gulp serve"
+    },
     "dependencies": {
         "@mdi/font": "^4.4.95",
         "@types/node": "^13.1.4",

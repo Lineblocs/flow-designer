@@ -133,7 +133,34 @@ angular
         return config;
       }
     };
-  })
+  }).service('ThemeService', function($window) {
+    this.setTheme = function(theme) {
+      $window.localStorage.setItem('THEME', theme);
+    };
+    this.getTheme = function() {
+      return $window.localStorage.getItem('THEME') || 'default';
+    };
+  
+    this.addStyle = function(path) {
+      if (!path) return;
+      var link = document.createElement('link');
+      link.setAttribute('rel', 'stylesheet');
+      link.setAttribute('type', 'text/css');
+      link.setAttribute('href', path);
+      document.head.appendChild(link);
+    }
+  
+    this.removeStyle = function(selectedPath) {
+      const allLinks = ['styles.css', 'styles.dark.css']
+      const links = document.head.querySelectorAll('link[href]');
+      for (var i = 0; i < links.length; i++) {
+        const path = links[i].getAttribute('href');
+        if (!allLinks.includes(path)) continue;
+        if (path === selectedPath) continue;
+        document.head.removeChild(links[i]);
+      }
+    }
+  })  
   .config(function ($routeProvider, $locationProvider, $httpProvider) {
     $routeProvider.when("/create", {
       templateUrl: "templates/create.html",
@@ -172,7 +199,7 @@ angular
     factory.FLOW_REMOTE_URL = factory.SERVER_REMOTE_URL + "/api/flow";
     return factory;
   })
-  .factory("$shared", function ($mdDialog, $mdSidenav, $log, $const, $http, $timeout, $q, $mdToast) {
+  .factory("$shared", function ($mdDialog, $mdSidenav, $log, $const, $http, $timeout, $q, $mdToast, $window) {
     var factory = this;
     factory.models = [];
     factory.trash = [];
@@ -1554,7 +1581,7 @@ angular
       });
     }
     init();
-  }).controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $timeout, $q) {
+  }).controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $timeout, $q, $window, ThemeService) {
     $scope.$shared = $shared;
     $scope.$const = $const;
     $scope.extensions = [];
@@ -1851,7 +1878,13 @@ angular
     function load() {
 
       var search = $location.search();
-      console.log("load search is ", search);
+      if ($window.localStorage.getItem('THEME') === 'dark') {
+        ThemeService.addStyle('styles.dark.css');
+        ThemeService.removeStyle('styles.dark.css');
+      } else {
+        ThemeService.addStyle('styles.css');
+        ThemeService.removeStyle('styles.css');
+      }
       $shared.flow = {
         "started": true
       };
