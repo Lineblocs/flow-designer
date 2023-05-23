@@ -40,7 +40,8 @@ body {
 #stencil {
     width: 100%;
     height: 768px;
-  background:#FFFFFF; 
+  /* background:#FFFFFF;  */
+  background: #000000;
 }
 md-tabs {
     transition: 0s !important;
@@ -52,9 +53,9 @@ md-toolbar.md-default-theme.md-hue-2:not(.md-menu-toolbar), md-toolbar.md-hue-1:
     color: #000;
     border-bottom: 1px solid #CCCCCC;
 }
-md-toolbar.md-default-theme.md-hue-1:not(.md-menu-toolbar), md-toolbar.md-hue-1:not(.md-menu-toolbar) md-icon {
+/* md-toolbar.md-default-theme.md-hue-1:not(.md-menu-toolbar), md-toolbar.md-hue-1:not(.md-menu-toolbar) md-icon {
   color: #000;
-}
+} */
 
 .sidebar {
     border: 1px solid #E3E3E3;
@@ -161,7 +162,7 @@ margin-right: auto;
   left: -100px;
   /*width: 128px;*/
   white-space: inherit;
-    max-width: 500px; /* Or whatever you need.*/
+  max-width: 500px; /* Or whatever you need. */
   width: 500px;
 }
 
@@ -274,4 +275,136 @@ ul#presets {
 
 .margin-content {
   margin: 8px;
+}
+
+.md-toolbar-tools{
+    background: #000000;
+    color: #FFFFFF;
+}
+
+.md-toolbar.md-hue-1:not(.md-menu-toolbar) md-icon {
+    color: #FFFFFF !important;
+}
+
+.st0{fill:#000000 !important;}
+
+.joint-paper.joint-theme-default{
+    background-color: #000000;
+}
+
+.v-line{
+    fill: #FFFFFF !important;
+}
+
+.joint-element *{
+    fill: #000000;
+}
+
+.widget-options md-tab-content{
+   background-color: #000000; 
+}
+
+md-content{
+    background-color: #000000 !important;
+}
+
+md-input-container input[type=text]{
+    color: white;
+    border-color: white;
+}
+
+md-input-container:not(.md-input-invalid).md-input-has-value label {
+    color: white;
+}
+
+md-dialog md-dialog-content{
+    background-color: #000000;
+    color: white;
+}
+
+md-dialog .md-actions{
+    background-color: #000000;
+    color: white;
+}
+
+md-input-container label:not(.md-no-float) {
+    color: white;
+}
+
+md-input-container>md-select{
+    color: white;
+}
+
+md-select .md-select-value {
+    border-bottom-color: rgb(255 255 255);
+}
+
+md-option{
+    color: white;
+}
+
+/* md-select:not([disabled]):hover{
+    color: white;
+} */
+
+md-toolbar:not(.md-menu-toolbar) {
+    background: #000000;
+}
+
+md-checkbox .md-label{
+    color: white;
+}
+
+md-input-container:not(.md-input-has-value) input:not(:focus){
+    color: white;
+}
+
+.button-content{
+    background-color: #000000;
+}
+
+md-checkbox .md-icon {
+    border-color: rgb(255 255 255);
+}
+
+.md-select-value :first-child{
+    color: white;
+}
+
+md-input-container:not(.md-input-has-value) input:not(:focus){
+    border-color: white;
+}
+
+md-input-container input[type=search]{
+    color: white;
+}
+
+md-menu-showing{
+    background-color: #000000;
+}
+
+md-input-container .md-input{
+    color: white;
+    border-color: white;
+}
+
+md-select-menu md-option:focus:not([selected]) {
+    background: rgb(41 42 46);
+}
+
+md-card{
+    background: black;
+    border: 2px solid white;
+}
+
+.templates-list{
+    background: #000000;
+}
+
+.widget-scroller{
+    background: #000000;
+}
+
+md-icon{
+    color: white;
 }
