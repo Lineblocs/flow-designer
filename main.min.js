@@ -100827,7 +100827,7 @@ angular
 
 
   })
-  .controller('CreateCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http) {
+  .controller('CreateCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, ThemeService, $location) {
     $scope.values = {
       name: ""
     };
@@ -100855,10 +100855,12 @@ angular
         var urlObj = URI(document.location.href);
         var query = urlObj.query(true);
         var token = query.auth;
+        var search = $location.search();
 
         $http.get(createUrl("/getFlowPresets?templateId=" + data['template_id'])).then(function (res) {
           if ( !res.data.has_presets ) {
             var url = "/edit?flowId=" + id + "&auth=" + token + "&workspaceId=" + query.workspaceId;
+            if (search.mode && search.mode === 'dark') url += "&mode=" + search.mode;
             if ( query.admin ) {
               url += "&admin=" + query.admin;
             }
@@ -100895,7 +100897,14 @@ angular
       $shared.isLoading = true;
       $http.get(createUrl("/flow/listTemplates")).then(function (res) {
         $shared.isLoading = false;
-        console.log("flow templates are ", res.data);
+        console.log("flow templates are", res.data);
+        if ($location.search().mode === 'dark') {
+          ThemeService.addStyle('styles.dark.css');
+          ThemeService.removeStyle('styles.dark.css');
+        } else {
+          ThemeService.addStyle('styles.css');
+          ThemeService.removeStyle('styles.css');
+        }
         var templates = res.data.data;
         $scope.templates = templates;
         var templatesByCategory = [{
@@ -101220,23 +101229,10 @@ angular
       cell.addPort(port);
     }
 
-    // function applyTheme(theme) {
-    //   const themes = {
-    //     default: 'styles.css',
-    //     dark: 'styles.dark.css',
-    //   }
-    //   if (theme !== ThemeService.getTheme()) {
-    //     ThemeService.setTheme(theme);
-    //   }
-    //   ThemeService.addStyle(themes[theme]);
-    //   ThemeService.removeStyle(themes[theme]);
-    // }
-    // applyTheme(ThemeService.getTheme());
-
     function load() {
 
       var search = $location.search();
-      if ($window.localStorage.getItem('THEME') === 'dark') {
+      if (search.mode === 'dark') {
         ThemeService.addStyle('styles.dark.css');
         ThemeService.removeStyle('styles.dark.css');
       } else {

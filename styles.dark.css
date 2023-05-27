@@ -408,3 +408,8 @@ md-card{
 md-icon{
     color: white;
 }
+
+.body-container{
+    background: #000000;
+    color: #FFFFFF;
+}
