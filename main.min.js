@@ -100860,7 +100860,7 @@ angular
         $http.get(createUrl("/getFlowPresets?templateId=" + data['template_id'])).then(function (res) {
           if ( !res.data.has_presets ) {
             var url = "/edit?flowId=" + id + "&auth=" + token + "&workspaceId=" + query.workspaceId;
-            if (search.mode) url += "&mode=" + search.mode;
+            if (search.mode && search.mode === 'dark') url += "&mode=" + search.mode;
             if ( query.admin ) {
               url += "&admin=" + query.admin;
             }
