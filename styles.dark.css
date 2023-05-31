@@ -53,9 +53,9 @@ md-toolbar.md-default-theme.md-hue-2:not(.md-menu-toolbar), md-toolbar.md-hue-1:
     color: #000;
     border-bottom: 1px solid #CCCCCC;
 }
-/* md-toolbar.md-default-theme.md-hue-1:not(.md-menu-toolbar), md-toolbar.md-hue-1:not(.md-menu-toolbar) md-icon {
-  color: #000;
-} */
+md-toolbar.md-default-theme.md-hue-1:not(.md-menu-toolbar), md-toolbar.md-hue-1:not(.md-menu-toolbar) md-icon {
+  color: #fff;
+}
 
 .sidebar {
     border: 1px solid #E3E3E3;
