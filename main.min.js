@@ -97709,6 +97709,9 @@ var launchMarkup = `<defs>
   </g>`;
         
 
+
+
+  
 function createMarkup(icon) {
   console.log("creating markup ", icon);
   var icon = icon || ICON_PHONE;
@@ -98269,19 +98272,7 @@ var a = new joint.shapes.devs.Model({
 
     </g>`;
 
-    // <path 
-    // class="st6" 
-    // d="M319.5,13.5
-    // L319.5,96.5
-    // A10,10 0 0 1 309.5,106.5
-    // L13.5,106.5
-    // A10,10 0 0 1 3.5,96.5
-    // L3.5,13.5
-    // A10,10 0 0 1 13.5,3.5
-    // L309.5,3.5
-    // A10,10 0 0 1 319.5,13.5
-    // Z"
-    // />
+
 
 // Launch NODE  
 joint.shapes.devs.LaunchModel = joint.shapes.devs.Model.extend({
@@ -98517,7 +98508,7 @@ joint.shapes.devs.Link.define('devs.FlowLink', {
       attrs: {
               ".connection": {
                 "stroke-width": 2,  // old value: 1
-                "stroke": "gray",  // old value: del param
+                "stroke": "white",  // old value: del param
                 "stroke-dasharray": 10  // old value: del param
               } 
             }
@@ -98587,8 +98578,7 @@ function createPickerMarkup(icon) {
 		<g class="scalable shadow base-body">
 			<path 
 					class="body" 
-					d="M169.7,100.5H3.5c-1.7,0-3-1.3-3-3v-94
-					c0-1.7,1.3-3,3-3h166.2c1.7,0,3,1.3,3,3v94C172.7,99.2,171.3,100.5,169.7,100.5z"/> 
+					d="M 319 14 L 319.051 91.9 A 10 10 0 0 1 310.016 101.98 L 13.022 101.894 A 10 10 0 0 1 3.088 92.022 L 3.035 12.046 A 10 10 0 0 1 13.151 2.082 L 308.941 2.007 A 10 10 0 0 1 318.922 12.31 Z"/> 
 		
 			<!-- <line 
 					id="separatу-line_16_" 

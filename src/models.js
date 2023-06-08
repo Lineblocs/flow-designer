@@ -886,7 +886,7 @@ joint.shapes.devs.Link.define('devs.FlowLink', {
       attrs: {
               ".connection": {
                 "stroke-width": 2,  // old value: 1
-                "stroke": "gray",  // old value: del param
+                "stroke": "white",  // old value: del param
                 "stroke-dasharray": 10  // old value: del param
               } 
             }
