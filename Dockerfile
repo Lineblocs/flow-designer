@@ -17,4 +17,4 @@ COPY --from=builder /app/ .
 COPY ports.conf /etc/apache2/ports.conf
 COPY apache.conf /usr/local/apache2/conf/httpd.conf
 EXPOSE 3000
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["./shell_scripts/entrypoint.sh"]
