@@ -1502,7 +1502,7 @@ angular
         data['template_id'] = $scope.selectedTemplate.id;
       }
       $shared.isCreateLoading = true;
-      $http.post(createUrl("/flow/"), data).then(function (res) {
+      $http.post(createUrl("/flow"), data).then(function (res) {
         $shared.isCreateLoading = false;
         console.log("response arguments ", arguments);
         console.log("response headers ", res.headers('X-Flow-ID'));
