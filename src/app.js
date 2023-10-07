@@ -809,7 +809,7 @@ angular
       };
       $scope.save = function() {
         var data = angular.copy($scope.params);
-        var url = createUrl("/widgetTemplate/");
+        var url = createUrl("/widgetTemplate");
         var modelJSON = model.toJSON();
         modelJSON.links = model.links.map(function (link) {
           return link.toJSON();
@@ -2121,7 +2121,7 @@ angular
       }
 
       function saveNewFunction($event) {
-        var url = createUrl("/function/");
+        var url = createUrl("/function");
         return $q(function (resolve, reject) {
           if ($scope.params['title']) {
             resolve();
@@ -2143,7 +2143,7 @@ angular
       }
       $scope.save = function ($event) {
         console.log("save called..");
-        var url = createUrl("/function/");
+        var url = createUrl("/function");
         return $q(function (resolve, reject) {
           if (!$scope.params['title']) {
             saveNewFunction().then(function () {
