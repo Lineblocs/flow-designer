@@ -97709,6 +97709,9 @@ var launchMarkup = `<defs>
   </g>`;
         
 
+
+
+  
 function createMarkup(icon) {
   console.log("creating markup ", icon);
   var icon = icon || ICON_PHONE;
@@ -98269,19 +98272,7 @@ var a = new joint.shapes.devs.Model({
 
     </g>`;
 
-    // <path 
-    // class="st6" 
-    // d="M319.5,13.5
-    // L319.5,96.5
-    // A10,10 0 0 1 309.5,106.5
-    // L13.5,106.5
-    // A10,10 0 0 1 3.5,96.5
-    // L3.5,13.5
-    // A10,10 0 0 1 13.5,3.5
-    // L309.5,3.5
-    // A10,10 0 0 1 319.5,13.5
-    // Z"
-    // />
+
 
 // Launch NODE  
 joint.shapes.devs.LaunchModel = joint.shapes.devs.Model.extend({
@@ -99447,12 +99438,13 @@ function addCellArgs(model) {
 var href1 = document.location.href.includes("http://localhost");
 var href2 = document.location.href.includes("ngrok.io");
 var isLocal = false;
+var version = "v1";
 if (href1 || href2) {
-  var baseUrl = "https://lineblocs.com/api";
+  var baseUrl = "https://" + DEPLOYMENT_DOMAIN + "/api/" + version
   isLocal = true;
 } else {
   //var baseUrl = "/api";
-  var baseUrl = "https://lineblocs.com/api";
+  var baseUrl = "https://" + DEPLOYMENT_DOMAIN + "/api/" + version;
 }
 
 function createUrl(path) {
@@ -100044,7 +100036,7 @@ angular
 
     }
     factory.loadExtensions = function () {
-      var url = createUrl("/extension/listExtensions");
+      var url = createUrl("/extension/list");
       return $q(function (resolve, reject) {
         $http.get(url).then(function (res) {
           console.log("extensions are ", res.data);
@@ -100056,7 +100048,7 @@ angular
       });
     }
     factory.loadFunctions = function () {
-      var url = createUrl("/function/listFunctions");
+      var url = createUrl("/function/list");
       return $q(function (resolve, reject) {
         $http.get(url).then(function (res) {
           console.log("functions are ", res.data);
@@ -100069,7 +100061,7 @@ angular
       });
     }
     factory.loadWidgetTemplates = function () {
-      var url = createUrl("/widgetTemplate/listWidgets");
+      var url = createUrl("/widgetTemplate/list");
       return $q(function (resolve, reject) {
         $http.get(url).then(function (res) {
           console.log("widgets are ", res.data);
@@ -100165,7 +100157,7 @@ angular
       };
       $scope.save = function() {
         var data = angular.copy($scope.params);
-        var url = createUrl("/widgetTemplate/saveWidget");
+        var url = createUrl("/widgetTemplate/");
         var modelJSON = model.toJSON();
         modelJSON.links = model.links.map(function (link) {
           return link.toJSON();
@@ -100815,7 +100807,7 @@ angular
         serverData['name'] = $shared.flow.name;
         serverData['flow_json'] = JSON.stringify(params);
         $shared.isCreateLoading = true;
-        $http.post(createUrl("/flow/updateFlow/" + flowId), serverData).then(function () {
+        $http.post(createUrl("/flow/" + flowId), serverData).then(function () {
           $shared.isCreateLoading = false;
           showSaved(ev);
           stateActions.lastSave = Date.now();
@@ -100858,7 +100850,7 @@ angular
         data['template_id'] = $scope.selectedTemplate.id;
       }
       $shared.isCreateLoading = true;
-      $http.post(createUrl("/flow/saveFlow"), data).then(function (res) {
+      $http.post(createUrl("/flow/"), data).then(function (res) {
         $shared.isCreateLoading = false;
         console.log("response arguments ", arguments);
         console.log("response headers ", res.headers('X-Flow-ID'));
@@ -101197,7 +101189,7 @@ angular
       if ($scope.selectedTemplate) {
         data['template_id'] = $scope.selectedTemplate.id;
       }
-      $http.post(createUrl("/flow/updateFlow/" + $shared.flow.public_id), data).then(function (res) {
+      $http.post(createUrl("/flow/" + $shared.flow.public_id), data).then(function (res) {
         $shared.flow.started = true;
         load();
       });
@@ -101255,7 +101247,7 @@ angular
         "started": true
       };
       $shared.isLoading = true;
-      var url = createUrl("/extension/listExtensions");
+      var url = createUrl("/extension/list");
       $q.all([
         $scope.updateFunctions(),
         $shared.loadExtensions(),
@@ -101269,7 +101261,7 @@ angular
           var graph;
           if (search.flowId) {
             $q.all([
-              $http.get(createUrl("/flow/flowData/" + search.flowId)),
+              $http.get(createUrl("/flow/" + search.flowId)),
               $http.get(createUrl("/flow/listTemplates"))
             ]).then(function (res) {
               console.log("flow templates are ", res[1].data);
@@ -101477,7 +101469,7 @@ angular
       }
 
       function saveNewFunction($event) {
-        var url = createUrl("/function/saveFunction");
+        var url = createUrl("/function/");
         return $q(function (resolve, reject) {
           if ($scope.params['title']) {
             resolve();
@@ -101499,7 +101491,7 @@ angular
       }
       $scope.save = function ($event) {
         console.log("save called..");
-        var url = createUrl("/function/saveFunction");
+        var url = createUrl("/function/");
         return $q(function (resolve, reject) {
           if (!$scope.params['title']) {
             saveNewFunction().then(function () {
@@ -101509,7 +101501,7 @@ angular
           }
           var data = angular.copy($scope.params);
           data['code'] = editor.getValue();
-          var url = createUrl("/function/updateFunction/" + $scope.params['public_id']);
+          var url = createUrl("/function/" + $scope.params['public_id']);
           console.log("update function data ", data);
           $http.post(url, data).then(function (res) {
             var reply = res.data;
