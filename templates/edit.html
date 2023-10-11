@@ -70,10 +70,19 @@
             <md-button  ng-click="centerFocus()" aria-label="Go to center" class="md-icon-button center_focus">
             <md-icon md-svg-icon="img/icons/center_focus.svg">
                           <md-tooltip class="helper-tooltip" md-direction="bottom">
+                        Switch orientation
+                    </md-tooltip>
+            </md-icon>
+            </md-button>
+
+            <md-button  ng-click="changeOrientation()" aria-label="Change orientationr" class="md-icon-button center_focus">
+            <md-icon md-svg-icon="{{getOrientationIcon()}}">
+                          <md-tooltip class="helper-tooltip" md-direction="bottom">
                         Center Focus
                     </md-tooltip>
             </md-icon>
             </md-button>
+
             <md-button  ng-show="$shared.canDelete()" ng-click="$shared.deleteWidget($event)" aria-label="Go to center" class="md-icon-button delete">
             <md-icon md-svg-icon="img/icons/delete.svg">
                                       <md-tooltip class="helper-tooltip" md-direction="bottom">

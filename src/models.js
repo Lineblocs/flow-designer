@@ -258,7 +258,7 @@ function createLaunchAttrs(name, text) {
 }
 
 // In & OUT port
-var defaultPorts = {
+var verticalPorts = {
       groups: {
 
           'in': {
@@ -321,6 +321,72 @@ var defaultPorts = {
           // }
       }
 };
+// In & OUT port
+var horizontalPorts = {
+      groups: {
+
+          'in': {
+              position: 'left',  //left top right bottom
+
+                label: {
+                    // label layout definition:
+                    position: {
+                        name: 'manual', args: {
+                            y: -10,
+                            x: -140,
+                            attrs: { '.': { 'text-anchor': 'middle' } }
+                        }
+                      }
+                  
+              },
+              attrs: {
+                      '.port-label': {
+                          'ref-x': -140,
+                          fill: '#385374'
+                      },
+                      '.port-body': {
+                          r: 5,
+                          'ref-x':0,
+                          'ref-y':0,
+                          'stroke-width': 2,
+                          // stroke: '#385374',
+                          stroke: '#36D576',
+                          fill: '#36D576',
+                          padding: 20,
+                          transform: 'matrix(1 0 0 1 0 2)'
+                      }
+                  }
+          },
+
+          'out': {
+              position: 'right' , //right side - center vert
+              label: {
+                  position: 'outside'  // inside/outside  label position
+              },
+              attrs: {
+                      '.port-label': {
+                          fill: '#385374'
+                      },
+                      '.port-body': {
+                        r: 5,
+                        'ref-x': 0,
+                        'ref-y': 0,
+                        'stroke-width': 5,
+                        stroke: '#385374',
+                        fill: "#000878",
+                        padding: 2,
+                        transform: 'matrix(1 0 0 1 0 2)'
+                      }
+                }
+          },
+
+          // attrs: {
+          //   '.label': { text: '_HELLO_', 'ref-x': .5, 'ref-y': .2 },
+          // }
+      }
+};
+var defaultPorts = verticalPorts;
+//var defaultPorts = horizontalPorts;
 
 /*
 // DEF PORT SETTINGS =================================
@@ -652,6 +718,8 @@ var a = new joint.shapes.devs.Model({
 
 
 
+function redeclareGraphModels() { 
+  // declare any model types with relevant attributes
 // Launch NODE  
 joint.shapes.devs.LaunchModel = joint.shapes.devs.Model.extend({
 
@@ -894,6 +962,11 @@ joint.shapes.devs.Link.define('devs.FlowLink', {
     // inherit joint.shapes.standard.Link.markup
 }, {
 });
+
+}
+
+redeclareGraphModels();
+
 function createModelFromTemplate(template) {
   var title = template.title;
 

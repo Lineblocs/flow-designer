@@ -1,3 +1,6 @@
+var ORIENTATION_VERTICAL = "vertical";
+var ORIENTATION_HORIZONTAL = "horizontal";
+
 
 function Model(cell, name, links, data) {
   console.log("creating new model ", arguments);
@@ -205,6 +208,7 @@ angular
     factory.models = [];
     factory.trash = [];
     factory.selectorContext = 'AVAILABLE';
+    factory.orientation = ORIENTATION_VERTICAL;
     factory.voices = {
       "da-DK": [{
         "lang": "da-DK",
@@ -809,7 +813,7 @@ angular
       };
       $scope.save = function() {
         var data = angular.copy($scope.params);
-        var url = createUrl("/widgetTemplate/");
+        var url = createUrl("/widgetTemplate");
         var modelJSON = model.toJSON();
         modelJSON.links = model.links.map(function (link) {
           return link.toJSON();
@@ -1403,6 +1407,111 @@ angular
       panAndZoom.resetPan();
     }
 
+    function switchToHorizontal() {
+      var graph = diagram['graph'];
+      var cells = graph.getCells();
+      angular.forEach(cells, function (cell) {
+        console.log("updating cell ", cell);
+
+        cell.attr({
+          '.inPorts': {
+          }
+        });
+      });
+    }
+    function switchToVertical() {
+
+    }
+    function recreateLinks(links) {
+      var graph = diagram['graph'];
+      angular.forEach( links, function( data ) {
+        console.log("recreating link ", data );
+        var link = new joint.shapes.devs.FlowLink({
+          source: {
+            id: data.source.id,
+            port: data.source.port,
+          },
+          target: {
+            id: data.target.id,
+            port: data.target.port
+          },
+          attrs: {
+            ".connection": {
+              "stroke-width": 2
+            }
+          },
+          connector: GRAPH_CONNECTOR,
+          router: GRAPH_ROUTER,
+        });
+      // Assume graph has the srcModel and dstModel with in and out ports.
+      graph.addCell(link)
+      });
+    }
+    $scope.changeOrientation = function () {
+      console.log("changing orientation");
+      var graph = diagram['graph'];
+      var data = graph.toJSON();
+      if ( $shared.orientation === ORIENTATION_VERTICAL ) {
+        $shared.orientation = ORIENTATION_HORIZONTAL;
+        defaultPorts = horizontalPorts;
+        redeclareGraphModels();
+        graph.clear();
+        var newCells = [];
+        var links = [];
+        angular.forEach( data['cells'], function( cell ) {
+          if ( !cell ) {
+            return;
+          }
+          if ( cell.type === 'devs.FlowLink' ) {
+            links.push( cell );
+            return;
+          }
+          cell['ports']['groups']['in']['position'] = 'left';
+          cell['ports']['groups']['in']['label']['position']['args']['x'] = -20;
+          //cell['ports']['groups']['in']['label']['position']['args']['y'] = 0;
+          cell['ports']['groups']['in']['attrs']['.port-body']['ref-x'] = 0;
+          cell['ports']['groups']['out']['position'] = 'right';
+          newCells.push( cell );
+        } );
+        var newData = angular.copy( data );
+        newData.cells = newCells;
+        graph.fromJSON( newData );
+        recreateLinks( links );
+      } else if ( $shared.orientation === ORIENTATION_HORIZONTAL ) {
+        $shared.orientation = ORIENTATION_VERTICAL;
+        defaultPorts = verticalPorts;
+        redeclareGraphModels();
+        graph.clear();
+        var newCells = [];
+        var links = [];
+        angular.forEach( data['cells'], function( cell ) {
+          if ( !cell ) {
+            return;
+          }
+          if ( cell.type === 'devs.FlowLink' ) {
+            links.push( cell );
+            return;
+          }
+          cell['ports']['groups']['in']['position'] = 'top';
+          cell['ports']['groups']['in']['label']['position']['args']['x'] = -140;
+          //cell['ports']['groups']['in']['label']['position']['args']['y'] = 0;
+          cell['ports']['groups']['in']['attrs']['.port-body']['ref-x'] = -150;
+          cell['ports']['groups']['out']['position'] = 'bottom';
+          newCells.push( cell );
+        } );
+        var newData = angular.copy( data );
+        newData.cells = newCells;
+        graph.fromJSON( newData );
+        recreateLinks( links );
+      }
+    }
+    $scope.getOrientationIcon = function() {
+      if ( $shared.orientation === ORIENTATION_VERTICAL ) {
+        return "img/icons/change_orientation_horizontal.svg";
+      } else if ( $shared.orientation === ORIENTATION_HORIZONTAL ) {
+        return "img/icons/change_orientation_vertical.svg";
+      }
+    }
     function changeCell(item) {
       var graph = diagram['graph'];
       var cells = graph.getCells();
@@ -1457,6 +1566,7 @@ angular
       if (flowId) {
         var serverData = {};
         serverData['name'] = $shared.flow.name;
+        serverData['orientation'] = $shared.orientation;
         serverData['flow_json'] = JSON.stringify(params);
         $shared.isCreateLoading = true;
         $http.post(createUrl("/flow/" + flowId), serverData).then(function () {
@@ -1502,7 +1612,7 @@ angular
         data['template_id'] = $scope.selectedTemplate.id;
       }
       $shared.isCreateLoading = true;
-      $http.post(createUrl("/flow/"), data).then(function (res) {
+      $http.post(createUrl("/flow"), data).then(function (res) {
         $shared.isCreateLoading = false;
         console.log("response arguments ", arguments);
         console.log("response headers ", res.headers('X-Flow-ID'));
@@ -1885,6 +1995,9 @@ angular
       cell.addPort(port);
     }
 
+    function renderGraph(flow, templates) {
+    }
+
     function load() {
 
       var search = $location.search();
@@ -1930,6 +2043,11 @@ angular
                 }
                 initializeDiagram();
                 graph = diagram['graph'];
+                if ( $shared.flow.orientation !== ORIENTATION_VERTICAL ) {
+                  defaultPorts = horizontalPorts;
+                  redeclareGraphModels();
+                }
+                $shared.orientation = $shared.flow.orientation;
 
                 if (res[0].data.flow_json) {
 
@@ -2121,7 +2239,7 @@ angular
       }
 
       function saveNewFunction($event) {
-        var url = createUrl("/function/");
+        var url = createUrl("/function");
         return $q(function (resolve, reject) {
           if ($scope.params['title']) {
             resolve();
@@ -2143,7 +2261,7 @@ angular
       }
       $scope.save = function ($event) {
         console.log("save called..");
-        var url = createUrl("/function/");
+        var url = createUrl("/function");
         return $q(function (resolve, reject) {
           if (!$scope.params['title']) {
             saveNewFunction().then(function () {
@@ -4195,7 +4313,7 @@ function createLaunchAttrs(name, text) {
 }
 
 // In & OUT port
-var defaultPorts = {
+var verticalPorts = {
       groups: {
 
           'in': {
@@ -4258,6 +4376,72 @@ var defaultPorts = {
           // }
       }
 };
+// In & OUT port
+var horizontalPorts = {
+      groups: {
+
+          'in': {
+              position: 'left',  //left top right bottom
+
+                label: {
+                    // label layout definition:
+                    position: {
+                        name: 'manual', args: {
+                            y: -10,
+                            x: -140,
+                            attrs: { '.': { 'text-anchor': 'middle' } }
+                        }
+                      }
+                  
+              },
+              attrs: {
+                      '.port-label': {
+                          'ref-x': -140,
+                          fill: '#385374'
+                      },
+                      '.port-body': {
+                          r: 5,
+                          'ref-x':0,
+                          'ref-y':0,
+                          'stroke-width': 2,
+                          // stroke: '#385374',
+                          stroke: '#36D576',
+                          fill: '#36D576',
+                          padding: 20,
+                          transform: 'matrix(1 0 0 1 0 2)'
+                      }
+                  }
+          },
+
+          'out': {
+              position: 'right' , //right side - center vert
+              label: {
+                  position: 'outside'  // inside/outside  label position
+              },
+              attrs: {
+                      '.port-label': {
+                          fill: '#385374'
+                      },
+                      '.port-body': {
+                        r: 5,
+                        'ref-x': 0,
+                        'ref-y': 0,
+                        'stroke-width': 5,
+                        stroke: '#385374',
+                        fill: "#000878",
+                        padding: 2,
+                        transform: 'matrix(1 0 0 1 0 2)'
+                      }
+                }
+          },
+
+          // attrs: {
+          //   '.label': { text: '_HELLO_', 'ref-x': .5, 'ref-y': .2 },
+          // }
+      }
+};
+var defaultPorts = verticalPorts;
+//var defaultPorts = horizontalPorts;
 
 /*
 // DEF PORT SETTINGS =================================
@@ -4589,6 +4773,8 @@ var a = new joint.shapes.devs.Model({
 
 
 
+function redeclareGraphModels() { 
+  // declare any model types with relevant attributes
 // Launch NODE  
 joint.shapes.devs.LaunchModel = joint.shapes.devs.Model.extend({
 
@@ -4823,7 +5009,7 @@ joint.shapes.devs.Link.define('devs.FlowLink', {
       attrs: {
               ".connection": {
                 "stroke-width": 2,  // old value: 1
-                "stroke": "white",  // old value: del param
+                "stroke": "gray",  // old value: del param
                 "stroke-dasharray": 10  // old value: del param
               } 
             }
@@ -4831,6 +5017,11 @@ joint.shapes.devs.Link.define('devs.FlowLink', {
     // inherit joint.shapes.standard.Link.markup
 }, {
 });
+
+}
+
+redeclareGraphModels();
+
 function createModelFromTemplate(template) {
   var title = template.title;
 
