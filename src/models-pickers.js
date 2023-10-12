@@ -321,7 +321,7 @@ joint.shapes.devs.StreamAudioPicker = joint.shapes.devs.Model.extend({
     type: 'devs.StreamAudioPicker',
     creates: 'StreamAudioModel',
     size: widgetDimens,
-    attrs: createDefaultAttrs("Hangup", "hangup a channel"),
+    attrs: createDefaultAttrs("StreamAudio", "Send real time audio to Websocket"),
   inPorts: ['In'],
   outPorts: ['Done', 'Fail'],
   ports: defaultPorts
