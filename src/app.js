@@ -1730,6 +1730,11 @@ angular
       'Say',
       'Play'
     ];
+    $scope.audioStreamDirections = [
+      'in',
+      'out',
+      'both'
+    ];
     $scope.finishRecordTypes = [
       'Keypress',
       'Silence'

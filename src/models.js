@@ -948,6 +948,22 @@ joint.shapes.devs.HangupModel = joint.shapes.devs.Model.extend({
 
 joint.shapes.devs.HangupView = joint.shapes.devs.ModelView;
 
+// StreamAudio NODE
+joint.shapes.devs.StreamAudioModel = joint.shapes.devs.Model.extend({
+
+  markup: createMarkup(ICON_STREAMAUDIO),
+  defaults: joint.util.deepSupplement({
+    name: 'StreamAudio',
+    type: 'devs.StreamAudioModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("StreamAudio", "Send real time audio to Websocket"),
+  inPorts: ['In'],
+  outPorts: ['Done'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.StreamAudioView = joint.shapes.devs.ModelView;
 
 // Flow STYLE
 joint.shapes.devs.Link.define('devs.FlowLink', {

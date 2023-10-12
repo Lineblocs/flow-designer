@@ -97050,6 +97050,7 @@ var stencilLibraryGraph = new joint.dia.Graph,
        joint.shapes.devs.RecordVoicemailPicker,
        joint.shapes.devs.PlaybackPicker,
        joint.shapes.devs.MacroPicker,
+       joint.shapes.devs.StreamAudioPicker,
        joint.shapes.devs.SetVariablesPicker,
        joint.shapes.devs.ConferencePicker,
        joint.shapes.devs.SendDigitsPicker,
@@ -97617,6 +97618,14 @@ var ICON_SEND = `
         <path d="M7.17831,13.85647v4.19665h4.1786V18.034h.00955V13.85647ZM21.66063,7.91031a10.50463,10.50463,0,0,0-6.85-6.87355A10.89958,10.89958,0,0,0,.5,11.37083H2.02633c.25761-3.07822,2.2994-4.57906,5.257-5.25788A6.59572,6.59572,0,0,1,12.53992,4.8224V2.81487a.88447.88447,0,0,1,1.45016-.64044l6.44935,5.29605a.81645.81645,0,0,1,0,1.27141l-2.46128,2.02679a6.66184,6.66184,0,0,1-6.61169,7.2653v.01914h-.00955V22.25A10.89373,10.89373,0,0,0,21.66063,7.91031ZM3.02812,15.34774H1.26328v2.70538H3.95352V16.52369A8.11857,8.11857,0,0,1,3.02812,15.34774Zm.9254,2.70538v3.22176H7.17831V18.05312Z" style="fill: none;stroke: #36d576;stroke-miterlimit: 10"/>
         <path d="M20.43943,8.74189l-2.46128,2.02679-3.98807,3.26937a.88144.88144,0,0,1-1.45016-.63086V10.33842c-5.68607.07643-8.12848,1.4244-6.46822,6.48157.18121.55442-.52477.99414-1.03044.64054a7.00406,7.00406,0,0,1-1.08774-.93684,8.11857,8.11857,0,0,1-.9254-1.17595,6.10649,6.10649,0,0,1-1.03976-3.25992,5.8499,5.8499,0,0,1,.038-.717c.25761-3.07822,2.2994-4.57906,5.257-5.25788a25.12483,25.12483,0,0,1,5.25656-.51615V2.81487a.88447.88447,0,0,1,1.45016-.64044l6.44935,5.29605A.81645.81645,0,0,1,20.43943,8.74189Z" style="fill: none;stroke: #36d576;stroke-miterlimit: 10"/>
       </g>
+    </g>
+  </g>
+`;
+
+var ICON_STREAMAUDIO = `
+  <g id="Layer_2" data-name="Layer 2" transform="matrix(1 0 0 1 80 18)" class="node_icon" >
+    <g id="Layer_2-2" data-name="Layer 2">
+      <path d="M15.75176.5H1.51678A1.01815,1.01815,0,0,0,.5,1.51953v.67969A1.01815,1.01815,0,0,0,1.51678,3.21875c0,3.86424,2.16135,7.12542,5.1196,8.15625-2.95825,1.03083-5.1196,4.292-5.1196,8.15625A1.01815,1.01815,0,0,0,.5,20.55078v.67969A1.01815,1.01815,0,0,0,1.51678,22.25h14.235a1.01815,1.01815,0,0,0,1.01678-1.01953v-.67969a1.01815,1.01815,0,0,0-1.01678-1.01953c0-3.86424-2.16134-7.12542-5.11959-8.15625,2.95825-1.03083,5.11959-4.292,5.11959-8.15625a1.01815,1.01815,0,0,0,1.01678-1.01953V1.51953A1.01815,1.01815,0,0,0,15.75176.5ZM12.571,16.8125H4.69762c.72272-1.988,2.2071-3.39844,3.93665-3.39844S11.84824,14.82424,12.571,16.8125Zm.0008-10.875H4.69754a7.98908,7.98908,0,0,1-.46933-2.71875h8.81213A7.9901,7.9901,0,0,1,12.57181,5.9375Z" style="fill: none;stroke: #36d576;stroke-miterlimit: 10"/>
     </g>
   </g>
 `;
@@ -98570,6 +98579,22 @@ joint.shapes.devs.HangupModel = joint.shapes.devs.Model.extend({
 
 joint.shapes.devs.HangupView = joint.shapes.devs.ModelView;
 
+// StreamAudio NODE
+joint.shapes.devs.StreamAudioModel = joint.shapes.devs.Model.extend({
+
+  markup: createMarkup(ICON_STREAMAUDIO),
+  defaults: joint.util.deepSupplement({
+    name: 'StreamAudio',
+    type: 'devs.StreamAudioModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("StreamAudio", "Send real time audio to Websocket"),
+  inPorts: ['In'],
+  outPorts: ['Done'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.StreamAudioView = joint.shapes.devs.ModelView;
 
 // Flow STYLE
 joint.shapes.devs.Link.define('devs.FlowLink', {
@@ -98940,6 +98965,24 @@ joint.shapes.devs.WaitPicker = joint.shapes.devs.Model.extend({
 });
 
 joint.shapes.devs.WaitPickerView = joint.shapes.devs.ModelView;
+
+joint.shapes.devs.StreamAudioPicker = joint.shapes.devs.Model.extend({
+
+  markup: createPickerMarkup(ICON_WAIT),
+
+  defaults: joint.util.deepSupplement({
+    name: 'StreamAudio',
+    type: 'devs.StreamAudioPicker',
+    creates: 'StreamAudioModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("Hangup", "hangup a channel"),
+  inPorts: ['In'],
+  outPorts: ['Done'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.StreamAudioPickerView = joint.shapes.devs.ModelView;
 function adjustVertices(graph, cell) {
 
     // if `cell` is a view, find its model
@@ -100887,7 +100930,7 @@ angular
             return;
           }
           cell['ports']['groups']['in']['position'] = 'left';
-          cell['ports']['groups']['in']['label']['position']['args']['x'] = 0;
+          cell['ports']['groups']['in']['label']['position']['args']['x'] = -20;
           //cell['ports']['groups']['in']['label']['position']['args']['y'] = 0;
           cell['ports']['groups']['in']['attrs']['.port-body']['ref-x'] = 0;
           cell['ports']['groups']['out']['position'] = 'right';
@@ -100913,6 +100956,8 @@ angular
             return;
           }
           cell['ports']['groups']['in']['position'] = 'top';
+          cell['ports']['groups']['in']['label']['position']['args']['x'] = -140;
+          //cell['ports']['groups']['in']['label']['position']['args']['y'] = 0;
           cell['ports']['groups']['in']['attrs']['.port-body']['ref-x'] = -150;
           cell['ports']['groups']['out']['position'] = 'bottom';
           newCells.push( cell );
@@ -101147,6 +101192,11 @@ angular
     $scope.playbackTypes = [
       'Say',
       'Play'
+    ];
+    $scope.audioStreamDirections = [
+      'in',
+      'out',
+      'both'
     ];
     $scope.finishRecordTypes = [
       'Keypress',

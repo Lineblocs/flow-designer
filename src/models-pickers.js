@@ -311,3 +311,21 @@ joint.shapes.devs.WaitPicker = joint.shapes.devs.Model.extend({
 });
 
 joint.shapes.devs.WaitPickerView = joint.shapes.devs.ModelView;
+
+joint.shapes.devs.StreamAudioPicker = joint.shapes.devs.Model.extend({
+
+  markup: createPickerMarkup(ICON_WAIT),
+
+  defaults: joint.util.deepSupplement({
+    name: 'StreamAudio',
+    type: 'devs.StreamAudioPicker',
+    creates: 'StreamAudioModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("Hangup", "hangup a channel"),
+  inPorts: ['In'],
+  outPorts: ['Done'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.StreamAudioPickerView = joint.shapes.devs.ModelView;

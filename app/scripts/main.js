@@ -1730,6 +1730,11 @@ angular
       'Say',
       'Play'
     ];
+    $scope.audioStreamDirections = [
+      'in',
+      'out',
+      'both'
+    ];
     $scope.finishRecordTypes = [
       'Keypress',
       'Silence'
@@ -2645,6 +2650,14 @@ var ICON_SEND = `
     </g>
   </g>
 `;
+
+var ICON_STREAMAUDIO = `
+  <g id="Layer_2" data-name="Layer 2" transform="matrix(1 0 0 1 80 18)" class="node_icon" >
+    <g id="Layer_2-2" data-name="Layer 2">
+      <path d="M15.75176.5H1.51678A1.01815,1.01815,0,0,0,.5,1.51953v.67969A1.01815,1.01815,0,0,0,1.51678,3.21875c0,3.86424,2.16135,7.12542,5.1196,8.15625-2.95825,1.03083-5.1196,4.292-5.1196,8.15625A1.01815,1.01815,0,0,0,.5,20.55078v.67969A1.01815,1.01815,0,0,0,1.51678,22.25h14.235a1.01815,1.01815,0,0,0,1.01678-1.01953v-.67969a1.01815,1.01815,0,0,0-1.01678-1.01953c0-3.86424-2.16134-7.12542-5.11959-8.15625,2.95825-1.03083,5.11959-4.292,5.11959-8.15625a1.01815,1.01815,0,0,0,1.01678-1.01953V1.51953A1.01815,1.01815,0,0,0,15.75176.5ZM12.571,16.8125H4.69762c.72272-1.988,2.2071-3.39844,3.93665-3.39844S11.84824,14.82424,12.571,16.8125Zm.0008-10.875H4.69754a7.98908,7.98908,0,0,1-.46933-2.71875h8.81213A7.9901,7.9901,0,0,1,12.57181,5.9375Z" style="fill: none;stroke: #36d576;stroke-miterlimit: 10"/>
+    </g>
+  </g>
+`;
 /*! JointJS+ - Set of JointJS compatible plugins
 
 Copyright (c) 2013 client IO
@@ -3340,6 +3353,7 @@ var stencilLibraryGraph = new joint.dia.Graph,
        joint.shapes.devs.RecordVoicemailPicker,
        joint.shapes.devs.PlaybackPicker,
        joint.shapes.devs.MacroPicker,
+       joint.shapes.devs.StreamAudioPicker,
        joint.shapes.devs.SetVariablesPicker,
        joint.shapes.devs.ConferencePicker,
        joint.shapes.devs.SendDigitsPicker,
@@ -4053,6 +4067,24 @@ joint.shapes.devs.WaitPicker = joint.shapes.devs.Model.extend({
 });
 
 joint.shapes.devs.WaitPickerView = joint.shapes.devs.ModelView;
+
+joint.shapes.devs.StreamAudioPicker = joint.shapes.devs.Model.extend({
+
+  markup: createPickerMarkup(ICON_WAIT),
+
+  defaults: joint.util.deepSupplement({
+    name: 'StreamAudio',
+    type: 'devs.StreamAudioPicker',
+    creates: 'StreamAudioModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("Hangup", "hangup a channel"),
+  inPorts: ['In'],
+  outPorts: ['Done'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.StreamAudioPickerView = joint.shapes.devs.ModelView;
 var widgetDimens = {
   // width: 226,
   // height:108 
@@ -5003,6 +5035,22 @@ joint.shapes.devs.HangupModel = joint.shapes.devs.Model.extend({
 
 joint.shapes.devs.HangupView = joint.shapes.devs.ModelView;
 
+// StreamAudio NODE
+joint.shapes.devs.StreamAudioModel = joint.shapes.devs.Model.extend({
+
+  markup: createMarkup(ICON_STREAMAUDIO),
+  defaults: joint.util.deepSupplement({
+    name: 'StreamAudio',
+    type: 'devs.StreamAudioModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("StreamAudio", "Send real time audio to Websocket"),
+  inPorts: ['In'],
+  outPorts: ['Done'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.StreamAudioView = joint.shapes.devs.ModelView;
 
 // Flow STYLE
 joint.shapes.devs.Link.define('devs.FlowLink', {
