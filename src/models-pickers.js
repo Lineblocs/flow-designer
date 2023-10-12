@@ -323,7 +323,7 @@ joint.shapes.devs.StreamAudioPicker = joint.shapes.devs.Model.extend({
     size: widgetDimens,
     attrs: createDefaultAttrs("Hangup", "hangup a channel"),
   inPorts: ['In'],
-  outPorts: ['Done'],
+  outPorts: ['Done', 'Fail'],
   ports: defaultPorts
   }, joint.shapes.devs.Model.prototype.defaults)
 });

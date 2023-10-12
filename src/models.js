@@ -958,7 +958,7 @@ joint.shapes.devs.StreamAudioModel = joint.shapes.devs.Model.extend({
     size: widgetDimens,
     attrs: createDefaultAttrs("StreamAudio", "Send real time audio to Websocket"),
   inPorts: ['In'],
-  outPorts: ['Done'],
+  outPorts: ['Done', 'Fail'],
   ports: defaultPorts
   }, joint.shapes.devs.Model.prototype.defaults)
 });
