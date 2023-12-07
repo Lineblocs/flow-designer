@@ -1,3 +1,6 @@
+var ORIENTATION_VERTICAL = "vertical";
+var ORIENTATION_HORIZONTAL = "horizontal";
+
 
 function Model(cell, name, links, data) {
   console.log("creating new model ", arguments);
@@ -205,6 +208,7 @@ angular
     factory.models = [];
     factory.trash = [];
     factory.selectorContext = 'AVAILABLE';
+    factory.orientation = ORIENTATION_VERTICAL;
     factory.voices = {
       "da-DK": [{
         "lang": "da-DK",
@@ -688,7 +692,7 @@ angular
 
     }
     factory.loadExtensions = function () {
-      var url = createUrl("/extension/listExtensions");
+      var url = createUrl("/extension/list");
       return $q(function (resolve, reject) {
         $http.get(url).then(function (res) {
           console.log("extensions are ", res.data);
@@ -700,7 +704,7 @@ angular
       });
     }
     factory.loadFunctions = function () {
-      var url = createUrl("/function/listFunctions");
+      var url = createUrl("/function/list");
       return $q(function (resolve, reject) {
         $http.get(url).then(function (res) {
           console.log("functions are ", res.data);
@@ -713,7 +717,7 @@ angular
       });
     }
     factory.loadWidgetTemplates = function () {
-      var url = createUrl("/widgetTemplate/listWidgets");
+      var url = createUrl("/widgetTemplate/list");
       return $q(function (resolve, reject) {
         $http.get(url).then(function (res) {
           console.log("widgets are ", res.data);
@@ -809,7 +813,7 @@ angular
       };
       $scope.save = function() {
         var data = angular.copy($scope.params);
-        var url = createUrl("/widgetTemplate/saveWidget");
+        var url = createUrl("/widgetTemplate");
         var modelJSON = model.toJSON();
         modelJSON.links = model.links.map(function (link) {
           return link.toJSON();
@@ -1403,6 +1407,111 @@ angular
       panAndZoom.resetPan();
     }
 
+    function switchToHorizontal() {
+      var graph = diagram['graph'];
+      var cells = graph.getCells();
+      angular.forEach(cells, function (cell) {
+        console.log("updating cell ", cell);
+
+        cell.attr({
+          '.inPorts': {
+          }
+        });
+      });
+    }
+    function switchToVertical() {
+
+    }
+    function recreateLinks(links) {
+      var graph = diagram['graph'];
+      angular.forEach( links, function( data ) {
+        console.log("recreating link ", data );
+        var link = new joint.shapes.devs.FlowLink({
+          source: {
+            id: data.source.id,
+            port: data.source.port,
+          },
+          target: {
+            id: data.target.id,
+            port: data.target.port
+          },
+          attrs: {
+            ".connection": {
+              "stroke-width": 2
+            }
+          },
+          connector: GRAPH_CONNECTOR,
+          router: GRAPH_ROUTER,
+        });
+      // Assume graph has the srcModel and dstModel with in and out ports.
+      graph.addCell(link)
+      });
+    }
+    $scope.changeOrientation = function () {
+      console.log("changing orientation");
+      var graph = diagram['graph'];
+      var data = graph.toJSON();
+      if ( $shared.orientation === ORIENTATION_VERTICAL ) {
+        $shared.orientation = ORIENTATION_HORIZONTAL;
+        defaultPorts = horizontalPorts;
+        redeclareGraphModels();
+        graph.clear();
+        var newCells = [];
+        var links = [];
+        angular.forEach( data['cells'], function( cell ) {
+          if ( !cell ) {
+            return;
+          }
+          if ( cell.type === 'devs.FlowLink' ) {
+            links.push( cell );
+            return;
+          }
+          cell['ports']['groups']['in']['position'] = 'left';
+          cell['ports']['groups']['in']['label']['position']['args']['x'] = -20;
+          //cell['ports']['groups']['in']['label']['position']['args']['y'] = 0;
+          cell['ports']['groups']['in']['attrs']['.port-body']['ref-x'] = 0;
+          cell['ports']['groups']['out']['position'] = 'right';
+          newCells.push( cell );
+        } );
+        var newData = angular.copy( data );
+        newData.cells = newCells;
+        graph.fromJSON( newData );
+        recreateLinks( links );
+      } else if ( $shared.orientation === ORIENTATION_HORIZONTAL ) {
+        $shared.orientation = ORIENTATION_VERTICAL;
+        defaultPorts = verticalPorts;
+        redeclareGraphModels();
+        graph.clear();
+        var newCells = [];
+        var links = [];
+        angular.forEach( data['cells'], function( cell ) {
+          if ( !cell ) {
+            return;
+          }
+          if ( cell.type === 'devs.FlowLink' ) {
+            links.push( cell );
+            return;
+          }
+          cell['ports']['groups']['in']['position'] = 'top';
+          cell['ports']['groups']['in']['label']['position']['args']['x'] = -140;
+          //cell['ports']['groups']['in']['label']['position']['args']['y'] = 0;
+          cell['ports']['groups']['in']['attrs']['.port-body']['ref-x'] = -150;
+          cell['ports']['groups']['out']['position'] = 'bottom';
+          newCells.push( cell );
+        } );
+        var newData = angular.copy( data );
+        newData.cells = newCells;
+        graph.fromJSON( newData );
+        recreateLinks( links );
+      }
+    }
+    $scope.getOrientationIcon = function() {
+      if ( $shared.orientation === ORIENTATION_VERTICAL ) {
+        return "img/icons/change_orientation_horizontal.svg";
+      } else if ( $shared.orientation === ORIENTATION_HORIZONTAL ) {
+        return "img/icons/change_orientation_vertical.svg";
+      }
+    }
     function changeCell(item) {
       var graph = diagram['graph'];
       var cells = graph.getCells();
@@ -1457,9 +1566,10 @@ angular
       if (flowId) {
         var serverData = {};
         serverData['name'] = $shared.flow.name;
+        serverData['orientation'] = $shared.orientation;
         serverData['flow_json'] = JSON.stringify(params);
         $shared.isCreateLoading = true;
-        $http.post(createUrl("/flow/updateFlow/" + flowId), serverData).then(function () {
+        $http.post(createUrl("/flow/" + flowId), serverData).then(function () {
           $shared.isCreateLoading = false;
           showSaved(ev);
           stateActions.lastSave = Date.now();
@@ -1502,7 +1612,7 @@ angular
         data['template_id'] = $scope.selectedTemplate.id;
       }
       $shared.isCreateLoading = true;
-      $http.post(createUrl("/flow/saveFlow"), data).then(function (res) {
+      $http.post(createUrl("/flow"), data).then(function (res) {
         $shared.isCreateLoading = false;
         console.log("response arguments ", arguments);
         console.log("response headers ", res.headers('X-Flow-ID'));
@@ -1619,6 +1729,11 @@ angular
     $scope.playbackTypes = [
       'Say',
       'Play'
+    ];
+    $scope.audioStreamDirections = [
+      'in',
+      'out',
+      'both'
     ];
     $scope.finishRecordTypes = [
       'Keypress',
@@ -1841,7 +1956,7 @@ angular
       if ($scope.selectedTemplate) {
         data['template_id'] = $scope.selectedTemplate.id;
       }
-      $http.post(createUrl("/flow/updateFlow/" + $shared.flow.public_id), data).then(function (res) {
+      $http.post(createUrl("/flow/" + $shared.flow.public_id), data).then(function (res) {
         $shared.flow.started = true;
         load();
       });
@@ -1885,6 +2000,9 @@ angular
       cell.addPort(port);
     }
 
+    function renderGraph(flow, templates) {
+    }
+
     function load() {
 
       var search = $location.search();
@@ -1899,7 +2017,7 @@ angular
         "started": true
       };
       $shared.isLoading = true;
-      var url = createUrl("/extension/listExtensions");
+      var url = createUrl("/extension/list");
       $q.all([
         $scope.updateFunctions(),
         $shared.loadExtensions(),
@@ -1913,7 +2031,7 @@ angular
           var graph;
           if (search.flowId) {
             $q.all([
-              $http.get(createUrl("/flow/flowData/" + search.flowId)),
+              $http.get(createUrl("/flow/" + search.flowId)),
               $http.get(createUrl("/flow/listTemplates"))
             ]).then(function (res) {
               console.log("flow templates are ", res[1].data);
@@ -1930,6 +2048,11 @@ angular
                 }
                 initializeDiagram();
                 graph = diagram['graph'];
+                if ( $shared.flow.orientation !== ORIENTATION_VERTICAL ) {
+                  defaultPorts = horizontalPorts;
+                  redeclareGraphModels();
+                }
+                $shared.orientation = $shared.flow.orientation;
 
                 if (res[0].data.flow_json) {
 
@@ -2121,7 +2244,7 @@ angular
       }
 
       function saveNewFunction($event) {
-        var url = createUrl("/function/saveFunction");
+        var url = createUrl("/function");
         return $q(function (resolve, reject) {
           if ($scope.params['title']) {
             resolve();
@@ -2143,7 +2266,7 @@ angular
       }
       $scope.save = function ($event) {
         console.log("save called..");
-        var url = createUrl("/function/saveFunction");
+        var url = createUrl("/function");
         return $q(function (resolve, reject) {
           if (!$scope.params['title']) {
             saveNewFunction().then(function () {
@@ -2153,7 +2276,7 @@ angular
           }
           var data = angular.copy($scope.params);
           data['code'] = editor.getValue();
-          var url = createUrl("/function/updateFunction/" + $scope.params['public_id']);
+          var url = createUrl("/function/" + $scope.params['public_id']);
           console.log("update function data ", data);
           $http.post(url, data).then(function (res) {
             var reply = res.data;

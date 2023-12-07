@@ -129,6 +129,7 @@ margin-right: auto;
   overflow-y: scroll;
   height: 100%;
   min-height: 460px;
+  height: calc(100vh - 245px);
 }
 .widget-scroller {
   overflow-y: scroll;

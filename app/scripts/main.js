@@ -1,3 +1,6 @@
+var ORIENTATION_VERTICAL = "vertical";
+var ORIENTATION_HORIZONTAL = "horizontal";
+
 
 function Model(cell, name, links, data) {
   console.log("creating new model ", arguments);
@@ -90,12 +93,13 @@ function addCellArgs(model) {
 var href1 = document.location.href.includes("http://localhost");
 var href2 = document.location.href.includes("ngrok.io");
 var isLocal = false;
+var version = "v1";
 if (href1 || href2) {
-  var baseUrl = "https://lineblocs.com/api";
+  var baseUrl = "https://" + DEPLOYMENT_DOMAIN + "/api/" + version
   isLocal = true;
 } else {
   //var baseUrl = "/api";
-  var baseUrl = "https://lineblocs.com/api";
+  var baseUrl = "https://" + DEPLOYMENT_DOMAIN + "/api/" + version;
 }
 
 function createUrl(path) {
@@ -204,6 +208,7 @@ angular
     factory.models = [];
     factory.trash = [];
     factory.selectorContext = 'AVAILABLE';
+    factory.orientation = ORIENTATION_VERTICAL;
     factory.voices = {
       "da-DK": [{
         "lang": "da-DK",
@@ -687,7 +692,7 @@ angular
 
     }
     factory.loadExtensions = function () {
-      var url = createUrl("/extension/listExtensions");
+      var url = createUrl("/extension/list");
       return $q(function (resolve, reject) {
         $http.get(url).then(function (res) {
           console.log("extensions are ", res.data);
@@ -699,7 +704,7 @@ angular
       });
     }
     factory.loadFunctions = function () {
-      var url = createUrl("/function/listFunctions");
+      var url = createUrl("/function/list");
       return $q(function (resolve, reject) {
         $http.get(url).then(function (res) {
           console.log("functions are ", res.data);
@@ -712,7 +717,7 @@ angular
       });
     }
     factory.loadWidgetTemplates = function () {
-      var url = createUrl("/widgetTemplate/listWidgets");
+      var url = createUrl("/widgetTemplate/list");
       return $q(function (resolve, reject) {
         $http.get(url).then(function (res) {
           console.log("widgets are ", res.data);
@@ -808,7 +813,7 @@ angular
       };
       $scope.save = function() {
         var data = angular.copy($scope.params);
-        var url = createUrl("/widgetTemplate/saveWidget");
+        var url = createUrl("/widgetTemplate");
         var modelJSON = model.toJSON();
         modelJSON.links = model.links.map(function (link) {
           return link.toJSON();
@@ -1402,6 +1407,111 @@ angular
       panAndZoom.resetPan();
     }
 
+    function switchToHorizontal() {
+      var graph = diagram['graph'];
+      var cells = graph.getCells();
+      angular.forEach(cells, function (cell) {
+        console.log("updating cell ", cell);
+
+        cell.attr({
+          '.inPorts': {
+          }
+        });
+      });
+    }
+    function switchToVertical() {
+
+    }
+    function recreateLinks(links) {
+      var graph = diagram['graph'];
+      angular.forEach( links, function( data ) {
+        console.log("recreating link ", data );
+        var link = new joint.shapes.devs.FlowLink({
+          source: {
+            id: data.source.id,
+            port: data.source.port,
+          },
+          target: {
+            id: data.target.id,
+            port: data.target.port
+          },
+          attrs: {
+            ".connection": {
+              "stroke-width": 2
+            }
+          },
+          connector: GRAPH_CONNECTOR,
+          router: GRAPH_ROUTER,
+        });
+      // Assume graph has the srcModel and dstModel with in and out ports.
+      graph.addCell(link)
+      });
+    }
+    $scope.changeOrientation = function () {
+      console.log("changing orientation");
+      var graph = diagram['graph'];
+      var data = graph.toJSON();
+      if ( $shared.orientation === ORIENTATION_VERTICAL ) {
+        $shared.orientation = ORIENTATION_HORIZONTAL;
+        defaultPorts = horizontalPorts;
+        redeclareGraphModels();
+        graph.clear();
+        var newCells = [];
+        var links = [];
+        angular.forEach( data['cells'], function( cell ) {
+          if ( !cell ) {
+            return;
+          }
+          if ( cell.type === 'devs.FlowLink' ) {
+            links.push( cell );
+            return;
+          }
+          cell['ports']['groups']['in']['position'] = 'left';
+          cell['ports']['groups']['in']['label']['position']['args']['x'] = -20;
+          //cell['ports']['groups']['in']['label']['position']['args']['y'] = 0;
+          cell['ports']['groups']['in']['attrs']['.port-body']['ref-x'] = 0;
+          cell['ports']['groups']['out']['position'] = 'right';
+          newCells.push( cell );
+        } );
+        var newData = angular.copy( data );
+        newData.cells = newCells;
+        graph.fromJSON( newData );
+        recreateLinks( links );
+      } else if ( $shared.orientation === ORIENTATION_HORIZONTAL ) {
+        $shared.orientation = ORIENTATION_VERTICAL;
+        defaultPorts = verticalPorts;
+        redeclareGraphModels();
+        graph.clear();
+        var newCells = [];
+        var links = [];
+        angular.forEach( data['cells'], function( cell ) {
+          if ( !cell ) {
+            return;
+          }
+          if ( cell.type === 'devs.FlowLink' ) {
+            links.push( cell );
+            return;
+          }
+          cell['ports']['groups']['in']['position'] = 'top';
+          cell['ports']['groups']['in']['label']['position']['args']['x'] = -140;
+          //cell['ports']['groups']['in']['label']['position']['args']['y'] = 0;
+          cell['ports']['groups']['in']['attrs']['.port-body']['ref-x'] = -150;
+          cell['ports']['groups']['out']['position'] = 'bottom';
+          newCells.push( cell );
+        } );
+        var newData = angular.copy( data );
+        newData.cells = newCells;
+        graph.fromJSON( newData );
+        recreateLinks( links );
+      }
+    }
+    $scope.getOrientationIcon = function() {
+      if ( $shared.orientation === ORIENTATION_VERTICAL ) {
+        return "img/icons/change_orientation_horizontal.svg";
+      } else if ( $shared.orientation === ORIENTATION_HORIZONTAL ) {
+        return "img/icons/change_orientation_vertical.svg";
+      }
+    }
     function changeCell(item) {
       var graph = diagram['graph'];
       var cells = graph.getCells();
@@ -1456,9 +1566,10 @@ angular
       if (flowId) {
         var serverData = {};
         serverData['name'] = $shared.flow.name;
+        serverData['orientation'] = $shared.orientation;
         serverData['flow_json'] = JSON.stringify(params);
         $shared.isCreateLoading = true;
-        $http.post(createUrl("/flow/updateFlow/" + flowId), serverData).then(function () {
+        $http.post(createUrl("/flow/" + flowId), serverData).then(function () {
           $shared.isCreateLoading = false;
           showSaved(ev);
           stateActions.lastSave = Date.now();
@@ -1501,7 +1612,7 @@ angular
         data['template_id'] = $scope.selectedTemplate.id;
       }
       $shared.isCreateLoading = true;
-      $http.post(createUrl("/flow/saveFlow"), data).then(function (res) {
+      $http.post(createUrl("/flow"), data).then(function (res) {
         $shared.isCreateLoading = false;
         console.log("response arguments ", arguments);
         console.log("response headers ", res.headers('X-Flow-ID'));
@@ -1618,6 +1729,11 @@ angular
     $scope.playbackTypes = [
       'Say',
       'Play'
+    ];
+    $scope.audioStreamDirections = [
+      'in',
+      'out',
+      'both'
     ];
     $scope.finishRecordTypes = [
       'Keypress',
@@ -1840,7 +1956,7 @@ angular
       if ($scope.selectedTemplate) {
         data['template_id'] = $scope.selectedTemplate.id;
       }
-      $http.post(createUrl("/flow/updateFlow/" + $shared.flow.public_id), data).then(function (res) {
+      $http.post(createUrl("/flow/" + $shared.flow.public_id), data).then(function (res) {
         $shared.flow.started = true;
         load();
       });
@@ -1884,6 +2000,9 @@ angular
       cell.addPort(port);
     }
 
+    function renderGraph(flow, templates) {
+    }
+
     function load() {
 
       var search = $location.search();
@@ -1898,7 +2017,7 @@ angular
         "started": true
       };
       $shared.isLoading = true;
-      var url = createUrl("/extension/listExtensions");
+      var url = createUrl("/extension/list");
       $q.all([
         $scope.updateFunctions(),
         $shared.loadExtensions(),
@@ -1912,7 +2031,7 @@ angular
           var graph;
           if (search.flowId) {
             $q.all([
-              $http.get(createUrl("/flow/flowData/" + search.flowId)),
+              $http.get(createUrl("/flow/" + search.flowId)),
               $http.get(createUrl("/flow/listTemplates"))
             ]).then(function (res) {
               console.log("flow templates are ", res[1].data);
@@ -1929,6 +2048,11 @@ angular
                 }
                 initializeDiagram();
                 graph = diagram['graph'];
+                if ( $shared.flow.orientation !== ORIENTATION_VERTICAL ) {
+                  defaultPorts = horizontalPorts;
+                  redeclareGraphModels();
+                }
+                $shared.orientation = $shared.flow.orientation;
 
                 if (res[0].data.flow_json) {
 
@@ -2120,7 +2244,7 @@ angular
       }
 
       function saveNewFunction($event) {
-        var url = createUrl("/function/saveFunction");
+        var url = createUrl("/function");
         return $q(function (resolve, reject) {
           if ($scope.params['title']) {
             resolve();
@@ -2142,7 +2266,7 @@ angular
       }
       $scope.save = function ($event) {
         console.log("save called..");
-        var url = createUrl("/function/saveFunction");
+        var url = createUrl("/function");
         return $q(function (resolve, reject) {
           if (!$scope.params['title']) {
             saveNewFunction().then(function () {
@@ -2152,7 +2276,7 @@ angular
           }
           var data = angular.copy($scope.params);
           data['code'] = editor.getValue();
-          var url = createUrl("/function/updateFunction/" + $scope.params['public_id']);
+          var url = createUrl("/function/" + $scope.params['public_id']);
           console.log("update function data ", data);
           $http.post(url, data).then(function (res) {
             var reply = res.data;
@@ -2523,6 +2647,14 @@ var ICON_SEND = `
         <path d="M7.17831,13.85647v4.19665h4.1786V18.034h.00955V13.85647ZM21.66063,7.91031a10.50463,10.50463,0,0,0-6.85-6.87355A10.89958,10.89958,0,0,0,.5,11.37083H2.02633c.25761-3.07822,2.2994-4.57906,5.257-5.25788A6.59572,6.59572,0,0,1,12.53992,4.8224V2.81487a.88447.88447,0,0,1,1.45016-.64044l6.44935,5.29605a.81645.81645,0,0,1,0,1.27141l-2.46128,2.02679a6.66184,6.66184,0,0,1-6.61169,7.2653v.01914h-.00955V22.25A10.89373,10.89373,0,0,0,21.66063,7.91031ZM3.02812,15.34774H1.26328v2.70538H3.95352V16.52369A8.11857,8.11857,0,0,1,3.02812,15.34774Zm.9254,2.70538v3.22176H7.17831V18.05312Z" style="fill: none;stroke: #36d576;stroke-miterlimit: 10"/>
         <path d="M20.43943,8.74189l-2.46128,2.02679-3.98807,3.26937a.88144.88144,0,0,1-1.45016-.63086V10.33842c-5.68607.07643-8.12848,1.4244-6.46822,6.48157.18121.55442-.52477.99414-1.03044.64054a7.00406,7.00406,0,0,1-1.08774-.93684,8.11857,8.11857,0,0,1-.9254-1.17595,6.10649,6.10649,0,0,1-1.03976-3.25992,5.8499,5.8499,0,0,1,.038-.717c.25761-3.07822,2.2994-4.57906,5.257-5.25788a25.12483,25.12483,0,0,1,5.25656-.51615V2.81487a.88447.88447,0,0,1,1.45016-.64044l6.44935,5.29605A.81645.81645,0,0,1,20.43943,8.74189Z" style="fill: none;stroke: #36d576;stroke-miterlimit: 10"/>
       </g>
+    </g>
+  </g>
+`;
+
+var ICON_STREAMAUDIO = `
+  <g id="Layer_2" data-name="Layer 2" transform="matrix(1 0 0 1 80 18)" class="node_icon" >
+    <g id="Layer_2-2" data-name="Layer 2">
+      <path d="M15.75176.5H1.51678A1.01815,1.01815,0,0,0,.5,1.51953v.67969A1.01815,1.01815,0,0,0,1.51678,3.21875c0,3.86424,2.16135,7.12542,5.1196,8.15625-2.95825,1.03083-5.1196,4.292-5.1196,8.15625A1.01815,1.01815,0,0,0,.5,20.55078v.67969A1.01815,1.01815,0,0,0,1.51678,22.25h14.235a1.01815,1.01815,0,0,0,1.01678-1.01953v-.67969a1.01815,1.01815,0,0,0-1.01678-1.01953c0-3.86424-2.16134-7.12542-5.11959-8.15625,2.95825-1.03083,5.11959-4.292,5.11959-8.15625a1.01815,1.01815,0,0,0,1.01678-1.01953V1.51953A1.01815,1.01815,0,0,0,15.75176.5ZM12.571,16.8125H4.69762c.72272-1.988,2.2071-3.39844,3.93665-3.39844S11.84824,14.82424,12.571,16.8125Zm.0008-10.875H4.69754a7.98908,7.98908,0,0,1-.46933-2.71875h8.81213A7.9901,7.9901,0,0,1,12.57181,5.9375Z" style="fill: none;stroke: #36d576;stroke-miterlimit: 10"/>
     </g>
   </g>
 `;
@@ -3221,6 +3353,7 @@ var stencilLibraryGraph = new joint.dia.Graph,
        joint.shapes.devs.RecordVoicemailPicker,
        joint.shapes.devs.PlaybackPicker,
        joint.shapes.devs.MacroPicker,
+       joint.shapes.devs.StreamAudioPicker,
        joint.shapes.devs.SetVariablesPicker,
        joint.shapes.devs.ConferencePicker,
        joint.shapes.devs.SendDigitsPicker,
@@ -3645,8 +3778,7 @@ function createPickerMarkup(icon) {
 		<g class="scalable shadow base-body">
 			<path 
 					class="body" 
-					d="M169.7,100.5H3.5c-1.7,0-3-1.3-3-3v-94
-					c0-1.7,1.3-3,3-3h166.2c1.7,0,3,1.3,3,3v94C172.7,99.2,171.3,100.5,169.7,100.5z"/> 
+					d="M 319 14 L 319.051 91.9 A 10 10 0 0 1 310.016 101.98 L 13.022 101.894 A 10 10 0 0 1 3.088 92.022 L 3.035 12.046 A 10 10 0 0 1 13.151 2.082 L 308.941 2.007 A 10 10 0 0 1 318.922 12.31 Z"/> 
 		
 			<!-- <line 
 					id="separatу-line_16_" 
@@ -3935,6 +4067,24 @@ joint.shapes.devs.WaitPicker = joint.shapes.devs.Model.extend({
 });
 
 joint.shapes.devs.WaitPickerView = joint.shapes.devs.ModelView;
+
+joint.shapes.devs.StreamAudioPicker = joint.shapes.devs.Model.extend({
+
+  markup: createPickerMarkup(ICON_WAIT),
+
+  defaults: joint.util.deepSupplement({
+    name: 'StreamAudio',
+    type: 'devs.StreamAudioPicker',
+    creates: 'StreamAudioModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("Hangup", "hangup a channel"),
+  inPorts: ['In'],
+  outPorts: ['Done'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.StreamAudioPickerView = joint.shapes.devs.ModelView;
 var widgetDimens = {
   // width: 226,
   // height:108 
@@ -4195,7 +4345,7 @@ function createLaunchAttrs(name, text) {
 }
 
 // In & OUT port
-var defaultPorts = {
+var verticalPorts = {
       groups: {
 
           'in': {
@@ -4258,6 +4408,72 @@ var defaultPorts = {
           // }
       }
 };
+// In & OUT port
+var horizontalPorts = {
+      groups: {
+
+          'in': {
+              position: 'left',  //left top right bottom
+
+                label: {
+                    // label layout definition:
+                    position: {
+                        name: 'manual', args: {
+                            y: -10,
+                            x: -140,
+                            attrs: { '.': { 'text-anchor': 'middle' } }
+                        }
+                      }
+                  
+              },
+              attrs: {
+                      '.port-label': {
+                          'ref-x': -140,
+                          fill: '#385374'
+                      },
+                      '.port-body': {
+                          r: 5,
+                          'ref-x':0,
+                          'ref-y':0,
+                          'stroke-width': 2,
+                          // stroke: '#385374',
+                          stroke: '#36D576',
+                          fill: '#36D576',
+                          padding: 20,
+                          transform: 'matrix(1 0 0 1 0 2)'
+                      }
+                  }
+          },
+
+          'out': {
+              position: 'right' , //right side - center vert
+              label: {
+                  position: 'outside'  // inside/outside  label position
+              },
+              attrs: {
+                      '.port-label': {
+                          fill: '#385374'
+                      },
+                      '.port-body': {
+                        r: 5,
+                        'ref-x': 0,
+                        'ref-y': 0,
+                        'stroke-width': 5,
+                        stroke: '#385374',
+                        fill: "#000878",
+                        padding: 2,
+                        transform: 'matrix(1 0 0 1 0 2)'
+                      }
+                }
+          },
+
+          // attrs: {
+          //   '.label': { text: '_HELLO_', 'ref-x': .5, 'ref-y': .2 },
+          // }
+      }
+};
+var defaultPorts = verticalPorts;
+//var defaultPorts = horizontalPorts;
 
 /*
 // DEF PORT SETTINGS =================================
@@ -4589,6 +4805,8 @@ var a = new joint.shapes.devs.Model({
 
 
 
+function redeclareGraphModels() { 
+  // declare any model types with relevant attributes
 // Launch NODE  
 joint.shapes.devs.LaunchModel = joint.shapes.devs.Model.extend({
 
@@ -4817,6 +5035,22 @@ joint.shapes.devs.HangupModel = joint.shapes.devs.Model.extend({
 
 joint.shapes.devs.HangupView = joint.shapes.devs.ModelView;
 
+// StreamAudio NODE
+joint.shapes.devs.StreamAudioModel = joint.shapes.devs.Model.extend({
+
+  markup: createMarkup(ICON_STREAMAUDIO),
+  defaults: joint.util.deepSupplement({
+    name: 'StreamAudio',
+    type: 'devs.StreamAudioModel',
+    size: widgetDimens,
+    attrs: createDefaultAttrs("StreamAudio", "Send real time audio to Websocket"),
+  inPorts: ['In'],
+  outPorts: ['Done'],
+  ports: defaultPorts
+  }, joint.shapes.devs.Model.prototype.defaults)
+});
+
+joint.shapes.devs.StreamAudioView = joint.shapes.devs.ModelView;
 
 // Flow STYLE
 joint.shapes.devs.Link.define('devs.FlowLink', {
@@ -4831,6 +5065,11 @@ joint.shapes.devs.Link.define('devs.FlowLink', {
     // inherit joint.shapes.standard.Link.markup
 }, {
 });
+
+}
+
+redeclareGraphModels();
+
 function createModelFromTemplate(template) {
   var title = template.title;
 
