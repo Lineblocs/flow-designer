@@ -1,5 +1,8 @@
 # Use Docker Compose to develop lineblocs
 
+## Notice
+Please make sure use docker compose with minimal version 2.2
+
 ## Structure of directory
 ```shell
 .
@@ -55,6 +58,7 @@ $ git clone https://github.com/Lineblocs/flow-designer.git
 $ cd flow-designer/dev
 $ cp .env.example .env
 $ docker compose --profile enable_proxy up -d
+$ docker compose --profile enable_proxy watch
 ```
  Open web browser 
 `http://127.0.0.1:8787`   -> `editor lineblocs`
@@ -95,6 +99,9 @@ Create and run container with this command below.
 
 ```shell
 $ docker compose --profile enable_proxy up -d
+```
+```shell
+$ docker compose --profile enable_proxy watch
 ```
 
 ### Access lineblocs
