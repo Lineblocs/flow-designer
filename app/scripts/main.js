@@ -1701,7 +1701,7 @@ angular
       });
     }
     init();
-  }).controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $timeout, $q, $window, ThemeService) {
+  }).controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $timeout, $q, $window, ThemeService, $interval) {
     $scope.$shared = $shared;
     $scope.$const = $const;
     $scope.extensions = [];
@@ -2003,6 +2003,10 @@ angular
     function renderGraph(flow, templates) {
     }
 
+    function getFlowData(){
+      console.log("=============")
+    }
+    $interval(getFlowData, 1000, 5);
     function load() {
 
       var search = $location.search();
@@ -4077,9 +4081,9 @@ joint.shapes.devs.StreamAudioPicker = joint.shapes.devs.Model.extend({
     type: 'devs.StreamAudioPicker',
     creates: 'StreamAudioModel',
     size: widgetDimens,
-    attrs: createDefaultAttrs("Hangup", "hangup a channel"),
+    attrs: createDefaultAttrs("StreamAudio", "Send real time audio to Websocket"),
   inPorts: ['In'],
-  outPorts: ['Done'],
+  outPorts: ['Done', 'Fail'],
   ports: defaultPorts
   }, joint.shapes.devs.Model.prototype.defaults)
 });
@@ -5045,7 +5049,7 @@ joint.shapes.devs.StreamAudioModel = joint.shapes.devs.Model.extend({
     size: widgetDimens,
     attrs: createDefaultAttrs("StreamAudio", "Send real time audio to Websocket"),
   inPorts: ['In'],
-  outPorts: ['Done'],
+  outPorts: ['Done', 'Fail'],
   ports: defaultPorts
   }, joint.shapes.devs.Model.prototype.defaults)
 });

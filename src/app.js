@@ -1701,7 +1701,7 @@ angular
       });
     }
     init();
-  }).controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $timeout, $q, $window, ThemeService) {
+  }).controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $timeout, $q, $window, ThemeService, $interval) {
     $scope.$shared = $shared;
     $scope.$const = $const;
     $scope.extensions = [];
@@ -2003,6 +2003,10 @@ angular
     function renderGraph(flow, templates) {
     }
 
+    function getFlowData(){
+      console.log("=============")
+    }
+    $interval(getFlowData, 1000, 5);
     function load() {
 
       var search = $location.search();
