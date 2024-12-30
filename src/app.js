@@ -2005,7 +2005,6 @@ angular
     }
 
     function getFlowData(){
-      console.log("=============");
       var search = $location.search();
       $http.get(createUrl("/flow/" + search.flowId)).then(function (res) {
         if(res.data.flow_json){
@@ -2052,8 +2051,7 @@ angular
     }
     
     function load() {
-      $interval(getFlowData, 30000);
-      debugger
+      
       var search = $location.search();
       if (search.mode === 'dark') {
         ThemeService.addStyle('styles.dark.css');
@@ -2077,7 +2075,7 @@ angular
         $shared.extensions = extensions;
         $timeout(function () {
           window['angularScope'] = angular.element(document.getElementById('scopeCtrl')).scope();
-          var graph;
+          // var graph;
           if (search.flowId) {
             $q.all([
               $http.get(createUrl("/flow/" + search.flowId)),
@@ -2104,7 +2102,6 @@ angular
                 $shared.orientation = $shared.flow.orientation;
 
                 if (res[0].data.flow_json) {
-
                   var data = JSON.parse(res[0].data.flow_json);
                   console.log("loading graph data ", data);
                   graph.fromJSON(data.graph);
@@ -2143,6 +2140,7 @@ angular
                     }
                   }
                   $shared.cellModel = null;
+                  
                 } else {
                   var launch = new joint.shapes.devs.LaunchModel({
                     position: {
@@ -2169,6 +2167,7 @@ angular
             });
           }
         }, 0);
+        $interval(getFlowData, 30000);
       });
     }
     $scope.load = load;
