@@ -1704,6 +1704,7 @@ angular
   }).controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $timeout, $q, $window, ThemeService, $interval) {
     $scope.$shared = $shared;
     $scope.$const = $const;
+    var graph;
     $scope.extensions = [];
 
     $scope.conditions = [
@@ -2004,11 +2005,55 @@ angular
     }
 
     function getFlowData(){
-      console.log("=============")
+      console.log("=============");
+      var search = $location.search();
+      $http.get(createUrl("/flow/" + search.flowId)).then(function (res) {
+        if(res.data.flow_json){
+          var data = JSON.parse(res.data.flow_json);
+          console.log("loading graph data ", data);
+          graph.fromJSON(data.graph);
+          var cells = graph.getCells();
+          for (var index in cells) {
+            var cell = cells[index];
+            console.log("checking if cell needs dynamic ports ", cell);
+            if (cell.attributes.type === 'devs.SwitchModel') {
+              for (var index1 in data.models) {
+                var model = data.models[index1];
+                if (model.id === cell.id) {
+                  for (var index2 in model.links) {
+                    var link = model.links[index2];
+                    createDynamicPort(cell, link);
+                  }
+                }
+              }
+            }
+          }
+          for (var index in data.models) {
+            var model = data.models[index];
+            for (var index1 in cells) {
+              var cell = cells[index1];
+              if (model.id === cell.id) {
+                var links = [];
+                for (var index2 in model.links) {
+                  var link = model.links[index2];
+                  var obj1 = new Link(null, null, link.label, link.type, link.condition, link.value, link.cell, []);
+                  links.push(obj1);
+                }
+                var obj2 = new Model(cell, model.name, links, model.data);
+                addCellArgs(obj2);
+                console.log("pushing model ", obj2);
+                $shared.models.push(obj2);
+              }
+            }
+          }
+          $shared.cellModel = null;
+        }
+      });
     }
-    $interval(getFlowData, 1000, 5);
+    
     function load() {
-
+      $interval(getFlowData, 30000);
+      debugger
       var search = $location.search();
       if (search.mode === 'dark') {
         ThemeService.addStyle('styles.dark.css');
