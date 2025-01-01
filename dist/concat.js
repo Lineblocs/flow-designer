@@ -101629,8 +101629,8 @@ angular
               }, 0);
             });
           }
+          $interval(getFlowData, 30000);
         }, 0);
-        $interval(getFlowData, 30000);
       });
     }
     $scope.load = load;
