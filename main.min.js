@@ -96701,6 +96701,7 @@ var DEFAULT_LINK = new joint.dia.Link({
 function getAngularScope() {
   return window['angularScope'];
 }
+
 function getSVGEl(joint)
 {
   return $("g[model-id='" + joint.id + "']");
@@ -96998,6 +96999,11 @@ $("#canvas")
 
       out(m);
   });
+graph.on('change add remove', function (cell) {
+    console.log('A cell was changed:', cell);
+    // angular.element(document.getElementById('callAutoSave')).scope().saveChanges('saveChanges');
+    window.localStorage.setItem('LASTSAVE', new Date());
+});
   paper.on('cell:pointerdblclick',
     function(cellView, evt, x, y) { 
         getAngularScope().loadWidget(cellView, true);
@@ -99516,7 +99522,7 @@ function checkExpires(expiresIn) {
 
 // NODE - Label pole
 function changeLabel(cell, text, refY) {
-  console.log("change label called ", arguments);
+  console.log("change label called", arguments);
   refY = refY || labelRefY;
   cell.attr('.label', {
     text: text,
@@ -99571,6 +99577,7 @@ function createUrl(path) {
 
 angular
   .module('basicUsageSidenavDemo', ['ngMaterial', 'ngRoute'])
+
   .service('JWTHttpInterceptor', function () {
     return {
       // optional method
@@ -99600,7 +99607,8 @@ angular
         return config;
       }
     };
-  }).service('ThemeService', function($window) {
+  })
+  .service('ThemeService', function($window) {
     this.setTheme = function(theme) {
       $window.localStorage.setItem('THEME', theme);
     };
@@ -99627,7 +99635,8 @@ angular
         document.head.removeChild(links[i]);
       }
     }
-  })  
+  }) 
+
   .config(function ($routeProvider, $locationProvider, $httpProvider) {
     $routeProvider.when("/create", {
       templateUrl: "templates/create.html",
@@ -99652,12 +99661,14 @@ angular
     $locationProvider.html5Mode(true);
     $httpProvider.interceptors.push('JWTHttpInterceptor');
   })
+
   .run(function () {
     angular.element(document).ready(function () {
       angular.element(".loading").removeClass("dont-show");
       angular.element(".isnt-loading").removeClass("dont-show");
     });
   })
+
   .factory("$const", function () {
     var factory = this;
     factory.LINK_CONDITION_MATCHES = "LINK_CONDITION_MATCHES";
@@ -100826,6 +100837,7 @@ angular
 
     return factory;
   })
+
   .controller('RootCtrl', function ($scope, $timeout, $mdSidenav, $log, $mdDialog, $shared, $http, $location, $const, $mdSidenav) {
     $scope.$shared = $shared;
   })
@@ -101164,7 +101176,8 @@ angular
       });
     }
     init();
-  }).controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $timeout, $q, $window, ThemeService, $interval) {
+  })
+  .controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $timeout, $q, $window, ThemeService, $interval) {
     $scope.$shared = $shared;
     $scope.$const = $const;
     var graph;
@@ -101467,7 +101480,42 @@ angular
     function renderGraph(flow, templates) {
     }
 
-    function getFlowData(){
+    function save(){
+      var graph = diagram['graph'];
+      var json = graph.toJSON();
+      var params = {};
+      params['graph'] = json;
+      var models = [];
+      for (var index in $shared.models) {
+        var model = $shared.models[index];
+        var data = model.toJSON();
+        data.links = model.links.map(function (link) {
+          return link.toJSON();
+        });
+        models.push(data);
+      }
+      params['models'] = models;
+      console.log("output JSON is ", params);
+      var query = $location.search();
+      var flowId = query.flowId;
+      if (flowId) {
+        var serverData = {};
+        serverData['name'] = $shared.flow.name;
+        serverData['orientation'] = $shared.orientation;
+        serverData['flow_json'] = JSON.stringify(params);
+        $shared.isCreateLoading = true;
+        $http.post(createUrl("/flow/" + flowId), serverData).then(function () {
+          $shared.isCreateLoading = false;
+          stateActions.lastSave = Date.now();
+          fetchFlowData();
+        }, function (err) {
+          $shared.isCreateLoading = false;
+          alert("An error occured", err);
+        });
+      }
+    }
+
+    function fetchFlowData(){
       var search = $location.search();
       $http.get(createUrl("/flow/" + search.flowId)).then(function (res) {
         if(res.data.flow_json){
@@ -101512,6 +101560,47 @@ angular
         }
       });
     }
+
+    
+    function getFlowData(){
+      var dateTime = $window.localStorage.getItem('LASTSAVE') || 'default';
+      const date1 = new Date(dateTime);
+      const date2 = new Date();
+      const diffTime = Math.abs(date2 - date1);
+      if(diffTime <= 30000){
+        save();
+        // returnwait.then(function(result){
+          
+        // })
+      }else{
+        fetchFlowData();
+      }
+    }
+
+    $scope.getAccountSetting = function(){
+      $http.get(createUrl("/self")).then(function (res) {
+        if(res){
+          $scope.isChecked = res.auto_save_flows;
+          if(res.auto_save_flows === true){
+            $interval(getFlowData, 30000);
+          }
+        }
+      }, function (err) {
+        console.error(err);
+        alert("Internal Error occured..");
+      });
+    }
+
+    $scope.changeautosave = function(event){
+      $http.post(createUrl("/updateSelf"), {"auto_save_flows": event}).then(function (res) {
+        if(res){
+          getAccountSetting();
+        }
+      }, function (err) {
+        console.error(err);
+        alert("Internal Error occured..");
+      });
+    }
     
     function load() {
       
@@ -101542,10 +101631,15 @@ angular
           if (search.flowId) {
             $q.all([
               $http.get(createUrl("/flow/" + search.flowId)),
-              $http.get(createUrl("/flow/listTemplates"))
+              $http.get(createUrl("/flow/listTemplates")),
+              $http.get(createUrl("/self"))
             ]).then(function (res) {
               console.log("flow templates are ", res[1].data);
               $scope.templates = res[1].data.data;
+              $scope.isChecked = res[2].data.auto_save_flows;
+              if($scope.isChecked === true){
+                $interval(getFlowData, 30000);
+              }
               $shared.flow = {
                 "started": true
               };
@@ -101629,14 +101723,15 @@ angular
               }, 0);
             });
           }
-          $interval(getFlowData, 30000);
+          // $interval(getFlowData, 30000);
         }, 0);
       });
     }
     $scope.load = load;
     load();
     //$mdSidenav('rightWidgets').open();
-  }).controller('AdjustCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $timeout, $q, $mdDialog) {
+  })
+  .controller('AdjustCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $timeout, $q, $mdDialog) {
     $scope.$shared = $shared;
     $scope.$const = $const;
     var search = $location.search();
@@ -101729,7 +101824,8 @@ angular
       });
     }
 
-  }).controller('PaperCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $mdDialog) {
+  })
+  .controller('PaperCtrl', function ($scope, $timeout, $mdSidenav, $log, $const, $shared, $location, $http, $mdDialog) {
     $scope.$shared = $shared;
 
     function DialogController($scope, $timeout, $q, $http, macroFunction, onSave, onCancel) {

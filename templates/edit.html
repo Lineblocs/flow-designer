@@ -105,7 +105,13 @@
                     </md-tooltip>
             </md-icon>
             </md-button>
-            <md-button  ng-click="saveChanges($event)" aria-label="Save" class="md-raised md-primary">
+            <div class="chekboxdv">
+              <md-checkbox class="ckbox" ng-model="isChecked" aria-label="Auto Save" ng-change="changeautosave(isChecked)">
+                Auto Save
+              </md-checkbox>
+            </div>
+            
+            <md-button id="callAutoSave"  ng-click="saveChanges($event)" aria-label="Save" class="md-raised md-primary">
                 Save
             </md-button>
         </div>

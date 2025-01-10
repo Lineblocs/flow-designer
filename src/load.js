@@ -23,6 +23,7 @@ var DEFAULT_LINK = new joint.dia.Link({
 function getAngularScope() {
   return window['angularScope'];
 }
+
 function getSVGEl(joint)
 {
   return $("g[model-id='" + joint.id + "']");
@@ -320,6 +321,11 @@ $("#canvas")
 
       out(m);
   });
+graph.on('change add remove', function (cell) {
+    console.log('A cell was changed:', cell);
+    // angular.element(document.getElementById('callAutoSave')).scope().saveChanges('saveChanges');
+    window.localStorage.setItem('LASTSAVE', new Date());
+});
   paper.on('cell:pointerdblclick',
     function(cellView, evt, x, y) { 
         getAngularScope().loadWidget(cellView, true);
