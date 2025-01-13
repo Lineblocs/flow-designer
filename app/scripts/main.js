@@ -2034,13 +2034,13 @@ angular
         serverData['name'] = $shared.flow.name;
         serverData['orientation'] = $shared.orientation;
         serverData['flow_json'] = JSON.stringify(params);
-        $shared.isCreateLoading = true;
+        // $shared.isCreateLoading = true;
         $http.post(createUrl("/flow/" + flowId), serverData).then(function () {
-          $shared.isCreateLoading = false;
+          // $shared.isCreateLoading = false;
           stateActions.lastSave = Date.now();
           fetchFlowData();
         }, function (err) {
-          $shared.isCreateLoading = false;
+          // $shared.isCreateLoading = false;
           alert("An error occured", err);
         });
       }
@@ -2169,6 +2169,7 @@ angular
               $scope.templates = res[1].data.data;
               $scope.isChecked = res[2].data.auto_save_flows;
               if($scope.isChecked === true){
+                $window.localStorage.clear('LASTSAVE');
                 $interval(getFlowData, 30000);
               }
               $shared.flow = {
