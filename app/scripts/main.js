@@ -1712,6 +1712,7 @@ angular
     $scope.$shared = $shared;
     $scope.$const = $const;
     var graph;
+    var previousSave;
     $scope.extensions = [];
 
     $scope.conditions = [
@@ -2011,7 +2012,7 @@ angular
     function renderGraph(flow, templates) {
     }
 
-    function save(){
+    function autoSave(){
       var graph = diagram['graph'];
       var json = graph.toJSON();
       var params = {};
@@ -2038,15 +2039,28 @@ angular
         $http.post(createUrl("/flow/" + flowId), serverData).then(function () {
           // $shared.isCreateLoading = false;
           stateActions.lastSave = Date.now();
-          fetchFlowData();
+          getFlowData();
         }, function (err) {
           // $shared.isCreateLoading = false;
           alert("An error occured", err);
         });
       }
     }
+    
+    function getFlowData(){
+      // var dateTime = $window.localStorage.getItem('LASTSAVE') || 'default';
+      // const date1 = new Date(dateTime);
+      // const date2 = new Date();
+      // const diffTime = Math.abs(date2 - date1);
+      // if(diffTime <= 30000){
+      //   save();
+      //   // returnwait.then(function(result){
+          
+      //   // })
+      // }else{
+      //   fetchFlowData();
+      // }
 
-    function fetchFlowData(){
       var search = $location.search();
       $http.get(createUrl("/flow/" + search.flowId)).then(function (res) {
         if(res.data.flow_json){
@@ -2092,22 +2106,6 @@ angular
       });
     }
 
-    
-    function getFlowData(){
-      var dateTime = $window.localStorage.getItem('LASTSAVE') || 'default';
-      const date1 = new Date(dateTime);
-      const date2 = new Date();
-      const diffTime = Math.abs(date2 - date1);
-      if(diffTime <= 30000){
-        save();
-        // returnwait.then(function(result){
-          
-        // })
-      }else{
-        fetchFlowData();
-      }
-    }
-
     $scope.getAccountSetting = function(){
       $http.get(createUrl("/self")).then(function (res) {
         if(res){
@@ -2118,7 +2116,6 @@ angular
         }
       }, function (err) {
         console.error(err);
-        alert("Internal Error occured..");
       });
     }
 
@@ -2129,10 +2126,13 @@ angular
         }
       }, function (err) {
         console.error(err);
-        alert("Internal Error occured..");
       });
     }
-    
+    $scope.$on('grapshChangesBroadcast', function(event, data) {
+      // setTimeout(autoSave, 10000)
+      autoSave()
+    });
+
     function load() {
       
       var search = $location.search();
@@ -2169,7 +2169,6 @@ angular
               $scope.templates = res[1].data.data;
               $scope.isChecked = res[2].data.auto_save_flows;
               if($scope.isChecked === true){
-                $window.localStorage.clear('LASTSAVE');
                 $interval(getFlowData, 30000);
               }
               $shared.flow = {
@@ -2192,6 +2191,7 @@ angular
 
                 if (res[0].data.flow_json) {
                   var data = JSON.parse(res[0].data.flow_json);
+                  previousSave = res[0].data.flow_json;
                   console.log("loading graph data ", data);
                   graph.fromJSON(data.graph);
                   var cells = graph.getCells();
@@ -3248,7 +3248,7 @@ function appendStencilLibraryModels(graph, list)
   };
   var scaleDragPosition = function() {
   var scale = V(paper.viewport).scale();
-dragStartPosition = { x: x * scale.sx, y: y * scale.sy};
+  dragStartPosition = { x: x * scale.sx, y: y * scale.sy};
   }
   var zoomOut = function() {
     panAndZoom.zoomOut();
@@ -3407,24 +3407,24 @@ $("#canvas")
 
     });
   paper.model.on('batch:stop', function () {
-            var links = paper.model.getLinks();
-            _.each(links, function (link) {
-                var source = link.get('source');
-                var target = link.get('target');
-                console.log("batch stop info ", link);
-                if ( !link.isBack ) {
-                  link.toBack();
-                  link.isBack = true;
-                }
-                if (source.id === undefined || target.id === undefined) {
-                    link.remove();
-                }
-                if (source.id === target.id) {
-                  link.remove();
-                }
-            });
-            labelAlign();
-        });
+      var links = paper.model.getLinks();
+      _.each(links, function (link) {
+          var source = link.get('source');
+          var target = link.get('target');
+          console.log("batch stop info ", link);
+          if ( !link.isBack ) {
+            link.toBack();
+            link.isBack = true;
+          }
+          if (source.id === undefined || target.id === undefined) {
+              link.remove();
+          }
+          if (source.id === target.id) {
+            link.remove();
+          }
+      });
+      labelAlign();
+  });
 
   graph.on('change:source change:target', function(link) {
       var sourcePort = link.get('source').port;
@@ -3441,23 +3441,30 @@ $("#canvas")
 
       out(m);
   });
-graph.on('change add remove', function (cell) {
-    console.log('A cell was changed:', cell);
-    // angular.element(document.getElementById('callAutoSave')).scope().saveChanges('saveChanges');
-    window.localStorage.setItem('LASTSAVE', new Date());
-});
+
+  graph.on('add', function (cell) {
+    var appElement = angular.element(document.getElementById('scopeCtrl'));
+    var $scope = appElement.scope();
+    $scope.$broadcast('grapshChangesBroadcast');
+  });
+  graph.on('remove', function (cell) {
+    var appElement = angular.element(document.getElementById('scopeCtrl'));
+    var $scope = appElement.scope();
+    $scope.$broadcast('grapshChangesBroadcast');
+  });
+
   paper.on('cell:pointerdblclick',
-    function(cellView, evt, x, y) { 
-        getAngularScope().loadWidget(cellView, true);
-    }
-);
-  paper.on('cell:pointerdown',
-    function(cellView, evt, x, y) { 
-        evt.stopPropagation();
-        console.log("load widget called..", arguments);
-        getAngularScope().loadWidget(cellView, false);
-    }
-);
+      function(cellView, evt, x, y) { 
+          getAngularScope().loadWidget(cellView, true);
+      }
+  );
+    paper.on('cell:pointerdown',
+      function(cellView, evt, x, y) { 
+          evt.stopPropagation();
+          console.log("load widget called..", arguments);
+          getAngularScope().loadWidget(cellView, false);
+      }
+  );
 
 
 
@@ -3775,52 +3782,52 @@ function bindHotkeys() {
     });
 }
 
-      function labelAlign(selector) { 
-        selector =  selector || "#canvas #v-2";
-        let targetVal = document.querySelectorAll(selector);
-        let textStartPosX, iconNewStartPosX
-        let iconShift = 40
+function labelAlign(selector) { 
+  selector =  selector || "#canvas #v-2";
+  let targetVal = document.querySelectorAll(selector);
+  let textStartPosX, iconNewStartPosX
+  let iconShift = 40
 
-        //console.log("█===>  in SVG targetVal");
-        //console.log(targetVal);   // NodeList
-        
-        targetVal.forEach( el => {
-          //console.log(el);  // full Grid SVG
-          let cellNodes = el.querySelectorAll(".joint-cells-layer .joint-cell") // get All Nodes in Grid 
-          let iconLabels = el.querySelectorAll(".joint-cells-layer .joint-cell  .label ")   //.node_icon   .label
-          
-          //console.log("// All Nodes in Grid");  // label Text data
-          //console.log(cellNodes);  // label Text data
+  //console.log("█===>  in SVG targetVal");
+  //console.log(targetVal);   // NodeList
+  
+  targetVal.forEach( el => {
+    //console.log(el);  // full Grid SVG
+    let cellNodes = el.querySelectorAll(".joint-cells-layer .joint-cell") // get All Nodes in Grid 
+    let iconLabels = el.querySelectorAll(".joint-cells-layer .joint-cell  .label ")   //.node_icon   .label
+    
+    //console.log("// All Nodes in Grid");  // label Text data
+    //console.log(cellNodes);  // label Text data
 
-          cellNodes.forEach( el => {
-          //console.log("// current Node");  // current Node
-          //console.log(el);  // current Node
-          
-          const textLabel = el.querySelector(".label")
-          if (!textLabel) {
-            return;
-          }
-          console.dir(textLabel);  // current Label
-          
-          let textLabelWidth= textLabel.textLength.baseVal.value;  // get Label width
-          console.log("█ textLabelWidth : ", textLabelWidth);  
-          
-          textStartPosX = textLabel.transform.baseVal[0].matrix.e  // get Label startPosX 
-          // el.setAttribute("fill", "red")  // for test
-          
-          const iconNode = el.querySelector(".node_icon")
-          if ( iconNode ) {
-            console.dir(iconNode);  // current Icon
-            
-            let sub = textStartPosX - textLabelWidth/2 - iconShift
-            iconNewStartPosX = iconNode.transform.baseVal[0].matrix.e = sub
+    cellNodes.forEach( el => {
+    //console.log("// current Node");  // current Node
+    //console.log(el);  // current Node
+    
+    const textLabel = el.querySelector(".label")
+    if (!textLabel) {
+      return;
+    }
+    console.dir(textLabel);  // current Label
+    
+    let textLabelWidth= textLabel.textLength.baseVal.value;  // get Label width
+    console.log("█ textLabelWidth : ", textLabelWidth);  
+    
+    textStartPosX = textLabel.transform.baseVal[0].matrix.e  // get Label startPosX 
+    // el.setAttribute("fill", "red")  // for test
+    
+    const iconNode = el.querySelector(".node_icon")
+    if ( iconNode ) {
+      console.dir(iconNode);  // current Icon
+      
+      let sub = textStartPosX - textLabelWidth/2 - iconShift
+      iconNewStartPosX = iconNode.transform.baseVal[0].matrix.e = sub
 
-            console.log(" textStartPosX : ", textStartPosX, "    iconNewStartPosX : ", iconNewStartPosX );  // current Node
-          }
-            
-          })
-        })
-      }
+      console.log(" textStartPosX : ", textStartPosX, "    iconNewStartPosX : ", iconNewStartPosX );  // current Node
+    }
+      
+    })
+  })
+}
 
 
 //initializeDiagram();
@@ -3835,7 +3842,7 @@ $.get("./templates.html", function(data) {
 });
 */
 window.addEventListener("load", function() {
-          angular.bootstrap(document, ['basicUsageSidenavDemo']);
+      angular.bootstrap(document, ['basicUsageSidenavDemo']);
       bindHotkeys();
       labelAlign();
       labelAlign("#stencil #v-8");

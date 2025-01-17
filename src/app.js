@@ -1712,6 +1712,7 @@ angular
     $scope.$shared = $shared;
     $scope.$const = $const;
     var graph;
+    var previousSave;
     $scope.extensions = [];
 
     $scope.conditions = [
@@ -2011,7 +2012,7 @@ angular
     function renderGraph(flow, templates) {
     }
 
-    function save(){
+    function autoSave(){
       var graph = diagram['graph'];
       var json = graph.toJSON();
       var params = {};
@@ -2038,15 +2039,28 @@ angular
         $http.post(createUrl("/flow/" + flowId), serverData).then(function () {
           // $shared.isCreateLoading = false;
           stateActions.lastSave = Date.now();
-          fetchFlowData();
+          getFlowData();
         }, function (err) {
           // $shared.isCreateLoading = false;
           alert("An error occured", err);
         });
       }
     }
+    
+    function getFlowData(){
+      // var dateTime = $window.localStorage.getItem('LASTSAVE') || 'default';
+      // const date1 = new Date(dateTime);
+      // const date2 = new Date();
+      // const diffTime = Math.abs(date2 - date1);
+      // if(diffTime <= 30000){
+      //   save();
+      //   // returnwait.then(function(result){
+          
+      //   // })
+      // }else{
+      //   fetchFlowData();
+      // }
 
-    function fetchFlowData(){
       var search = $location.search();
       $http.get(createUrl("/flow/" + search.flowId)).then(function (res) {
         if(res.data.flow_json){
@@ -2092,22 +2106,6 @@ angular
       });
     }
 
-    
-    function getFlowData(){
-      var dateTime = $window.localStorage.getItem('LASTSAVE') || 'default';
-      const date1 = new Date(dateTime);
-      const date2 = new Date();
-      const diffTime = Math.abs(date2 - date1);
-      if(diffTime <= 30000){
-        save();
-        // returnwait.then(function(result){
-          
-        // })
-      }else{
-        fetchFlowData();
-      }
-    }
-
     $scope.getAccountSetting = function(){
       $http.get(createUrl("/self")).then(function (res) {
         if(res){
@@ -2118,7 +2116,6 @@ angular
         }
       }, function (err) {
         console.error(err);
-        alert("Internal Error occured..");
       });
     }
 
@@ -2129,10 +2126,13 @@ angular
         }
       }, function (err) {
         console.error(err);
-        alert("Internal Error occured..");
       });
     }
-    
+    $scope.$on('grapshChangesBroadcast', function(event, data) {
+      // setTimeout(autoSave, 10000)
+      autoSave()
+    });
+
     function load() {
       
       var search = $location.search();
@@ -2169,7 +2169,6 @@ angular
               $scope.templates = res[1].data.data;
               $scope.isChecked = res[2].data.auto_save_flows;
               if($scope.isChecked === true){
-                $window.localStorage.clear('LASTSAVE');
                 $interval(getFlowData, 30000);
               }
               $shared.flow = {
@@ -2192,6 +2191,7 @@ angular
 
                 if (res[0].data.flow_json) {
                   var data = JSON.parse(res[0].data.flow_json);
+                  previousSave = res[0].data.flow_json;
                   console.log("loading graph data ", data);
                   graph.fromJSON(data.graph);
                   var cells = graph.getCells();
