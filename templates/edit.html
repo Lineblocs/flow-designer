@@ -105,9 +105,16 @@
                     </md-tooltip>
             </md-icon>
             </md-button>
-            <md-button  ng-click="saveChanges($event)" aria-label="Save" class="md-raised md-primary">
+            <div class="chekboxdv">
+              <md-checkbox class="ckbox" ng-model="$shared.isAutosaveEnabled" aria-label="Auto Save" ng-change="toggleAutosave($shared.isAutosaveEnabled)">
+                Auto Save
+              </md-checkbox>
+            </div>
+            
+            <md-button id="callAutoSave"  ng-click="saveChanges($event)" aria-label="Save" class="md-raised md-primary">
                 Save
             </md-button>
+            <small ng-show="$shared.lastSave">Last save: {{showReadableSaveTime($shared.lastSave)}}</small>
         </div>
     </md-toolbar>
     <div ng-controller="PaperCtrl" class="papers">

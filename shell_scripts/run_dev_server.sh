@@ -1,6 +1,7 @@
 #! /bin/bash
 yes | cp index.prod.html index.html
 
+DEPLOYMENT_DOMAIN='lineblocs.com'
 INDEX_PATH='index.html'
 sed "s/CONFIGURED_DEPLOYMENT_DOMAIN/${DEPLOYMENT_DOMAIN}/g" $INDEX_PATH > $INDEX_PATH.cop
 mv $INDEX_PATH.cop $INDEX_PATH

@@ -9682,6 +9682,17 @@ ul#presets {
 .margin-content {
   margin: 8px;
 }
+.chekboxdv{
+    border: 1px solid #395373;
+    padding: 3px 10px;
+    border-radius: 7px;
+}
+.chekboxdv md-checkbox{
+  margin: 0;
+}
+.ckbox md-checkbox.md-default-theme.md-checked, md-checkbox.md-checked .md-icon{
+  background-color:#395373;
+}
 md-card {
 	border-radius: 20px;
 }
