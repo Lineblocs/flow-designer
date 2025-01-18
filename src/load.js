@@ -23,6 +23,11 @@ var DEFAULT_LINK = new joint.dia.Link({
 function getAngularScope() {
   return window['angularScope'];
 }
+function triggerAutosave() {
+    var appElement = angular.element(document.getElementById('scopeCtrl'));
+    var $scope = appElement.scope();
+    $scope.$broadcast('graphChangesBroadcast');
+}
 
 function getSVGEl(joint)
 {
@@ -321,16 +326,8 @@ $("#canvas")
 
       out(m);
   });
-
-  graph.on('add', function (cell) {
-    var appElement = angular.element(document.getElementById('scopeCtrl'));
-    var $scope = appElement.scope();
-    $scope.$broadcast('grapshChangesBroadcast');
-  });
-  graph.on('remove', function (cell) {
-    var appElement = angular.element(document.getElementById('scopeCtrl'));
-    var $scope = appElement.scope();
-    $scope.$broadcast('grapshChangesBroadcast');
+  graph.on('change add remove', function () {
+    triggerAutosave();
   });
 
   paper.on('cell:pointerdblclick',

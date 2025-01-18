@@ -1,5 +1,6 @@
 var ORIENTATION_VERTICAL = "vertical";
 var ORIENTATION_HORIZONTAL = "horizontal";
+var autoSavingQueue = [];
 
 
 function Model(cell, name, links, data) {
@@ -927,14 +928,12 @@ angular
       doDuplicate(view, model);
     }
     factory.canDelete = function () {
-      console.log("canDelete called ", arguments, factory.cellModel);
       if (factory.cellModel && factory.cellModel.cell && factory.cellModel.cell.attributes.type !== "devs.LaunchModel") {
         return true;
       }
       return false;
     }
     factory.canSave = function () {
-      console.log("canSave called ", arguments, factory.cellModel);
       if (factory.cellModel && factory.cellModel.cell && factory.cellModel.cell.attributes.type !== "devs.LaunchModel") {
         return true;
       }
@@ -947,7 +946,6 @@ angular
       return false;
     }
     factory.hasCellModel = function () {
-      console.log("hasCellModel ", factory.cellModel);
       if (factory.cellModel && factory.cellModel.cell) {
         return true;
       }
@@ -1297,6 +1295,7 @@ angular
       } else if (model.cell.attributes.type === 'devs.SwitchModel') {}
       factory.unsetCellModel();
       factory.showToast("Widget changes saved")
+      triggerAutosave();
     }
     factory.showToast = function(message) {
           $mdToast.show(
@@ -1346,7 +1345,6 @@ angular
       return langs;
     }
     factory.getVoices = function () {
-      console.log("getVoices ", factory.cellModel);
       var cellModel = factory.cellModel;
       if (!cellModel || !cellModel.data || !cellModel.data.text_language) {
         return [];
@@ -1369,7 +1367,7 @@ angular
     return factory;
   })
 
-  .controller('RootCtrl', function ($scope, $timeout, $mdSidenav, $log, $mdDialog, $shared, $http, $location, $const, $mdSidenav) {
+  .controller('RootCtrl', function ($scope, $timeout, $interval, $mdSidenav, $log, $mdDialog, $shared, $http, $location, $const, $mdSidenav) {
     $scope.$shared = $shared;
   })
   .controller('ControlsCtrl', function ($scope, $timeout, $mdSidenav, $log, $mdDialog, $shared, $http, $location, $const, $mdSidenav) {
@@ -1411,6 +1409,7 @@ angular
       var paper = diagram['paper'];
       //paper.translate(0, 0);
       panAndZoom.resetPan();
+      triggerAutosave();
     }
 
     function switchToHorizontal() {
@@ -1424,6 +1423,7 @@ angular
           }
         });
       });
+
     }
     function switchToVertical() {
 
@@ -1510,6 +1510,8 @@ angular
         graph.fromJSON( newData );
         recreateLinks( links );
       }
+
+      triggerAutosave();
     }
     $scope.getOrientationIcon = function() {
       if ( $shared.orientation === ORIENTATION_VERTICAL ) {
@@ -1578,7 +1580,7 @@ angular
         $http.post(createUrl("/flow/" + flowId), serverData).then(function () {
           $shared.isCreateLoading = false;
           showSaved(ev);
-          stateActions.lastSave = Date.now();
+          $shared.lastSave = new Date();
         }, function (err) {
           alert("An error occured");
         });
@@ -1713,6 +1715,8 @@ angular
     $scope.$const = $const;
     var graph;
     var previousSave;
+
+    $shared.lastSave = null;
     $scope.extensions = [];
 
     $scope.conditions = [
@@ -1757,6 +1761,33 @@ angular
       'fr-FR'
     ];
     $scope.cellView = null;
+
+ 
+    $scope.showReadableSaveTime = function(date) {
+      console.log('showReadableSaveTime', date);
+      if (!date) return '';
+      
+      const now = new Date();
+      const isToday = date.toDateString() === now.toDateString();
+      
+      // Format time (e.g., 3:40PM)
+      const timeStr = date.toLocaleString('en-US', { 
+          hour: 'numeric', 
+          minute: '2-digit', 
+          hour12: true 
+      });
+      
+      if (isToday) {
+          return `${timeStr} today`;
+      } else {
+          // Format date without year (e.g., 11/01)
+          const dateStr = (date.getMonth() + 1).toString().padStart(2, '0') + 
+                         '/' + 
+                         date.getDate().toString().padStart(2, '0');
+          return `${dateStr} ${timeStr}`;
+      }
+    }
+
     $scope.addLink = function (label, type, cellModel) {
       cellModel = cellModel || $shared.cellModel;
       type = type || $const.LINK_CONDITION_MATCHES;
@@ -1941,7 +1972,6 @@ angular
     }
 
     $scope.flowWasStarted = function () {
-      console.log("flowWasStarted ", $shared.flow);
       if ($shared.flow && $shared.flow.started) {
         return true;
       }
@@ -2013,6 +2043,11 @@ angular
     }
 
     function autoSave(){
+      if (!$shared.isAutosaveEnabled) {
+        console.log('auto save disabled. not saving');
+        return;
+      }
+
       var graph = diagram['graph'];
       var json = graph.toJSON();
       var params = {};
@@ -2038,8 +2073,7 @@ angular
         // $shared.isCreateLoading = true;
         $http.post(createUrl("/flow/" + flowId), serverData).then(function () {
           // $shared.isCreateLoading = false;
-          stateActions.lastSave = Date.now();
-          getFlowData();
+          $shared.lastSave = new Date();
         }, function (err) {
           // $shared.isCreateLoading = false;
           alert("An error occured", err);
@@ -2109,7 +2143,7 @@ angular
     $scope.getAccountSetting = function(){
       $http.get(createUrl("/self")).then(function (res) {
         if(res){
-          $scope.isChecked = res.auto_save_flows;
+          $shared.isAutosaveEnabled = res.auto_save_flows;
           if(res.auto_save_flows === true){
             $interval(getFlowData, 30000);
           }
@@ -2119,7 +2153,7 @@ angular
       });
     }
 
-    $scope.changeautosave = function(event){
+    $scope.toggleAutosave = function(event){
       $http.post(createUrl("/updateSelf"), {"auto_save_flows": event}).then(function (res) {
         if(res){
           getAccountSetting();
@@ -2128,9 +2162,21 @@ angular
         console.error(err);
       });
     }
-    $scope.$on('grapshChangesBroadcast', function(event, data) {
+    $scope.$on('graphChangesBroadcast', function(event, data) {
       // setTimeout(autoSave, 10000)
-      autoSave()
+      var saveAttempt = {
+        time: Date.now()
+      }
+      autoSavingQueue.push(saveAttempt);
+      let autosaveDelay = 1000 * 5;
+
+      $timeout(() => {
+        let lastSaveAttempt = autoSavingQueue[autoSavingQueue.length-1]
+        if (lastSaveAttempt === saveAttempt) {
+          console.log('graph was updated -- auto saving changes');
+          autoSave()
+        }
+      }, autosaveDelay);
     });
 
     function load() {
@@ -2167,10 +2213,7 @@ angular
             ]).then(function (res) {
               console.log("flow templates are ", res[1].data);
               $scope.templates = res[1].data.data;
-              $scope.isChecked = res[2].data.auto_save_flows;
-              if($scope.isChecked === true){
-                $interval(getFlowData, 30000);
-              }
+              $shared.isAutosaveEnabled = res[2].data.auto_save_flows;
               $shared.flow = {
                 "started": true
               };
@@ -3143,6 +3186,11 @@ var DEFAULT_LINK = new joint.dia.Link({
 function getAngularScope() {
   return window['angularScope'];
 }
+function triggerAutosave() {
+    var appElement = angular.element(document.getElementById('scopeCtrl'));
+    var $scope = appElement.scope();
+    $scope.$broadcast('graphChangesBroadcast');
+}
 
 function getSVGEl(joint)
 {
@@ -3441,16 +3489,8 @@ $("#canvas")
 
       out(m);
   });
-
-  graph.on('add', function (cell) {
-    var appElement = angular.element(document.getElementById('scopeCtrl'));
-    var $scope = appElement.scope();
-    $scope.$broadcast('grapshChangesBroadcast');
-  });
-  graph.on('remove', function (cell) {
-    var appElement = angular.element(document.getElementById('scopeCtrl'));
-    var $scope = appElement.scope();
-    $scope.$broadcast('grapshChangesBroadcast');
+  graph.on('change add remove', function () {
+    triggerAutosave();
   });
 
   paper.on('cell:pointerdblclick',
