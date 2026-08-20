@@ -12,7 +12,7 @@
       <label>Name</label>
       <input ng-model="values.name">
     </md-input-container>
-    <ul class="no-list-style">
+    <ul class="no-list-style" ng-show="showTemplates">
       <li ng-repeat="category in templatesByCategory">
         <div layout="row" class="templates-list">
           <h2 class="margin-md-card">{{category.name}}</h2>

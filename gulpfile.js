@@ -20,6 +20,7 @@ const autoprefixer = require('gulp-autoprefixer');
 const imagemin = require('imagemin');
 const imageminJpegtran = require('imagemin-jpegtran');
 const imageminPngquant = require('imagemin-pngquant');
+var PORT = process.env.PORT || 9000;
 
 
 
@@ -70,6 +71,7 @@ gulp.task('connect', ['styles'], function() {
     }))
 // paths to bower_components should be relative to the current file
 // e.g. in app/index.html you should use ../bower_components
+
 .use('/bower_components', serveStatic('bower_components'))
 .use(serveIndex('app'))
 .use(modRewrite([
@@ -77,15 +79,15 @@ gulp.task('connect', ['styles'], function() {
     '^/edit$ /index.html [L]'
   ]));
 require('http').createServer(app)
-.listen(9000)
+.listen(PORT)
 .on('listening', function() {
-    console.log('Started connect web server on http://localhost:9000');
+    console.log('Started connect web server on http://localhost:' + PORT);
 });
 });
 
 gulp.task('serve', [ 'connect',  'watch'], function() {
     if (argv.open) {
-        require('opn')('http://localhost:9000');
+        require('opn')('http://localhost:' + PORT);
     }
 });
 

@@ -1605,6 +1605,7 @@ angular
     $scope.values = {
       name: ""
     };
+    $scope.showTemplates = false;
     $scope.blankTemplate = {
       "title": "Blank Template",
       "id": null
@@ -1658,6 +1659,7 @@ angular
       });
     }
     $scope.useTemplate = function (template) {
+      console.log('useTemplate called with ', template);
       $scope.selectedTemplate = template;
     };
     $scope.isSelected = function (template) {
@@ -1671,7 +1673,7 @@ angular
       $shared.isLoading = true;
       $http.get(createUrl("/flow/listTemplates")).then(function (res) {
         $shared.isLoading = false;
-        console.log("flow templates are", res.data);
+        console.log("ControlsCtrl - flow templates are", res.data);
         if ($location.search().mode === 'dark') {
           ThemeService.addStyle('styles.dark.css');
           ThemeService.removeStyle('styles.dark.css');
@@ -1681,6 +1683,9 @@ angular
         }
         var templates = res.data.data;
         $scope.templates = templates;
+        $scope.selectedTemplate = $scope.blankTemplate;
+        $scope.useTemplate($scope.blankTemplate);
+
         var templatesByCategory = [{
           "name": "Simple Flows", 
           "templates": []
@@ -1715,6 +1720,11 @@ angular
     $scope.$const = $const;
     var graph;
     var previousSave;
+
+    $scope.blankTemplate = {
+      "title": "Blank Template",
+      "id": null
+    };
 
     $shared.lastSave = null;
     $scope.extensions = [];
@@ -1979,6 +1989,7 @@ angular
       return false;
     }
     $scope.useTemplate = function (template) {
+      console.log("useTemplate called ", template);
       $scope.selectedTemplate = template;
     };
     $scope.isSelected = function (template) {
@@ -2211,9 +2222,10 @@ angular
               $http.get(createUrl("/flow/listTemplates")),
               $http.get(createUrl("/self"))
             ]).then(function (res) {
-              console.log("flow templates are ", res[1].data);
+              console.log("AppCtrl - flow templates are ", res[1].data);
               $scope.templates = res[1].data.data;
               $shared.isAutosaveEnabled = res[2].data.auto_save_flows;
+              $scope.useTemplate($scope.blankTemplate);
               $shared.flow = {
                 "started": true
               };
