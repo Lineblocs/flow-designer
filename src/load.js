@@ -379,14 +379,17 @@ var stencilLibraryGraph = new joint.dia.Graph,
        joint.shapes.devs.DialPicker,
        joint.shapes.devs.BridgePicker,
        joint.shapes.devs.ProcessInputPicker,
-       joint.shapes.devs.RecordVoicemailPicker,
        joint.shapes.devs.PlaybackPicker,
-       joint.shapes.devs.MacroPicker,
-       joint.shapes.devs.StreamAudioPicker,
        joint.shapes.devs.SetVariablesPicker,
-       joint.shapes.devs.ConferencePicker,
        joint.shapes.devs.SendDigitsPicker,
-       joint.shapes.devs.WaitPicker
+       joint.shapes.devs.WaitPicker,
+       // to implement
+       /*
+       joint.shapes.devs.ConferencePicker,
+       joint.shapes.devs.StreamAudioPicker,
+       joint.shapes.devs.MacroPicker,
+       joint.shapes.devs.RecordVoicemailPicker,
+       */
   ])
   stencilPaper.on('cell:pointerdown', function(cellView, e, x, y) {
     $('body').append('<div id="flyPaper" style="position:fixed;z-index:100;opacity:.7;pointer-event:none;"></div>');
